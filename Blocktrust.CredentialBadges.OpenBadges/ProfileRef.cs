@@ -1,26 +1,35 @@
-namespace Blocktrust.CredentialBadges.OpenBadges;
+﻿namespace Blocktrust.CredentialBadges.OpenBadges;
 
+using System;
 using System.Text.Json.Serialization;
 
 /// <summary>
-/// A Profile is a collection of information that describes the entity
-/// or organization using Open Badges. Issuers must be represented as Profiles,
-/// and endorsers, or other entities may also be represented using this vocabulary.
-/// Each Profile that represents an Issuer may be referenced in many BadgeClasses
-/// that it has defined. Anyone can create and host an Issuer file to start issuing
-/// Open Badges. Issuers may also serve as recipients of Open Badges, often
-/// identified within an Assertion by specific properties, like their url or
-/// contact email address.
-/// <see cref="https://www.imsglobal.org/spec/ob/v3p0/#profile"/>
+/// A description of the individual, entity, or organization that issued the credential. 
+/// Either a URI with the Unique URI for the Issuer/Profile file, or a Profile object MUST be supplied.
 /// </summary>
-public class Profile
+public class ProfileRef
 {
-   /// <summary>
-    /// Unique URI for the Issuer/Profile file. [1]
+    /// <summary>
+    /// A URI representing the Unique URI for the Issuer/Profile file. [0..1]
     /// </summary>
     [JsonPropertyName("id")]
-    public required Uri Id { get; set; }
+    public Uri? Id { get; set; }
 
+    // /// <summary>
+    // /// A Profile is a collection of information that describes the entity or organization using Open Badges. 
+    // /// Issuers must be represented as Profiles, and endorsers, or other entities may also be represented using this vocabulary. 
+    // /// Each Profile that represents an Issuer may be referenced in many BadgeClasses that it has defined. 
+    // /// Anyone can create and host an Issuer file to start issuing Open Badges. Issuers may also serve as recipients of Open Badges, 
+    // /// often identified within an Assertion by specific properties, like their url or contact email address. [0..1]
+    // /// </summary>
+    // [JsonPropertyName("profile")]
+    // public Profile? Profile { get; set; }
+    
+
+    // TODO Copied over from the Profile class for easier serialization
+    // Maybe custom serializer, or just use the Profile class directly without
+    // an required Id ?
+    
     /// <summary>
     /// The value of the type property MUST be an unordered set. One of the
     /// items MUST be the IRI 'Profile'. [1..*]
@@ -51,25 +60,9 @@ public class Profile
     /// A short description of the issuer entity or organization. [0..1]
     /// </summary>
     [JsonPropertyName("description")]
-    public string? Description { get; set; }
-
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the individual or
-    // /// organization represented by this profile. These endorsements are
-    // /// signed with a Data Integrity proof format. [0..*]
-    // /// </summary>
-    // [JsonPropertyName("endorsement")]
-    // public List<EndorsementCredential>? Endorsement { get; set; }
-
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the individual or
-    // /// organization represented by this profile. These endorsements are
-    // /// signed with the VC-JWT proof format. [0..*]
-    // /// </summary>
-    // [JsonPropertyName("endorsementJwt")]
-    // public List<CompactJws>? EndorsementJwt { get; set; }
-
-    /// <summary>
+    public string? Description { get; set; } 
+    
+      /// <summary>
     /// An image representing the issuer. This must be a PNG or SVG image. [0..1]
     /// </summary>
     [JsonPropertyName("image")]
@@ -160,4 +153,3 @@ public class Profile
     [JsonPropertyName("dateOfBirth")]
     public DateTime? DateOfBirth { get; set; }
 }
-
