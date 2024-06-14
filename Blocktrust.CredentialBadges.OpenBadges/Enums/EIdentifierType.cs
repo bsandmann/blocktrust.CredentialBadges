@@ -1,82 +1,82 @@
 ﻿/// <summary>
 /// Enumeration for IdentifierType
 /// </summary>
-public enum IdentifierTypeEnum
+public enum EIdentifierType
 {
     /// <summary>
     /// A specific type of identifier, e.g., "name"
     /// </summary>
-    name,
+    Name,
     /// <summary>
     /// A specific type of identifier, e.g., "sourcedId"
     /// </summary>
-    sourcedId,
+    SourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "systemId"
     /// </summary>
-    systemId,
+    SystemId,
     /// <summary>
     /// A specific type of identifier, e.g., "productId"
     /// </summary>
-    productId,
+    ProductId,
     /// <summary>
     /// A specific type of identifier, e.g., "userName"
     /// </summary>
-    userName,
+    UserName,
     /// <summary>
     /// A specific type of identifier, e.g., "accountId"
     /// </summary>
-    accountId,
+    AccountId,
     /// <summary>
     /// A specific type of identifier, e.g., "emailAddress"
     /// </summary>
-    emailAddress,
+    EmailAddress,
     /// <summary>
     /// A specific type of identifier, e.g., "nationalIdentityNumber"
     /// </summary>
-    nationalIdentityNumber,
+    NationalIdentityNumber,
     /// <summary>
     /// A specific type of identifier, e.g., "isbn"
     /// </summary>
-    isbn,
+    Isbn,
     /// <summary>
     /// A specific type of identifier, e.g., "issn"
     /// </summary>
-    issn,
+    Issn,
     /// <summary>
     /// A specific type of identifier, e.g., "lisSourcedId"
     /// </summary>
-    lisSourcedId,
+    LisSourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "oneRosterSourcedId"
     /// </summary>
-    oneRosterSourcedId,
+    OneRosterSourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "sisSourcedId"
     /// </summary>
-    sisSourcedId,
+    SisSourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiContextId"
     /// </summary>
-    ltiContextId,
+    LtiContextId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiDeploymentId"
     /// </summary>
-    ltiDeploymentId,
+    LtiDeploymentId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiToolId"
     /// </summary>
-    ltiToolId,
+    LtiToolId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiPlatformId"
     /// </summary>
-    ltiPlatformId,
+    LtiPlatformId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiUserId"
     /// </summary>
-    ltiUserId,
+    LtiUserId,
     /// <summary>
     /// A specific type of identifier, e.g., "identifier"
     /// </summary>
-    identifier
+    Identifier
 }

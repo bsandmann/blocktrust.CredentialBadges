@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 /// <see cref="https://www.imsglobal.org/spec/ob/v3p0/#resultstatustype-enumeration"/>
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum ResultStatusType
+public enum EResultStatusType
 {
     /// <summary>
     /// The learner has successfully completed the achievement.

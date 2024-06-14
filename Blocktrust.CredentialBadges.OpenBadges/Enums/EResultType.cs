@@ -5,7 +5,7 @@
 /// Extending the vocabulary makes use of a naming convention.
 /// <see cref="https://www.imsglobal.org/spec/ob/v3p0/#resulttype-enumeration"/>
 /// </summary>
-public enum ResultType
+public enum EResultType
 {
     /// <summary>
     /// The result is a grade point average.

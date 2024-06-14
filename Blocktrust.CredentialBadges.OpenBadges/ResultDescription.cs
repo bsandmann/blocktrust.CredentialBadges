@@ -54,7 +54,7 @@ public class ResultDescription
     /// The type of result this description represents. This is an extensible enumerated vocabulary. [1]
     /// </summary>
     [JsonPropertyName("resultType")]
-    public required ResultType Enumeration { get; set; }
+    public required EResultType Enumeration { get; set; }
 
     /// <summary>
     /// An ordered array of rubric criterion levels that may be asserted in the linked result. The levels should be ordered from low to high as determined by the achievement creator. [0..*]

@@ -45,7 +45,7 @@ public class Result
     /// ResultDescription is Status. [0..1]
     /// </summary>
     [JsonPropertyName("status")]
-    public ResultStatusType? Status { get; set; }
+    public EResultStatusType? Status { get; set; }
     
     /// <summary>
     /// A string representing the result of the performance, or demonstration, of

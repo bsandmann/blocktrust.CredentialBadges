@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 /// <see cref="https://www.imsglobal.org/spec/ob/v3p0/#alignmenttargettype-enumeration"/>
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum AlignmentTargetType
+public enum EAlignmentTargetType
 {
     /// <summary>
     /// An alignment to a CTDL-ASN/CTDL competency published by Credential Engine.

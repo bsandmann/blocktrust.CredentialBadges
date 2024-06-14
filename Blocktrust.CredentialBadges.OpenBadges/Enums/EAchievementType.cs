@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 /// <see cref="https://www.imsglobal.org/spec/ob/v3p0/#achievementtype-enumeration"/>
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum AchievementType
+public enum EAchievementType
 {
     /// <summary>
     /// Represents a generic achievement.

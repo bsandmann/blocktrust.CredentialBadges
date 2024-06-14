@@ -45,7 +45,7 @@ public class Alignment
     /// The type of the alignment target node. [0..1]
     /// </summary>
     [JsonPropertyName("targetType")]
-    public AlignmentTargetType? TargetType { get; set; }
+    public EAlignmentTargetType? TargetType { get; set; }
 
     /// <summary>
     /// URL linking to the official description of the alignment target, for

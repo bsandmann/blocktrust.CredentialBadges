@@ -24,5 +24,5 @@ public class IdentifierEntry
     /// The type of identifier. [0..1]
     /// </summary>
     [JsonPropertyName("identifierType")]
-    public IdentifierTypeEnum? IdentifierType { get; set; }
+    public EIdentifierType? IdentifierType { get; set; }
 }

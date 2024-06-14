@@ -53,21 +53,21 @@ public class Profile
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the individual or
-    // /// organization represented by this profile. These endorsements are
-    // /// signed with a Data Integrity proof format. [0..*]
-    // /// </summary>
-    // [JsonPropertyName("endorsement")]
-    // public List<EndorsementCredential>? Endorsement { get; set; }
+    /// <summary>
+    /// Allows endorsers to make specific claims about the individual or
+    /// organization represented by this profile. These endorsements are
+    /// signed with a Data Integrity proof format. [0..*]
+    /// </summary>
+    [JsonPropertyName("endorsement")]
+    public List<EndorsementCredential>? Endorsement { get; set; }
 
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the individual or
-    // /// organization represented by this profile. These endorsements are
-    // /// signed with the VC-JWT proof format. [0..*]
-    // /// </summary>
-    // [JsonPropertyName("endorsementJwt")]
-    // public List<CompactJws>? EndorsementJwt { get; set; }
+    /// <summary>
+    /// Allows endorsers to make specific claims about the individual or
+    /// organization represented by this profile. These endorsements are
+    /// signed with the VC-JWT proof format. [0..*]
+    /// </summary>
+    [JsonPropertyName("endorsementJwt")]
+    public List<string>? EndorsementJwt { get; set; }
 
     /// <summary>
     /// An image representing the issuer. This must be a PNG or SVG image. [0..1]

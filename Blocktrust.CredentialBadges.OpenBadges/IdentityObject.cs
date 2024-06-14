@@ -31,7 +31,7 @@ public class IdentityObject
     /// The identity type. [1]
     /// </summary>
     [JsonPropertyName("identityType")]
-    public required IdentifierTypeEnum IdentityType { get; set; }
+    public required EIdentifierType IdentityType { get; set; }
 
     /// <summary>
     /// If the identityHash is hashed, this should contain the string used to salt the hash. If this value is

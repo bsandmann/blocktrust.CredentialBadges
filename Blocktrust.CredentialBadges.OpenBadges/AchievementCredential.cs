@@ -65,21 +65,19 @@ public class AchievementCredential
     [JsonPropertyName("credentialSubject")]
     public required AchievementSubject CredentialSubject { get; set; }
 
-    // Currently Not supported by us
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the credential, and the achievement and profiles in the credential. 
-    // /// These endorsements are signed with a Data Integrity proof format. [0..*]
-    // /// </summary>
-    // [JsonPropertyName("endorsement")]
-    // public List<EndorsementCredential>? Endorsement { get; set; }
+    /// <summary>
+    /// Allows endorsers to make specific claims about the credential, and the achievement and profiles in the credential. 
+    /// These endorsements are signed with a Data Integrity proof format. [0..*]
+    /// </summary>
+    [JsonPropertyName("endorsement")]
+    public List<EndorsementCredential>? Endorsement { get; set; }
 
-    // Currently Not supported by us
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the credential, and the achievement and profiles in the credential. 
-    // /// These endorsements are signed with the VC-JWT proof format. [0..*]
-    // /// </summary>
-    // [JsonPropertyName("endorsementJwt")]
-    // public List<string>? EndorsementJwt { get; set; }
+    /// <summary>
+    /// Allows endorsers to make specific claims about the credential, and the achievement and profiles in the credential. 
+    /// These endorsements are signed with the VC-JWT proof format. [0..*]
+    /// </summary>
+    [JsonPropertyName("endorsementJwt")]
+    public List<string>? EndorsementJwt { get; set; }
 
     /// <summary>
     /// A description of the work that the recipient did to earn the achievement. 

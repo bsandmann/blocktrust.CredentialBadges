@@ -32,7 +32,7 @@ public class Achievement
     /// The type of achievement. This is an extensible vocabulary. [0..1]
     /// </summary>
     [JsonPropertyName("achievementType")]
-    public AchievementType? AchievementType { get; set; }
+    public EAchievementType? AchievementType { get; set; }
 
     /// <summary>
     /// The person or organization that created the achievement definition. [0..1]
@@ -59,12 +59,12 @@ public class Achievement
     [JsonPropertyName("description")]
     public required string Description { get; set; }
 
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the Achievement.
-    // /// These endorsements are signed with a Data Integrity proof format. [0..*] 
-    // /// </summary>
-    // [JsonPropertyName("endorsement")]
-    // public List<EndorsementCredential>? Endorsement { get; set; }
+    /// <summary>
+    /// Allows endorsers to make specific claims about the Achievement.
+    /// These endorsements are signed with a Data Integrity proof format. [0..*] 
+    /// </summary>
+    [JsonPropertyName("endorsement")]
+    public List<EndorsementCredential>? Endorsement { get; set; }
     
     // /// <summary>
     // /// Allows endorsers to make specific claims about the Achievement.
