@@ -11,7 +11,7 @@ public class IdentityObject
     /// MUST be the IRI 'IdentityObject'. [1]
     /// </summary>
     [JsonPropertyName("type")]
-    public required List<string> Type { get; set; } = new List<string> { "IdentityObject" };
+    public required string Type { get; set; } = "IdentityObject";
 
     /// <summary>
     /// Whether or not the identityHash value is hashed. [1]

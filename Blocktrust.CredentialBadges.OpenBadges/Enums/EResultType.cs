@@ -1,10 +1,13 @@
 ﻿namespace Blocktrust.CredentialBadges.OpenBadges;
 
+using System.Text.Json.Serialization;
+
 /// <summary>
 /// The type of result. This is an extensible enumerated vocabulary.
 /// Extending the vocabulary makes use of a naming convention.
 /// <see cref="https://www.imsglobal.org/spec/ob/v3p0/#resulttype-enumeration"/>
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum EResultType
 {
     /// <summary>

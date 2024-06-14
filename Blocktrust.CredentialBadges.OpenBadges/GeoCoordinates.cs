@@ -13,7 +13,7 @@ public class GeoCoordinates
     /// One of the items MUST be the IRI 'GeoCoordinates'. [1]
     /// </summary>
     [JsonPropertyName("type")]
-    public required List<string> Type { get; set; } = new List<string> { "GeoCoordinates" };
+    public required string Type { get; set; } = "GeoCoordinates";
 
     /// <summary>
     /// The latitude of the location [WGS84]. [1]

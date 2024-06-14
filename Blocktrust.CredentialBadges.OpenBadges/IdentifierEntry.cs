@@ -12,7 +12,7 @@ public class IdentifierEntry
     /// One of the items MUST be the IRI 'IdentifierEntry'. [1]
     /// </summary>
     [JsonPropertyName("type")]
-    public required List<string> Type { get; set; } = new List<string> { "IdentifierEntry" };
+    public required string Type { get; set; } = "IdentifierEntry";
 
     /// <summary>
     /// An identifier. [1]

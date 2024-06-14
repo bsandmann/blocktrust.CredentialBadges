@@ -1,82 +1,85 @@
-﻿/// <summary>
+﻿using System.Text.Json.Serialization;
+
+/// <summary>
 /// Enumeration for IdentifierType
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum EIdentifierType
 {
     /// <summary>
     /// A specific type of identifier, e.g., "name"
     /// </summary>
-    Name,
+    name,
     /// <summary>
     /// A specific type of identifier, e.g., "sourcedId"
     /// </summary>
-    SourcedId,
+    sourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "systemId"
     /// </summary>
-    SystemId,
+    systemId,
     /// <summary>
     /// A specific type of identifier, e.g., "productId"
     /// </summary>
-    ProductId,
+    productId,
     /// <summary>
     /// A specific type of identifier, e.g., "userName"
     /// </summary>
-    UserName,
+    userName,
     /// <summary>
     /// A specific type of identifier, e.g., "accountId"
     /// </summary>
-    AccountId,
+    accountId,
     /// <summary>
     /// A specific type of identifier, e.g., "emailAddress"
     /// </summary>
-    EmailAddress,
+    emailAddress,
     /// <summary>
     /// A specific type of identifier, e.g., "nationalIdentityNumber"
     /// </summary>
-    NationalIdentityNumber,
+    nationalIdentityNumber,
     /// <summary>
     /// A specific type of identifier, e.g., "isbn"
     /// </summary>
-    Isbn,
+    isbn,
     /// <summary>
     /// A specific type of identifier, e.g., "issn"
     /// </summary>
-    Issn,
+    issn,
     /// <summary>
     /// A specific type of identifier, e.g., "lisSourcedId"
     /// </summary>
-    LisSourcedId,
+    lisSourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "oneRosterSourcedId"
     /// </summary>
-    OneRosterSourcedId,
+    oneRosterSourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "sisSourcedId"
     /// </summary>
-    SisSourcedId,
+    sisSourcedId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiContextId"
     /// </summary>
-    LtiContextId,
+    ltiContextId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiDeploymentId"
     /// </summary>
-    LtiDeploymentId,
+    ltiDeploymentId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiToolId"
     /// </summary>
-    LtiToolId,
+    ltiToolId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiPlatformId"
     /// </summary>
-    LtiPlatformId,
+    ltiPlatformId,
     /// <summary>
     /// A specific type of identifier, e.g., "ltiUserId"
     /// </summary>
-    LtiUserId,
+    ltiUserId,
     /// <summary>
     /// A specific type of identifier, e.g., "identifier"
     /// </summary>
-    Identifier
+    identifier
 }
