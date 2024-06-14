@@ -66,12 +66,12 @@ public class Achievement
     [JsonPropertyName("endorsement")]
     public List<EndorsementCredential>? Endorsement { get; set; }
     
-    // /// <summary>
-    // /// Allows endorsers to make specific claims about the Achievement.
-    // /// These endorsements are signed with the VC-JWT proof format. [0..*] 
-    // /// </summary>
-    // [JsonPropertyName("endorsementJwt")]
-    // public List<CompactJws>? EndorsementJwt { get; set; }
+    /// <summary>
+    /// Allows endorsers to make specific claims about the Achievement.
+    /// These endorsements are signed with the VC-JWT proof format. [0..*] 
+    /// </summary>
+    [JsonPropertyName("endorsementJwt")]
+    public List<string>? EndorsementJwt { get; set; }
 
     /// <summary>
     /// Category, subject, area of study, discipline, or general branch of

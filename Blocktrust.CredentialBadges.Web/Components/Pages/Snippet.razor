@@ -1,11 +1,71 @@
 ﻿@page "/snippet"
+@using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge
+@using Blocktrust.CredentialBadges.Core.Common
+@using MediatR
+@inject IMediator mediator
 @rendermode InteractiveServer
 
 <PageTitle>Snippet</PageTitle>
 
 <h1>Snippet Generator Demo</h1>
 
-
+<input class="" type="text" @bind="rawInput" @bind:event="oninput" @onkeydown="HandleKeyDown"/>
+<button class="btn btn-success" @onclick="ParseVerifyAndCreateSnippet">Parse</button>
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="background-color: #d87575">@ErrorMessage</p>
+}
 
 @code {
+    private string? rawInput;
+    private string? ErrorMessage;
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrEmpty(rawInput))
+        {
+            ErrorMessage = null;
+            await ParseVerifyAndCreateSnippet();
+        }
+        else if (e.Key == "Escape")
+        {
+            ErrorMessage = null;
+            rawInput = null;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ParseVerifyAndCreateSnippet()
+    {
+        //TODO refactor in seperate command
+        
+        var parserResult = CredentialParser.Parse(rawInput);
+        if (parserResult.IsFailed)
+        {
+            ErrorMessage = parserResult.Errors.First().Message;
+            return;
+        }
+
+        var verifyOpenBadgeResult = await mediator.Send(new VerifyOpenBadgeRequest(parserResult.Value));
+        if (verifyOpenBadgeResult.IsFailed)
+        {
+            ErrorMessage = verifyOpenBadgeResult.Errors.First().Message;
+            return;
+        }
+
+        if (!verifyOpenBadgeResult.Value.VerificationIsSuccessfull())
+        {
+            ErrorMessage = "Verification of the OpenBadge failed. Only verified OpenBadges can be used to generate a snippet.";
+            return;
+        }
+        
+        // Image extraction
+        
+        // Image upload
+        
+        // Database entry
+        
+        // Snippet generation
+    }
+
 }
