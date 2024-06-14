@@ -1,0 +1,73 @@
+@page "/systemhealth"
+@using Blocktrust.CredentialBadges.Builder.Commands.CheckAgentHealth
+@using MediatR
+@inject IMediator Mediator
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h1>This page should contain the code to create a new OpenBadges compliant Credential using Identus</h1>
+
+<button class="btn btn-primary" @onclick="() => CheckHealth(1)">Check Health on Agent 1</button>
+<button class="btn btn-primary" @onclick="() => CheckHealth(2)">Check Health on Agent 2</button>
+
+@if (IsCheckingHealthAgent1)
+{
+    <p>Checking Agent 1&hellip;</p>
+}
+else if (Agent1Status is not null)
+{
+    <p>Agent 1: @Agent1Status</p>
+}
+
+@if (IsCheckingHealthAgent2)
+{
+    <p>Checking Agent 2&hellip;</p>
+}
+else if (Agent2Status is not null)
+{
+    <p>Agent 2: @Agent2Status</p>
+}
+
+
+@code {
+    private bool IsCheckingHealthAgent1 = false;
+    private bool IsCheckingHealthAgent2 = false;
+    private string? Agent1Status = null;
+    private string? Agent2Status = null;
+
+    private async Task CheckHealth(int agentNumber)
+    {
+        if (agentNumber == 1)
+        {
+            IsCheckingHealthAgent1 = true;
+            Agent1Status = null;
+            var result = await Mediator.Send(new CheckAgentHealthRequest(agentNumber));
+            IsCheckingHealthAgent1 = false;
+            if (result.IsFailed)
+            {
+                Agent1Status = "Failed: " + result.Errors.First().Message;
+            }
+            else
+            {
+                Agent1Status = "Success. Agent 1 is healthy.";
+            }
+        }
+        else if (agentNumber == 2)
+        {
+            IsCheckingHealthAgent2 = true;
+            Agent2Status = null;
+            var result = await Mediator.Send(new CheckAgentHealthRequest(agentNumber));
+            IsCheckingHealthAgent2 = false;
+            if (result.IsFailed)
+            {
+                Agent2Status = "Failed: " + result.Errors.First().Message;
+            }
+            else
+            {
+                Agent2Status = "Success. Agent 2 is healthy.";
+            }
+        }
+    }
+
+}
