@@ -26,6 +26,9 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<str
             if (response.IsSuccessStatusCode)
             {
                 var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                
+                
+                
                 return Result.Ok(responseBody);
             }
 

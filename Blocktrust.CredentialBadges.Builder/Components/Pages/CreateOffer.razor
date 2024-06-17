@@ -21,10 +21,7 @@
         <InputText id="connectionId" class="form-control" @bind-Value="_offerRequest.ConnectionId" />
     </div>
     
-    <div class="form-group">
-        <label for="apiKey">API Key</label>
-        <InputText id="apiKey" class="form-control" @bind-Value="_offerRequest.ApiKey" />
-    </div>
+
 
     <br />
 
@@ -82,6 +79,8 @@
     private async Task HandleValidSubmit()
     {
         var result = await Mediator.Send(_offerRequest);
+        
+        
         if (result.IsSuccess)
         {
             _offerresult = result.Value;
