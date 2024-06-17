@@ -1,0 +1,96 @@
+@page "/create-offer"
+@using Blocktrust.CredentialBadges.Builder.Commands.Offers.CreateOffer
+@using MediatR
+@inject IMediator Mediator
+@inject ILogger<CreateOfferHandler> Logger
+@rendermode InteractiveServer
+
+<h3 xmlns="http://www.w3.org/1999/html">Create Credential Offer</h3>
+
+<EditForm Model="_offerRequest" OnValidSubmit="HandleValidSubmit" FormName="createOfferForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="issuingDID">Issuing DID</label>
+        <InputText id="issuingDID" class="form-control" @bind-Value="_offerRequest.IssuingDID" />
+    </div>
+
+    <div class="form-group">
+        <label for="connectionId">Connection ID</label>
+        <InputText id="connectionId" class="form-control" @bind-Value="_offerRequest.ConnectionId" />
+    </div>
+    
+    <div class="form-group">
+        <label for="apiKey">API Key</label>
+        <InputText id="apiKey" class="form-control" @bind-Value="_offerRequest.ApiKey" />
+    </div>
+
+    <br />
+
+    <!--  ACHIEVEMENT -->
+    <h1>Achievement:</h1>
+    <p>id: urn:uuid:bd6d9316-f7ae-4073-a1e5-2f7f5bd22922 </p>
+    <p>type: Achievement </p>
+    <p>name: Badge </p>
+    <p>description: This is a sample credential issued by the Digital Credentials Consortium to demonstrate the functionality of Verifiable Credentials for wallets and verifiers. </p>
+    <p>criteria: This credential was issued to a student that demonstrated proficiency in the Python programming language... </p>
+    <p>image: https://user-images.githubusercontent.com/752326/214947713-15826a3a-b5ac-4fba-8d4a-884b60cb7157.png </p>
+    
+    <hr/>
+    
+    
+
+
+    <button type="submit" class="btn btn-primary">Create Offer</button>
+</EditForm>
+
+<h2>Offer:</h2>
+<pre>@_offerresult</pre>
+
+@code {
+    private string _offerresult = "pending...";
+    private CreateOfferRequest _offerRequest = new()
+    {
+        Claims = new Claims
+        {
+            Type = new List<string> { "AchievementSubject" },
+            Achievement = new Achievement
+            {
+                Id = "urn:uuid:bd6d9316-f7ae-4073-a1e5-2f7f5bd22922",
+                Type = new List<string> { "Achievement" },
+                AchievementType = "Diploma",
+                Name = "Badge",
+                Description = "This is a sample credential issued by the Digital Credentials Consortium to demonstrate the functionality of Verifiable Credentials for wallets and verifiers.",
+                Criteria = new Criteria
+                {
+                    Type = "Criteria",
+                    Narrative = "This credential was issued to a student that demonstrated proficiency in the Python programming language..."
+                },
+                Image = new Image
+                {
+                    Id = "https://user-images.githubusercontent.com/752326/214947713-15826a3a-b5ac-4fba-8d4a-884b60cb7157.png",
+                    Type = "Image"
+                }
+            }
+        },
+        CredentialFormat = "JWT",
+        IssuingDID = "did:prism:9c3e479df669e43a27315659c5ed715406238203ef9b6ac6761076dd17f69bd7:CoQBCoEBEkIKDm15LWlzc3Vpbmcta2V5EAJKLgoJc2VjcDI1NmsxEiEDOGHrcbLBlN3XdgaU7HCUmh8R4Tho-8Eea_d5YWg5CnUSOwoHbWFzdGVyMBABSi4KCXNlY3AyNTZrMRIhAyGNxWZkaOBOty75ezzewIqUln80vVhZKL0YPvadP9A8",
+        ConnectionId = "e3cb8edb-d634-4f2e-9711-98257e5a723e"
+    };
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await Mediator.Send(_offerRequest);
+        if (result.IsSuccess)
+        {
+            _offerresult = result.Value;
+            Logger.LogInformation("Offer created successfully: {Result}", result.Value);
+        }
+        else
+        {
+            _offerresult = "Error creating offer";
+            Logger.LogError("Error creating offer: {Error}", result.Errors.FirstOrDefault()?.Message);
+        }
+    }
+}
