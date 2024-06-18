@@ -8,13 +8,9 @@ public class GenerateCredentialHandler
     //
     // Get offer by threadId - agent 2
     //
-    // Accept offer- last offer id
+    // Accept offer- pass recordId, from get Offer by thread id agent 2
     //
-    // Get record by id - agent  1
-    //
-    // LOOP  every 3 seconds - get offer by Id until response sent status
-    //
-    // sentStatus? Return value.credential
+    // Get credential: Get record by id, every 3 seconds for max of 30 seconds - agent  2, check status, is status sent? retun credential
     //
     // }
 

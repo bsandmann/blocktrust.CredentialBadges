@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using MediatR
 @using Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId
+@using Blocktrust.CredentialBadges.Builder.Commands.Offers.AcceptOffer
 @inject IMediator Mediator
 @rendermode InteractiveServer
 
@@ -24,10 +25,36 @@ else if (LastOfferId is not null)
     <p>Offer Id: @LastOfferId</p>
 }
 
+<div class="form-group">
+    <label for="recordIdInput">Record ID</label>
+    <InputText id="recordIdInput" class="form-control" @bind-Value="RecordId" />
+</div>
+
+<div class="form-group">
+    <label for="subjectIdInput">Subject ID</label>
+    <InputText id="subjectIdInput" class="form-control" @bind-Value="SubjectId" />
+</div>
+
+<button class="btn btn-primary" @onclick="() => AcceptOffer()">Accept Offer</button>
+
+@if (IsAcceptingOffer)
+{
+    <p>Accepting Offer&hellip;</p>
+}
+else if (AcceptOfferResult is not null)
+{
+    <p>Accept Offer Result: @AcceptOfferResult</p>
+}
+
 @code {
     private bool IsGettingLastOfferId = false;
     private string? LastOfferId = null;
     private string ThId = string.Empty;
+
+    private bool IsAcceptingOffer = false;
+    private string? AcceptOfferResult = null;
+    private string RecordId = string.Empty;
+    private string SubjectId = string.Empty;
 
     private async Task GetLastOfferId()
     {
@@ -42,6 +69,22 @@ else if (LastOfferId is not null)
         else
         {
             LastOfferId = result.Value;
+        }
+    }
+
+    private async Task AcceptOffer()
+    {
+        IsAcceptingOffer = true;
+        AcceptOfferResult = null;
+        var result = await Mediator.Send(new AcceptOfferRequest(RecordId, SubjectId));
+        IsAcceptingOffer = false;
+        if (result.IsFailed)
+        {
+            AcceptOfferResult = "Failed: " + result.Errors.First().Message;
+        }
+        else
+        {
+            AcceptOfferResult = "Success: " + result.Value;
         }
     }
 }
