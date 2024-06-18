@@ -31,4 +31,7 @@ public class Criteria
     /// </summary>
     [JsonPropertyName("narrative")]
     public string? Narrative { get; set; }
+    
+    [JsonPropertyName("type")]
+    public string? Type { get; set; }
 }
