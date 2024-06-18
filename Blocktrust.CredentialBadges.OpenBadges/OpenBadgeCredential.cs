@@ -14,9 +14,10 @@ public class OpenBadgeCredential
     
     /// <summary>
     /// Unambiguous reference to the credential. [1]
+    /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
     /// </summary>
     [JsonPropertyName("id")]
-    public required Uri Id { get; set; }
+    public Uri Id { get; set; }
     
     /// <summary>
     /// The short description of the credential for display purposes in wallets. [0..1]
@@ -34,15 +35,17 @@ public class OpenBadgeCredential
     
     /// <summary>
     /// A description of the individual, entity, or organization that issued the credential. [1]
+    /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
     /// </summary>
     [JsonPropertyName("issuer")]
-    public required ProfileRef Issuer { get; set; }
+    public ProfileRef Issuer { get; set; }
 
     /// <summary>
     /// Timestamp of when the credential becomes valid. [1]
+    /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
     /// </summary>
     [JsonPropertyName("validFrom")]
-    public required DateTime ValidFrom { get; set; }
+    public DateTime ValidFrom { get; set; }
 
     /// <summary>
     /// If the credential has some notion of validity period, this indicates a timestamp when a credential should no longer 
@@ -88,6 +91,13 @@ public class OpenBadgeCredential
     /// <summary>
     /// Optional property to capture the complete JWT as it was created 
     /// </summary>
+    [JsonIgnore]
     public JwtModel? Jwt { get; set; }
+    
+    /// <summary>
+    /// Flag to determine the type of data model used for the credential (1.0 or 2.0)
+    /// </summary>
+    [JsonIgnore]
+    public EDataModelType DataModelType { get; set; }
     
 }

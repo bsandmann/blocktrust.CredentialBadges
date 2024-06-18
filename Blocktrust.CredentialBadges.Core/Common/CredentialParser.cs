@@ -23,27 +23,24 @@ public static class CredentialParser
         else if (rawInput.Trim().StartsWith("ey"))
         {
             // we naivly assume it is an jwt token and try to decode it
-            var parsedJwt = JwtParser.ExtractHeaderAndPayloadFromBase64(rawInput);
+            var parsedJwt = JwtParser.Parse(rawInput);
             if (parsedJwt.IsFailed)
             {
                 return Result.Fail($"Credential was assumed to be an JWT but could not decode:  {parsedJwt.Errors.FirstOrDefault()?.Message}");
             }
 
-            if (string.IsNullOrEmpty(parsedJwt.Value.PayloadAsJson))
+            if (parsedJwt.Value.OpenBadgeCredentials.Count == 0)
             {
-                return Result.Fail("Could not extract payload from JWT.");
+                return Result.Fail("Could not extract payload from JWT: No OpenBadgeCredentials found.");
+            }
+            else if (parsedJwt.Value.OpenBadgeCredentials.Count > 1)
+            {
+                return Result.Fail("Could not extract payload from JWT: Multiple OpenBadgeCredentials found. Only one is supported.");
             }
 
-            var openBadgeCredentialResult = DeserializeAsOpenBadgeCredential(parsedJwt.Value.PayloadAsJson);
-            if (openBadgeCredentialResult.IsFailed)
-            {
-                return openBadgeCredentialResult.ToResult();
-            }
+            var openBadgeCredential = parsedJwt.Value.OpenBadgeCredentials.Single();
 
-            // Add the JWT information to the credential
-            openBadgeCredentialResult.Value.Jwt = parsedJwt.Value;
-
-            return Result.Ok(openBadgeCredentialResult.Value);
+            return Result.Ok(openBadgeCredential);
         }
         else
         {
@@ -68,32 +65,29 @@ public static class CredentialParser
             {
                 return Result.Fail($"Credential was assumed to be an Base64 and to contain a JWT but could not find JWT");
             }
-            
-            var parsedJwt = JwtParser.ExtractHeaderAndPayloadFromBase64(decodedString);
+
+            var parsedJwt = JwtParser.Parse(decodedString);
             if (parsedJwt.IsFailed)
             {
                 return Result.Fail($"Credential was assumed to be an JWT but could not decode:  {parsedJwt.Errors.FirstOrDefault()?.Message}");
             }
 
-            if (string.IsNullOrEmpty(parsedJwt.Value.PayloadAsJson))
+            if (parsedJwt.Value.OpenBadgeCredentials.Count == 0)
             {
-                return Result.Fail("Could not extract payload from JWT.");
+                return Result.Fail("Could not extract payload from JWT: No OpenBadgeCredentials found.");
+            }
+            else if (parsedJwt.Value.OpenBadgeCredentials.Count > 1)
+            {
+                return Result.Fail("Could not extract payload from JWT: Multiple OpenBadgeCredentials found. Only one is supported.");
             }
 
-            var openBadgeCredentialResult = DeserializeAsOpenBadgeCredential(parsedJwt.Value.PayloadAsJson);
-            if (openBadgeCredentialResult.IsFailed)
-            {
-                return openBadgeCredentialResult.ToResult();
-            }
+           var openBadgeCredential = parsedJwt.Value.OpenBadgeCredentials.Single();
 
-            // Add the JWT information to the credential
-            openBadgeCredentialResult.Value.Jwt = parsedJwt.Value;
-
-            return Result.Ok(openBadgeCredentialResult.Value); 
+            return Result.Ok(openBadgeCredential);
         }
     }
 
-    private static Result<OpenBadgeCredential> DeserializeAsOpenBadgeCredential(string rawInput)
+    public static Result<OpenBadgeCredential> DeserializeAsOpenBadgeCredential(string rawInput)
     {
         var options = new JsonSerializerOptions
         {
@@ -167,7 +161,9 @@ public static class CredentialParser
         }
         else
         {
-            return Result.Fail("Could not determine the type of the credential to either be a OpenBadgeCredential or an EndorsementCredential");
+            // TODO This code has to be enabled again, when we can create correct Credential-types with identus
+            // return Result.Fail("Could not determine the type of the credential to either be a OpenBadgeCredential or an EndorsementCredential");
+            return Result.Ok(false);
         }
     }
 }
