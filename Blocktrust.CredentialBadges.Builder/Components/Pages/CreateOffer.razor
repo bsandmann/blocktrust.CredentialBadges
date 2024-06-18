@@ -90,7 +90,7 @@
         
         if (result.IsSuccess)
         {
-            _offerresult = result.Value;
+            _offerresult = result.Value.thid;
             Logger.LogInformation("Offer created successfully: {Result}", result.Value);
         }
         else

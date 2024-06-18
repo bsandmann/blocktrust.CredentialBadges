@@ -6,7 +6,7 @@ using Blocktrust.CredentialBadges.IdentusClientApi;
 
 namespace Blocktrust.CredentialBadges.Builder.Commands.Offers.CreateOffer;
 
-public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<string>>
+public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<OfferResponse>>
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<CreateOfferHandler> _logger;
@@ -19,7 +19,7 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<str
         _logger = logger;
     }
 
-    public async Task<Result<string>> Handle(CreateOfferRequest request, CancellationToken cancellationToken)
+    public async Task<Result<OfferResponse>> Handle(CreateOfferRequest request, CancellationToken cancellationToken)
     {
         _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent1ApiKey);
         var identusClient = new IdentusClient(_httpClient);
@@ -30,12 +30,22 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<str
         {
             var reqs = _httpClient.DefaultRequestHeaders.ToString();
             var response = await identusClient.CreateCredentialOfferAsync(request, cancellationToken);
-            return Result.Ok(response.RecordId);
+            OfferResponse offerResponse = new OfferResponse()
+            {
+                success = true,
+                recordId = response.RecordId,
+                thid = response.Thid,
+                message = "Offer created successfully"
+            };
+                
+            
+            return Result.Ok(offerResponse);
         }
         catch (ApiException ex)
         {
             _logger.LogError(ex, "Error creating offer");
             return Result.Fail(ex.Message);
+      
         }
     }
 }
