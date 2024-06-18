@@ -5,11 +5,10 @@
 @inject ILogger<CreateOfferHandler> Logger
 @rendermode InteractiveServer
 
-<h3 xmlns="http://www.w3.org/1999/html">Create Credential Offer</h3>
+<h3>Create Credential Offer</h3>
 
 <EditForm Model="_offerRequest" OnValidSubmit="HandleValidSubmit" FormName="createOfferForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+
 
     <div class="form-group">
         <label for="issuingDID">Issuing DID</label>
@@ -18,10 +17,8 @@
 
     <div class="form-group">
         <label for="connectionId">Connection ID</label>
-        <InputText id="connectionId" class="form-control" @bind-Value="_offerRequest.ConnectionId" />
+        <InputText id="connectionId" class="form-control" @bind-Value="_connectionId" />
     </div>
-    
-
 
     <br />
 
@@ -33,11 +30,8 @@
     <p>description: This is a sample credential issued by the Digital Credentials Consortium to demonstrate the functionality of Verifiable Credentials for wallets and verifiers. </p>
     <p>criteria: This credential was issued to a student that demonstrated proficiency in the Python programming language... </p>
     <p>image: https://user-images.githubusercontent.com/752326/214947713-15826a3a-b5ac-4fba-8d4a-884b60cb7157.png </p>
-    
-    <hr/>
-    
-    
 
+    <hr/>
 
     <button type="submit" class="btn btn-primary">Create Offer</button>
 </EditForm>
@@ -46,40 +40,52 @@
 <pre>@_offerresult</pre>
 
 @code {
+    private string _connectionId = "e3cb8edb-d634-4f2e-9711-98257e5a723e";
     private string _offerresult = "pending...";
+    
+    private static Guid ConvertToGuid(string guidString)
+    {
+        if (Guid.TryParse(guidString, out Guid guid))
+        {
+            return guid;
+        }
+        return Guid.Empty; 
+    }
+
+    
     private CreateOfferRequest _offerRequest = new()
     {
-        Claims = new Claims
+        Claims = new 
         {
-            Type = new List<string> { "AchievementSubject" },
-            Achievement = new Achievement
+            type = new List<string> { "AchievementSubject" },
+            achievement = new
             {
-                Id = "urn:uuid:bd6d9316-f7ae-4073-a1e5-2f7f5bd22922",
-                Type = new List<string> { "Achievement" },
-                AchievementType = "Diploma",
-                Name = "Badge",
-                Description = "This is a sample credential issued by the Digital Credentials Consortium to demonstrate the functionality of Verifiable Credentials for wallets and verifiers.",
-                Criteria = new Criteria
+                id = "urn:uuid:bd6d9316-f7ae-4073-a1e5-2f7f5bd22922",
+                type = new List<string> { "Achievement" },
+                achievementType = "Diploma",
+                name = "Badge",
+                description = "This is a sample credential issued by the Digital Credentials Consortium to demonstrate the functionality of Verifiable Credentials for wallets and verifiers.",
+                criteria = new
                 {
-                    Type = "Criteria",
-                    Narrative = "This credential was issued to a student that demonstrated proficiency in the Python programming language..."
+                    type = "Criteria",
+                    narrative = "This credential was issued to a student that demonstrated proficiency in the Python programming language through activities performed in the course titled *Introduction to Python* offered by [Example Institute of Technology](https://exit.example.edu) from **February 17, 2023** to **June 12, 2023**. This is a credential with the following criteria:\n1. completed all homework assignments\n2. passed all exams\n3. completed final group project"
                 },
-                Image = new Image
+                image = new
                 {
-                    Id = "https://user-images.githubusercontent.com/752326/214947713-15826a3a-b5ac-4fba-8d4a-884b60cb7157.png",
-                    Type = "Image"
+                    id = "https://user-images.githubusercontent.com/752326/214947713-15826a3a-b5ac-4fba-8d4a-884b60cb7157.png",
+                    type = "Image"
                 }
             }
         },
         CredentialFormat = "JWT",
         IssuingDID = "did:prism:9c3e479df669e43a27315659c5ed715406238203ef9b6ac6761076dd17f69bd7:CoQBCoEBEkIKDm15LWlzc3Vpbmcta2V5EAJKLgoJc2VjcDI1NmsxEiEDOGHrcbLBlN3XdgaU7HCUmh8R4Tho-8Eea_d5YWg5CnUSOwoHbWFzdGVyMBABSi4KCXNlY3AyNTZrMRIhAyGNxWZkaOBOty75ezzewIqUln80vVhZKL0YPvadP9A8",
-        ConnectionId = "e3cb8edb-d634-4f2e-9711-98257e5a723e"
+        ConnectionId = Guid.Empty
     };
 
     private async Task HandleValidSubmit()
     {
+        _offerRequest.ConnectionId = ConvertToGuid(_connectionId);
         var result = await Mediator.Send(_offerRequest);
-        
         
         if (result.IsSuccess)
         {
