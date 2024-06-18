@@ -2,6 +2,7 @@
 @using MediatR
 @using Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId
 @using Blocktrust.CredentialBadges.Builder.Commands.Offers.AcceptOffer
+@using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetRecordById
 @inject IMediator Mediator
 @rendermode InteractiveServer
 
@@ -14,15 +15,15 @@
     <InputText id="thIdInput" class="form-control" @bind-Value="ThId" />
 </div>
 
-<button class="btn btn-primary" @onclick="() => GetLastOfferId()">Get Offer Id by ThId</button>
+<button class="btn btn-primary" @onclick="() => GetOfferByThId()">Get Offer Id by ThId</button>
 
-@if (IsGettingLastOfferId)
+@if (IsGettingOfferByThId)
 {
     <p>Getting Offer Id by ThId&hellip;</p>
 }
-else if (LastOfferId is not null)
+else if (OfferThId is not null)
 {
-    <p>Offer Id: @LastOfferId</p>
+    <p>Offer Id: @OfferThId</p>
 }
 
 <div class="form-group">
@@ -46,9 +47,25 @@ else if (AcceptOfferResult is not null)
     <p>Accept Offer Result: @AcceptOfferResult</p>
 }
 
+<div class="form-group">
+    <label for="getRecordIdInput">Record ID</label>
+    <InputText id="getRecordIdInput" class="form-control" @bind-Value="GetRecordId" />
+</div>
+
+<button class="btn btn-primary" @onclick="() => GetRecordById()">Get Record By Id</button>
+
+@if (IsGettingRecordById)
+{
+    <p>Getting Record by Id&hellip;</p>
+}
+else if (RecordByIdResult is not null)
+{
+    <p>Record: @RecordByIdResult</p>
+}
+
 @code {
-    private bool IsGettingLastOfferId = false;
-    private string? LastOfferId = null;
+    private bool IsGettingOfferByThId = false;
+    private string? OfferThId = null;
     private string ThId = string.Empty;
 
     private bool IsAcceptingOffer = false;
@@ -56,19 +73,23 @@ else if (AcceptOfferResult is not null)
     private string RecordId = string.Empty;
     private string SubjectId = string.Empty;
 
-    private async Task GetLastOfferId()
+    private bool IsGettingRecordById = false;
+    private string? RecordByIdResult = null;
+    private string GetRecordId = string.Empty;
+
+    private async Task GetOfferByThId()
     {
-        IsGettingLastOfferId = true;
-        LastOfferId = null;
+        IsGettingOfferByThId = true;
+        OfferThId = null;
         var result = await Mediator.Send(new GetOfferByThIdRequest(ThId));
-        IsGettingLastOfferId = false;
+        IsGettingOfferByThId = false;
         if (result.IsFailed)
         {
-            LastOfferId = "Failed: " + result.Errors.First().Message;
+            OfferThId = "Failed: " + result.Errors.First().Message;
         }
         else
         {
-            LastOfferId = result.Value;
+            OfferThId = result.Value;
         }
     }
 
@@ -85,6 +106,22 @@ else if (AcceptOfferResult is not null)
         else
         {
             AcceptOfferResult = "Success: " + result.Value;
+        }
+    }
+
+    private async Task GetRecordById()
+    {
+        IsGettingRecordById = true;
+        RecordByIdResult = null;
+        var result = await Mediator.Send(new GetRecordByIdRequest(GetRecordId));
+        IsGettingRecordById = false;
+        if (result.IsFailed)
+        {
+            RecordByIdResult = "Failed: " + result.Errors.First().Message;
+        }
+        else
+        {
+            RecordByIdResult = result.Value.Claims.ToString();
         }
     }
 }
