@@ -40,7 +40,7 @@
 <pre>@_offerresult</pre>
 
 @code {
-    private string _connectionId = "e3cb8edb-d634-4f2e-9711-98257e5a723e";
+    private string _connectionId = "e9df055a-57f8-4ef2-87c6-bc035f4256f0";
     private string _offerresult = "pending...";
     
     private static Guid ConvertToGuid(string guidString)
@@ -78,8 +78,9 @@
             }
         },
         CredentialFormat = "JWT",
-        IssuingDID = "did:prism:9c3e479df669e43a27315659c5ed715406238203ef9b6ac6761076dd17f69bd7:CoQBCoEBEkIKDm15LWlzc3Vpbmcta2V5EAJKLgoJc2VjcDI1NmsxEiEDOGHrcbLBlN3XdgaU7HCUmh8R4Tho-8Eea_d5YWg5CnUSOwoHbWFzdGVyMBABSi4KCXNlY3AyNTZrMRIhAyGNxWZkaOBOty75ezzewIqUln80vVhZKL0YPvadP9A8",
-        ConnectionId = Guid.Empty
+        IssuingDID = "did:prism:7e2dc793804699ea6c11570f02fb43eb32f9066f540d2b173209481b958c8504:CoQBCoEBEkIKDm15LWlzc3Vpbmcta2V5EAJKLgoJc2VjcDI1NmsxEiECHMWgUM3HbC8942TkwHyBulPNiE-JaVdO2uO4Vp5fREASOwoHbWFzdGVyMBABSi4KCXNlY3AyNTZrMRIhAlUNGDTlTX9ivHD_6Kiv1dxtZzdEpCO8fTDBewycsaEw",
+        ConnectionId = Guid.Empty,
+        AutomaticIssuance = true
     };
 
     private async Task HandleValidSubmit()

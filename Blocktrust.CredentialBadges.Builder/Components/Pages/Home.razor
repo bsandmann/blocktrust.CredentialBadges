@@ -1,10 +1,47 @@
 ﻿@page "/"
 @using MediatR
+@using Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId
 @inject IMediator Mediator
 @rendermode InteractiveServer
-@* @using Blocktrust.CredentialBadges.Builder.Commands.CheckAgentHealth *@
-
 
 <PageTitle>Home</PageTitle>
 
 <h1>Home</h1>
+
+<div class="form-group">
+    <label for="thIdInput">Transaction ID</label>
+    <InputText id="thIdInput" class="form-control" @bind-Value="ThId" />
+</div>
+
+<button class="btn btn-primary" @onclick="() => GetLastOfferId()">Get Offer Id by ThId</button>
+
+@if (IsGettingLastOfferId)
+{
+    <p>Getting Offer Id by ThId&hellip;</p>
+}
+else if (LastOfferId is not null)
+{
+    <p>Offer Id: @LastOfferId</p>
+}
+
+@code {
+    private bool IsGettingLastOfferId = false;
+    private string? LastOfferId = null;
+    private string ThId = string.Empty;
+
+    private async Task GetLastOfferId()
+    {
+        IsGettingLastOfferId = true;
+        LastOfferId = null;
+        var result = await Mediator.Send(new GetOfferByThIdRequest(ThId));
+        IsGettingLastOfferId = false;
+        if (result.IsFailed)
+        {
+            LastOfferId = "Failed: " + result.Errors.First().Message;
+        }
+        else
+        {
+            LastOfferId = result.Value;
+        }
+    }
+}

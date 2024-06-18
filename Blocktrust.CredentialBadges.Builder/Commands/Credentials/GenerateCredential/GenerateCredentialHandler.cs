@@ -6,7 +6,7 @@ public class GenerateCredentialHandler
     // {
     // Create offer - agent1 ,  save recordId.
     //
-    // GetLastOffer - agent 2
+    // Get offer by threadId - agent 2
     //
     // Accept offer- last offer id
     //
