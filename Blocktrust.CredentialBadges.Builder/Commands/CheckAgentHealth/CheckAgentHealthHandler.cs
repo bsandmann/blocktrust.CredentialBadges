@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+
 namespace Blocktrust.CredentialBadges.Builder.Commands.CheckAgentHealth;
 
 using Common;
@@ -21,6 +23,7 @@ public class CheckAgentHealthHandler : IRequestHandler<CheckAgentHealthRequest, 
 
     public async Task<Result<string>> Handle(CheckAgentHealthRequest request, CancellationToken cancellationToken)
     {
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "some key");
         var identusClient = new IdentusClient(_httpClient);
         if (request.AgentNumber == 1)
         {
