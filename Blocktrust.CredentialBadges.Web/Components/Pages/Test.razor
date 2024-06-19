@@ -1,0 +1,59 @@
+@page "/codesnippets"
+
+<h3>Code Snippets</h3>
+
+<div class="code-snippet">
+    <h4>HTML Code</h4>
+    <pre><code>@htmlCode</code></pre>
+    <button @onclick="CopyHtmlCode">Copy HTML</button>
+</div>
+
+<div class="code-snippet">
+    <h4>JavaScript Code</h4>
+    <pre><code>@jsCode</code></pre>
+    <button @onclick="CopyJsCode">Copy JS</button>
+</div>
+
+<div class="code-snippet">
+    <h4>CSS Code</h4>
+    <pre><code>@cssCode</code></pre>
+    <button @onclick="CopyCssCode">Copy CSS</button>
+</div>
+
+@code {
+    private string htmlCode = @"
+<div class='example'>
+    <h1>Hello World</h1>
+</div>";
+    
+    private string jsCode = @"
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Hello World');
+});";
+    
+    private string cssCode = @"
+.example {
+    color: red;
+    font-size: 20px;
+}";
+
+    private async Task CopyHtmlCode()
+    {
+        await CopyToClipboard(htmlCode);
+    }
+
+    private async Task CopyJsCode()
+    {
+        await CopyToClipboard(jsCode);
+    }
+
+    private async Task CopyCssCode()
+    {
+        await CopyToClipboard(cssCode);
+    }
+
+    private async Task CopyToClipboard(string code)
+    {
+        // await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", code);
+    }
+}
