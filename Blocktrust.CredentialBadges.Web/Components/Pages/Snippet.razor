@@ -2,7 +2,8 @@
 @using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge
 @using Blocktrust.CredentialBadges.Core.Common
 @using MediatR
-@inject IMediator mediator
+@inject IMediator Mediator
+
 @rendermode InteractiveServer
 
 <PageTitle>Snippet</PageTitle>
@@ -46,7 +47,7 @@
             return;
         }
 
-        var verifyOpenBadgeResult = await mediator.Send(new VerifyOpenBadgeRequest(parserResult.Value));
+        var verifyOpenBadgeResult = await Mediator.Send(new VerifyOpenBadgeRequest(parserResult.Value));
         if (verifyOpenBadgeResult.IsFailed)
         {
             ErrorMessage = verifyOpenBadgeResult.Errors.First().Message;
