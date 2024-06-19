@@ -2,6 +2,9 @@ namespace Blocktrust.CredentialBadges.OpenBadges;
 
 using System.Text.Json.Serialization;
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(AchievementCredential), "achievement")]
+[JsonDerivedType(typeof(EndorsementCredential), "endorsement")]
 public class OpenBadgeCredential
 {
     /// <summary>
