@@ -1,4 +1,4 @@
-﻿@page "/verifier"
+﻿@page "/verifier/{snippedId:Guid}"
 @rendermode InteractiveServer
 
 <PageTitle>Verifier</PageTitle>
@@ -7,6 +7,12 @@
 
 <p>A user will be redirected to this page, if he clicks on a embedded Credential</p>
 
-@code {
+@if (SnippedId is not null)
+{
+ 
+}
 
+@code {
+ [Parameter] public Guid? SnippedId { get; set; }
+ 
 }

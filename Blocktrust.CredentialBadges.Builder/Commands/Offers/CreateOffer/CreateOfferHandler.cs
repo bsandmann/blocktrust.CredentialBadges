@@ -28,14 +28,13 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<Off
 
         try
         {
-            var reqs = _httpClient.DefaultRequestHeaders.ToString();
             var response = await identusClient.CreateCredentialOfferAsync(request, cancellationToken);
             OfferResponse offerResponse = new OfferResponse()
             {
-                success = true,
-                recordId = response.RecordId,
-                thid = response.Thid,
-                message = "Offer created successfully"
+                Success = true,
+                RecordId = response.RecordId,
+                Thid = response.Thid,
+                Message = "Offer created successfully"
             };
                 
             

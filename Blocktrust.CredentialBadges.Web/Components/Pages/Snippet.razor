@@ -1,6 +1,8 @@
 ﻿@page "/snippet"
+@using System.Text.Json
 @using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge
 @using Blocktrust.CredentialBadges.Core.Common
+@using Blocktrust.CredentialBadges.OpenBadges
 @using MediatR
 @inject IMediator Mediator
 
@@ -59,13 +61,15 @@
             ErrorMessage = "Verification of the OpenBadge failed. Only verified OpenBadges can be used to generate a snippet.";
             return;
         }
-        
+
+        var credentialInDatabase = JsonSerializer.Serialize(parserResult.Value);
+
         // Image extraction
-        
+
         // Image upload
-        
+
         // Database entry
-        
+
         // Snippet generation
     }
 
