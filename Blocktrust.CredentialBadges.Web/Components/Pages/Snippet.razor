@@ -4,6 +4,7 @@
 @using Blocktrust.CredentialBadges.Core.Common
 @using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVerifiedCredential
 @using Blocktrust.CredentialBadges.Web.Domain
+@using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService
 @using MediatR
 @inject IMediator Mediator
 
@@ -30,12 +31,53 @@
     </div>
 }
 
+<h3>Code Snippets</h3>
+
+@if (IsLoading)
+{
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+
+    <div class="code-snippet">
+        <h4>HTML Code</h4>
+        <pre><code>@htmlCode</code></pre>
+        <button >Copy HTML</button>
+    </div>
+
+    <div class="code-snippet">
+        <h4>JavaScript Code</h4>
+        <pre><code>@jsCode</code></pre>
+        <button>Copy JS</button>
+    </div>
+
+    <div class="code-snippet">
+        <h4>CSS Code</h4>
+        <pre><code>@cssCode</code></pre>
+        <button >Copy CSS</button>
+    </div>
+}
+
+
 
 @code {
     private string? rawInput;
     private string? ErrorMessage;
     private string Message { get; set; }
     private string AlertClass { get; set; }
+    private bool IsLoading { get; set; }
+    
+    
+    private string htmlCode = "..";
+    private string jsCode = "..";
+    private string cssCode = "..";
+    
+    // Inject the GenerateSnippetService
+    [Inject]
+    private GenerateSnippetService generateSnippetService { get; set; }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
@@ -100,6 +142,11 @@
     
 
         // Snippet generation
+        var snippets = generateSnippetService.GenerateSnippets(result.Value);
+        htmlCode = snippets.HtmlSnippet;
+        jsCode = snippets.JsSnippet;
+        cssCode = snippets.CssSnippet;
+        
     }
 
 }

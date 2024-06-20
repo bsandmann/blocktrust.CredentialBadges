@@ -31,14 +31,17 @@ public class GenerateSnippetService
         string statusColor = credential.Status == VerifiedCredential.CredentialStatus.Verified ? "text-success" : "text-danger";
         string statusIcon = credential.Status == VerifiedCredential.CredentialStatus.Verified ? "bi-check-circle-fill" : "bi-x-circle-fill";
 
+        // Construct the URL or route based on the credential ID
+        string url = $"/credentials/{credential.Id}";
+
         var htmlBuilder = new StringBuilder();
-        htmlBuilder.AppendLine($"<div class=\"card\">");
+        htmlBuilder.AppendLine($"<a href=\"{url}\" class=\"card\">");
         htmlBuilder.AppendLine($"  <div class=\"card-body\">");
         htmlBuilder.AppendLine($"    <h5 class=\"card-title\">{credential.Name}</h5>");
         htmlBuilder.AppendLine($"    <p class=\"card-text\">{credential.Description}</p>");
         htmlBuilder.AppendLine($"    <p class=\"{statusColor}\">Status: <i class=\"bi {statusIcon}\"></i> {credential.Status}</p>");
         htmlBuilder.AppendLine($"  </div>");
-        htmlBuilder.AppendLine($"</div>");
+        htmlBuilder.AppendLine($"</a>");
 
         return htmlBuilder.ToString();
     }
