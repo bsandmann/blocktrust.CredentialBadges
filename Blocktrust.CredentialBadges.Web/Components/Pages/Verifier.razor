@@ -1,18 +1,94 @@
-﻿@page "/verifier/{snippedId:Guid}"
+﻿@page "/verifier/{SnippetId}"
+@using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService
+@using Blocktrust.CredentialBadges.Web.Domain
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById
+@using MediatR
+@inject IMediator Mediator
+@inject GenerateSnippetService SnippetService
 @rendermode InteractiveServer
 
 <PageTitle>Verifier</PageTitle>
 
 <h1>Verifier Page</h1>
 
-<p>A user will be redirected to this page, if he clicks on a embedded Credential</p>
+<p>A user will be redirected to this page if they click on an embedded Credential</p>
 
-@if (SnippedId is not null)
+@if (!string.IsNullOrEmpty(ErrorMessage))
 {
- 
+    <div class="alert alert-danger">
+        @ErrorMessage
+    </div>
+}
+else if (credential != null)
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@credential.Name</h5>
+            <p class="card-text">@credential.Description</p>
+            <p id="credential-status" class="@GetStatusColor(credential.Status)">Status: <i id="credential-status-icon" class="bi @GetStatusIcon(credential.Status)"></i> @credential.Status</p>
+            <button class="btn btn-primary" @onclick="RerunVerification">Re-run Verification</button>
+        </div>
+    </div>
 }
 
 @code {
- [Parameter] public Guid? SnippedId { get; set; }
- 
+    [Parameter] public string SnippetId { get; set; }
+    private VerifiedCredential credential;
+    private string ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Guid.TryParse(SnippetId, out Guid credentialId))
+        {
+            var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId));
+            if (result.IsSuccess)
+            {
+                credential = result.Value;
+            }
+            else
+            {
+                ErrorMessage = $"Error: {result.Errors.First().Message}";
+            }
+        }
+        else
+        {
+            ErrorMessage = "Invalid credential ID.";
+        }
+    }
+
+    private async Task RerunVerification()
+    {
+        if (Guid.TryParse(SnippetId, out Guid credentialId))
+        {
+      
+        }
+        else
+        {
+            ErrorMessage = "Invalid credential ID.";
+        }
+    }
+
+    private string GetStatusColor(VerifiedCredential.CredentialStatus status)
+    {
+        return status switch
+        {
+            VerifiedCredential.CredentialStatus.Verified => "text-success",
+            VerifiedCredential.CredentialStatus.Revoked => "text-danger",
+            VerifiedCredential.CredentialStatus.Expired => "text-warning",
+            VerifiedCredential.CredentialStatus.NotDue => "text-info",
+            _ => "text-secondary",
+        };
+    }
+
+    private string GetStatusIcon(VerifiedCredential.CredentialStatus status)
+    {
+        return status switch
+        {
+            VerifiedCredential.CredentialStatus.Verified => "bi-check-circle-fill",
+            VerifiedCredential.CredentialStatus.Revoked => "bi-x-circle-fill",
+            VerifiedCredential.CredentialStatus.Expired => "bi-exclamation-circle-fill",
+            VerifiedCredential.CredentialStatus.NotDue => "bi-info-circle-fill",
+            _ => "bi-question-circle-fill",
+        };
+    }
 }
