@@ -1,5 +1,6 @@
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
 using Blocktrust.CredentialBadges.Web.Components;
+using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddTransient<GenerateSnippetService>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VerifyOpenBadgeHandler).Assembly));
 

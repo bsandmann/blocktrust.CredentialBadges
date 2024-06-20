@@ -1,4 +1,6 @@
 @page "/codesnippets"
+@using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService
+@using Blocktrust.CredentialBadges.Web.Domain
 
 <h3>Code Snippets</h3>
 
@@ -21,21 +23,34 @@
 </div>
 
 @code {
-    private string htmlCode = @"
-<div class='example'>
-    <h1>Hello World</h1>
-</div>";
-    
-    private string jsCode = @"
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Hello World');
-});";
-    
-    private string cssCode = @"
-.example {
-    color: red;
-    font-size: 20px;
-}";
+    private string htmlCode = "";
+    private string jsCode = "";
+    private string cssCode = "";
+
+    // Inject the GenerateSnippetService
+    [Inject]
+    private GenerateSnippetService generateSnippetService { get; set; }
+
+    // On page load or any trigger event, generate the snippets
+    protected override void OnInitialized()
+    {
+        // Simulate a verified credential object
+        var credential = new VerifiedCredential
+        {
+            Name = "Example Credential",
+            Description = "This is an example credential.",
+            Status = VerifiedCredential.CredentialStatus.Verified,
+            Credential = "Sample credential"
+        };
+
+        // Generate snippets using the service
+        var snippets = generateSnippetService.GenerateSnippets(credential);
+
+        // Assign snippets to respective variables
+        htmlCode = snippets.HtmlSnippet;
+        jsCode = snippets.JsSnippet;
+        cssCode = snippets.CssSnippet;
+    }
 
     private async Task CopyHtmlCode()
     {
@@ -54,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     private async Task CopyToClipboard(string code)
     {
+        // Implement clipboard copy functionality using JavaScript interop
         // await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", code);
     }
 }
