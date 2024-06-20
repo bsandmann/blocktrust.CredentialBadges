@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blocktrust.CredentialBadges.Web.Entities;
 
-public class StoredCredentialEntity
+public class VerifiedCredentialEntity
 {
     [Key]
     public Guid StoredCredentialId { get; set; } // Primary Key

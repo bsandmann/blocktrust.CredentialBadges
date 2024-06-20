@@ -2,7 +2,7 @@ using Blocktrust.CredentialBadges.Web.Entities;
 
 namespace Blocktrust.CredentialBadges.Web.Domain;
 
-public class StoredCredential
+public class VerifiedCredential
 {
     public Guid Id { get; set; }
     public CredentialStatus Status { get; set; }
@@ -19,12 +19,12 @@ public class StoredCredential
         NotDue
     }
 
-    public StoredCredentialEntity ToEntity()
+    public VerifiedCredentialEntity ToEntity()
     {
-        return new StoredCredentialEntity
+        return new VerifiedCredentialEntity
         {
             StoredCredentialId = Id,
-            Status = (StoredCredentialEntity.CredentialStatus)Status,
+            Status = (VerifiedCredentialEntity.CredentialStatus)Status,
             Description = Description,
             Name = Name,
             Image = Image,
@@ -32,9 +32,9 @@ public class StoredCredential
         };
     }
 
-    public static StoredCredential FromEntity(StoredCredentialEntity entity)
+    public static VerifiedCredential FromEntity(VerifiedCredentialEntity entity)
     {
-        return new StoredCredential
+        return new VerifiedCredential
         {
             Id = entity.StoredCredentialId,
             Status = (CredentialStatus)entity.Status,
