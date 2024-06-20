@@ -26,7 +26,7 @@ public class VerifiedCredentialEntity
     [StringLength(100, ErrorMessage = "Name must not exceed 100 characters")]
     public string Name { get; set; }
 
-    public byte[] Image { get; set; }
+    public byte[] Image { get; set; } = null;
 
     [Required(ErrorMessage = "Credential is required")]
     [Column(TypeName = "text")]

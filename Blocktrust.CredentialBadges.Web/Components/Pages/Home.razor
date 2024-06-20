@@ -1,11 +1,57 @@
 ﻿@page "/"
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVerifiedCredential
+@using Blocktrust.CredentialBadges.Web.Domain
+@using MediatR
+
+@inject IMediator Mediator
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
 <h1>Blocktrust Credential Badges</h1>
 
-<p>This page is part of a Catalyst Proposal to enable the embedding of Verfiable Credentials inside a website.</p>
+<p>This page is part of a Catalyst Proposal to enable the embedding of Verifiable Credentials inside a website.</p>
 <p>The project is currently work in process and will evolve in time.</p>
 
 <a href="/snippet">Snippet Generator Page</a>
-<a href="/verifier">Credential Verifcation Page</a>
+<a href="/verifier">Credential Verification Page</a>
+
+<button @onclick="StoreCredential">Store Verified Credential</button>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert @AlertClass">
+        @Message
+    </div>
+}
+
+@code {
+    private string Message { get; set; }
+    private string AlertClass { get; set; }
+
+    private async Task StoreCredential()
+    {
+        var request = new StoreVerifiedCredentialRequest
+        {
+            Name = "Example Credential",
+            Description = "This is an example credential.",
+            Image = new byte[] { 0x00, 0x01, 0x02, 0x03 },
+            Credential = "Very long string representing the credential",
+            Status = VerifiedCredential.CredentialStatus.Verified
+        };
+
+        var result = await Mediator.Send(request);
+
+        if (result.IsSuccess)
+        {
+            var credential = result.Value;
+            Message = $"Successfully stored credential with ID: {credential.Id}";
+            AlertClass = "alert-success";
+        }
+        else
+        {
+            Message = $"Failed to store credential: {result.Errors.First().Message}";
+            AlertClass = "alert-danger";
+        }
+    }
+}
