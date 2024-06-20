@@ -1,6 +1,15 @@
 namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById;
 
-public class GetVerfiedCredentialByIdRequest
+using MediatR;
+using Domain;
+using FluentResults;
+
+public class GetVerifiedCredentialByIdRequest : IRequest<Result<VerifiedCredential>>
 {
-    
+    public Guid CredentialId { get; set; }
+
+    public GetVerifiedCredentialByIdRequest(Guid credentialId)
+    {
+        CredentialId = credentialId;
+    }
 }
