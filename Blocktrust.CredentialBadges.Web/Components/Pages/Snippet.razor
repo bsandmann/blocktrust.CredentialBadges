@@ -14,6 +14,26 @@
 
 <PageTitle>Snippet</PageTitle>
 
+<style>
+    
+    .code-snippet {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    
+    .code-snippet pre {
+        background-color: #272822;
+        color: #f8f8f2;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+    }
+
+</style>
+
 <h1>Snippet Generator Demo</h1>
 
 <input class="" type="text" @bind="rawInput" @bind:event="oninput" @onkeydown="HandleKeyDown"/>
@@ -31,16 +51,8 @@
     </div>
 }
 
-<h3>Code Snippets</h3>
 
-@if (IsLoading)
-{
-    <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-}
-else
-{
+<h3>Code Snippets</h3>
 
     <div class="code-snippet">
         <h4>HTML Code</h4>
@@ -59,7 +71,7 @@ else
         <pre><code>@cssCode</code></pre>
         <button >Copy CSS</button>
     </div>
-}
+
 
 
 
