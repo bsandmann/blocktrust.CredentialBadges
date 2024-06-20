@@ -103,4 +103,6 @@ public class OpenBadgeCredential
     [JsonIgnore]
     public EDataModelType DataModelType { get; set; }
     
+    
+    
 }
