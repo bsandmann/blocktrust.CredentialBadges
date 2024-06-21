@@ -12,11 +12,13 @@ public class SnippetsResult
 
 public class GenerateSnippetService
 {
+    private readonly string _jsSnippetCdnUrl = "https://ourdomain.com/js/credential-status-update.js";
+
     public SnippetsResult GenerateSnippets(VerifiedCredential credential)
     {
         var htmlSnippet = GenerateHtmlSnippet(credential);
         var cssSnippet = GenerateCssSnippet();
-        var jsSnippet = GenerateJavaScriptSnippet(credential);
+        var jsSnippet = GenerateJavaScriptSnippet();
 
         return new SnippetsResult
         {
@@ -36,11 +38,11 @@ public class GenerateSnippetService
 
         var htmlBuilder = new StringBuilder();
         htmlBuilder.AppendLine($"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">");
-        htmlBuilder.AppendLine($"<a href=\"{url}\" class=\"card\">");
+        htmlBuilder.AppendLine($"<a id=\"credential-{credential.Id}\" href=\"{url}\" class=\"card\" data-credential-id=\"{credential.Id}\">");
         htmlBuilder.AppendLine($"  <div class=\"card-body\">");
         htmlBuilder.AppendLine($"    <h5 class=\"card-title\">{credential.Name}</h5>");
         htmlBuilder.AppendLine($"    <p class=\"card-text\">{credential.Description}</p>");
-        htmlBuilder.AppendLine($"    <p id=\"credential-status\" class=\"{statusColor}\">Status: <i id=\"credential-status-icon\" class=\"bi {statusIcon}\"></i> {credential.Status}</p>");
+        htmlBuilder.AppendLine($"    <p id=\"credential-status-{credential.Id}\" class=\"{statusColor}\">Status: <i class=\"bi {statusIcon}\"></i> {credential.Status}</p>");
         htmlBuilder.AppendLine($"  </div>");
         htmlBuilder.AppendLine($"</a>");
 
@@ -51,6 +53,8 @@ public class GenerateSnippetService
     {
         var cssBuilder = new StringBuilder();
         cssBuilder.AppendLine(".card {");
+        cssBuilder.AppendLine("  text-decoration: none;"); // Ensure it looks like a card link
+        cssBuilder.AppendLine("  display: block;"); // Ensure the whole card area is clickable
         cssBuilder.AppendLine("  border: 1px solid #ccc;");
         cssBuilder.AppendLine("  border-radius: 5px;");
         cssBuilder.AppendLine("  padding: 10px;");
@@ -76,53 +80,16 @@ public class GenerateSnippetService
         cssBuilder.AppendLine(".text-info {");
         cssBuilder.AppendLine("  color: blue;");
         cssBuilder.AppendLine("}");
+        cssBuilder.AppendLine(".text-secondary {");
+        cssBuilder.AppendLine("  color: gray;");
+        cssBuilder.AppendLine("}");
 
         return cssBuilder.ToString();
     }
 
-    private string GenerateJavaScriptSnippet(VerifiedCredential credential)
+    private string GenerateJavaScriptSnippet()
     {
-        var jsBuilder = new StringBuilder();
-        jsBuilder.AppendLine($"const credentialId = '{credential.Id}';");
-        jsBuilder.AppendLine("document.addEventListener('DOMContentLoaded', function() {");
-        jsBuilder.AppendLine("  updateStatus();");
-        jsBuilder.AppendLine("});");
-        jsBuilder.AppendLine("function updateStatus() {");
-        jsBuilder.AppendLine("  fetch(`/api/credentials/status/${credentialId}`)");
-        jsBuilder.AppendLine("    .then(response => response.json())");
-        jsBuilder.AppendLine("    .then(data => {");
-        jsBuilder.AppendLine("      const statusElement = document.getElementById('credential-status');");
-        jsBuilder.AppendLine("      const statusIconElement = document.getElementById('credential-status-icon');");
-        jsBuilder.AppendLine("      let statusColor, statusIcon;");
-        jsBuilder.AppendLine("      switch(data.status) {");
-        jsBuilder.AppendLine("        case 'Verified':");
-        jsBuilder.AppendLine("          statusColor = 'text-success';");
-        jsBuilder.AppendLine("          statusIcon = 'bi-check-circle-fill';");
-        jsBuilder.AppendLine("          break;");
-        jsBuilder.AppendLine("        case 'Revoked':");
-        jsBuilder.AppendLine("          statusColor = 'text-danger';");
-        jsBuilder.AppendLine("          statusIcon = 'bi-x-circle-fill';");
-        jsBuilder.AppendLine("          break;");
-        jsBuilder.AppendLine("        case 'Expired':");
-        jsBuilder.AppendLine("          statusColor = 'text-warning';");
-        jsBuilder.AppendLine("          statusIcon = 'bi-exclamation-circle-fill';");
-        jsBuilder.AppendLine("          break;");
-        jsBuilder.AppendLine("        case 'NotDue':");
-        jsBuilder.AppendLine("          statusColor = 'text-info';");
-        jsBuilder.AppendLine("          statusIcon = 'bi-info-circle-fill';");
-        jsBuilder.AppendLine("          break;");
-        jsBuilder.AppendLine("        default:");
-        jsBuilder.AppendLine("          statusColor = 'text-secondary';");
-        jsBuilder.AppendLine("          statusIcon = 'bi-question-circle-fill';");
-        jsBuilder.AppendLine("      }");
-        jsBuilder.AppendLine("      statusElement.className = statusColor;");
-        jsBuilder.AppendLine("      statusIconElement.className = `bi ${statusIcon}`;");
-        jsBuilder.AppendLine("      statusElement.innerHTML = `Status: <i class='${statusIcon}'></i> ${data.status}`;");
-        jsBuilder.AppendLine("    })");
-        jsBuilder.AppendLine("    .catch(error => console.error('Error fetching status:', error));");
-        jsBuilder.AppendLine("}");
-
-        return jsBuilder.ToString();
+        return $"<script src=\"{_jsSnippetCdnUrl}\"></script>";
     }
 
     private string GetStatusColor(VerifiedCredential.CredentialStatus status)
@@ -144,7 +111,7 @@ public class GenerateSnippetService
             VerifiedCredential.CredentialStatus.Verified => "bi-check-circle-fill",
             VerifiedCredential.CredentialStatus.Revoked => "bi-x-circle-fill",
             VerifiedCredential.CredentialStatus.Expired => "bi-exclamation-circle-fill",
-            VerifiedCredential.CredentialStatus.NotDue => "bi-info-circle-fill",
+            VerifiedCredential.CredentialStatus.NotDue => "bi-clock-fill",
             _ => "bi-question-circle-fill",
         };
     }

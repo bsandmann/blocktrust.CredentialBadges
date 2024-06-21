@@ -56,21 +56,21 @@
 <h3>Code Snippets</h3>
 
     <div class="code-snippet">
-        <h4>HTML Code</h4>
+        <h4>Mark up </h4>
         <pre><code>@htmlCode</code></pre>
-        <button >Copy HTML</button>
+        <button >Copy</button>
     </div>
 
     <div class="code-snippet">
-        <h4>JavaScript Code</h4>
+        <h4>Script</h4>
         <pre><code>@jsCode</code></pre>
-        <button>Copy JS</button>
+        <button>Copy </button>
     </div>
 
     <div class="code-snippet">
-        <h4>CSS Code</h4>
+        <h4> Styles</h4>
         <pre><code>@cssCode</code></pre>
-        <button >Copy CSS</button>
+        <button >Copy </button>
     </div>
 
 
@@ -84,9 +84,9 @@
     private bool IsLoading { get; set; }
     
     
-    private string htmlCode = "..";
-    private string jsCode = "..";
-    private string cssCode = "..";
+    private string htmlCode = "";
+    private string jsCode = "";
+    private string cssCode = "";
     
     // Inject the GenerateSnippetService
     [Inject]
