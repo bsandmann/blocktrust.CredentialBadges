@@ -1,58 +1,99 @@
-// This script fetches the status of a credential from the API and updates the status on the page.
 document.addEventListener('DOMContentLoaded', function () {
-    const updateCredentialStatus = async (credentialId) => {
-        try {
-            const response = await fetch(`https://localhost:7277/api/verify/${credentialId}`);
-            if (!response.ok) {
-                console.error('Error fetching the credential:', response);
+    // Function to apply styles
+    function applyStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+            .credential-card {
+                text-decoration: none;
+                display: block;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                padding: 10px;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                margin-bottom: 10px;
             }
-            const credential = await response.json();
-            const statusElement = document.getElementById(`credential-status-${credentialId}`);
-            let statusClass, statusIcon;
-
-            switch (credential.status) {
-                case "Verified":
-                    statusClass = "text-success";
-                    statusIcon = "bi-check-circle-fill";
-                    break;
-                case "Revoked":
-                    statusClass = "text-danger";
-                    statusIcon = "bi-x-circle-fill";
-                    break;
-                case "Expired":
-                    statusClass = "text-warning";
-                    statusIcon = "bi-exclamation-circle-fill";
-                    break;
-                case "NotDue":
-                    statusClass = "text-primary";
-                    statusIcon = "bi-clock-fill";
-                    break;
-                default:
-                    statusClass = "text-muted";
-                    statusIcon = "bi-question-circle-fill";
-                    break;
+            .credential-card-title {
+                font-size: 1.2rem;
+                font-weight: bold;
             }
+            .credential-card-text {
+                margin-top: 10px;
+            }
+            .credential-text-success {
+                color: green;
+            }
+            .credential-text-danger {
+                color: red;
+            }
+            .credential-text-warning {
+                color: orange;
+            }
+            .credential-text-info {
+                color: blue;
+            }
+            .credential-text-secondary {
+                color: gray;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 
-            statusElement.innerHTML = `
-                <div id="credential-${credentialId}" data-credential-id="${credentialId}" class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${credential.name}</h5>
-                        <p class="card-text">${credential.description}</p>
-                        <p class="${statusClass}">Status: <i class="bi ${statusIcon}"></i> ${credential.status}</p>
-                    </div>
-                </div>
-            `;
-        } catch (error) {
-            console.error('Error fetching the credential:', error);
+    // Apply styles immediately upon loading
+    applyStyles();
+
+    // Function to fetch updated credential status and update the UI
+    function updateCredentialStatus(credentialId) {
+        // Replace with your API endpoint to fetch updated credential status
+        const apiEndpoint = `http://localhost:5159/verifycredential/${credentialId}`;
+
+        fetch(apiEndpoint)
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById(`credential-status-${credentialId}`);
+                if (statusElement) {
+                    const statusColor = getStatusColor(data.status);
+                    const statusIcon = getStatusIcon(data.status);
+
+                    statusElement.className = statusColor;
+                    statusElement.innerHTML = `Status: <i class="bi ${statusIcon}"></i> ${data.status}`;
+                }
+            })
+            .catch(error => console.error('Error fetching credential status:', error));
+    }
+
+    // Function to get status color based on credential status
+    function getStatusColor(status) {
+        switch (status) {
+            case 'Verified':
+                return 'credential-text-success';
+            case 'Revoked':
+                return 'credential-text-danger';
+            case 'Expired':
+                return 'credential-text-warning';
+            case 'NotDue':
+                return 'credential-text-info';
+            default:
+                return 'credential-text-secondary';
         }
-    };
+    }
 
-    // Automatically update all credential statuses on the page
-    document.querySelectorAll('[data-credential-id]').forEach(async element => {
-        const credentialId = element.getAttribute('data-credential-id');
-       await updateCredentialStatus(credentialId);
-    });
+    // Function to get status icon based on credential status
+    function getStatusIcon(status) {
+        switch (status) {
+            case 'Verified':
+                return 'bi-check-circle-fill';
+            case 'Revoked':
+                return 'bi-x-circle-fill';
+            case 'Expired':
+                return 'bi-exclamation-circle-fill';
+            case 'NotDue':
+                return 'bi-clock-fill';
+            default:
+                return 'bi-question-circle-fill';
+        }
+    }
 
-    // Expose the function to the global scope
-    window.updateCredentialStatus = updateCredentialStatus;
+    // Replace with the actual credential ID
+    const credentialId = 'replace-with-actual-credential-id';
+    updateCredentialStatus(credentialId);
 });

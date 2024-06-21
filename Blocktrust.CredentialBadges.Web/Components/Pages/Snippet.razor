@@ -9,14 +9,11 @@
 @using MediatR
 @inject IMediator Mediator
 
-
-
 @rendermode InteractiveServer
 
 <PageTitle>Snippet</PageTitle>
 
 <style>
-    
     .code-snippet {
         margin-bottom: 20px;
         padding: 10px;
@@ -44,7 +41,6 @@
     <p style="background-color: #d87575">@ErrorMessage</p>
 }
 
-
 @if (!string.IsNullOrEmpty(Message))
 {
     <div class="alert @AlertClass">
@@ -52,29 +48,12 @@
     </div>
 }
 
-
-<h3>Code Snippets</h3>
-
-    <div class="code-snippet">
-        <h4>Mark up </h4>
-        <pre><code>@htmlCode</code></pre>
-        <button >Copy</button>
-    </div>
-
-    <div class="code-snippet">
-        <h4>Script</h4>
-        <pre><code>@jsCode</code></pre>
-        <button>Copy </button>
-    </div>
-
-    <div class="code-snippet">
-        <h4> Styles</h4>
-        <pre><code>@cssCode</code></pre>
-        <button >Copy </button>
-    </div>
-
-
-
+<h3>Code Snippet</h3>
+<div class="code-snippet">
+    <h4>Snippet</h4>
+    <pre><code>@snippet</code></pre>
+    <button @onclick="CopyToClipboard">Copy</button>
+</div>
 
 @code {
     private string? rawInput;
@@ -82,12 +61,9 @@
     private string Message { get; set; }
     private string AlertClass { get; set; }
     private bool IsLoading { get; set; }
-    
-    
-    private string htmlCode = "";
-    private string jsCode = "";
-    private string cssCode = "";
-    
+
+    private string snippet = "";
+
     // Inject the GenerateSnippetService
     [Inject]
     private GenerateSnippetService generateSnippetService { get; set; }
@@ -109,8 +85,6 @@
 
     private async Task ParseVerifyAndCreateSnippet()
     {
-        //TODO refactor in seperate command
-        
         var parserResult = CredentialParser.Parse(rawInput);
         if (parserResult.IsFailed)
         {
@@ -131,12 +105,6 @@
             return;
         }
 
-
-        // Image extraction
-
-        // Image upload
-
-        // Database entry
         var storeVerifiedCredentialRequest = new StoreVerifiedCredentialRequest
         {
             Name = "Sample Credential",
@@ -152,14 +120,15 @@
             Message = $"Failed to store credential: {result.Errors.First().Message}";
             AlertClass = "alert-danger";
         }
-    
 
-        // Snippet generation
-        var snippets = generateSnippetService.GenerateSnippets(result.Value);
-        htmlCode = snippets.HtmlSnippet;
-        jsCode = snippets.JsSnippet;
-        cssCode = snippets.CssSnippet;
-        
+        var snippetResult = generateSnippetService.GenerateSnippet(result.Value);
+        snippet = snippetResult.Snippet;
     }
 
+    private async Task CopyToClipboard()
+    {
+        // await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", snippet);
+        Message = "Snippet copied to clipboard!";
+        AlertClass = "alert-success";
+    }
 }

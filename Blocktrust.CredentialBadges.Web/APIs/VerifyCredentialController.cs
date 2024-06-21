@@ -17,7 +17,19 @@ public class VerifyCredentialController : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCredentialById(Guid id)
+        
     {
+        // Get id
+        //     Get cred from db
+        //         deserialize cred to achievement credential
+        //             call verification command to re verify the credential
+        //             return
+        //             {
+        //                 id
+        //                     Status
+        //             }
+                    
+        
         //parse the id from string to Guid type 
         var cId = Guid.Parse(id.ToString());          
         
