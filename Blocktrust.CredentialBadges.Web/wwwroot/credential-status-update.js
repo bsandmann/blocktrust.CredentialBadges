@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const updateCredentialStatus = async (credentialId) => {
         try {
-            const response = await fetch(`https://api.ourdomain.com/credentials/${credentialId}`);
+            const response = await fetch(`https://localhost:7277/api/verify/${credentialId}`);
             if (!response.ok) {
                 console.error('Error fetching the credential:', response);
             }
