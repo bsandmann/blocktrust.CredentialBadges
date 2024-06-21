@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const response = await fetch(`https://api.ourdomain.com/credentials/${credentialId}`);
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                console.error('Error fetching the credential:', response);
             }
             const credential = await response.json();
             const statusElement = document.getElementById(`credential-status-${credentialId}`);
@@ -48,9 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Automatically update all credential statuses on the page
-    document.querySelectorAll('[data-credential-id]').forEach(element => {
+    document.querySelectorAll('[data-credential-id]').forEach(async element => {
         const credentialId = element.getAttribute('data-credential-id');
-        updateCredentialStatus(credentialId);
+       await updateCredentialStatus(credentialId);
     });
 
     // Expose the function to the global scope
