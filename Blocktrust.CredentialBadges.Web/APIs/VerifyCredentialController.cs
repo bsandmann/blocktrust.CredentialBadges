@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-// using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
+using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById;
+using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
+using System.Text.Json;
+using Blocktrust.CredentialBadges.OpenBadges;
 
 namespace Blocktrust.CredentialBadges.Web.APIs;
 
@@ -17,36 +20,41 @@ public class VerifyCredentialController : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCredentialById(Guid id)
-        
     {
-        // Get id
-        //     Get cred from db
-        //         deserialize cred to achievement credential
-        //             call verification command to re verify the credential
-        //             return
-        //             {
-        //                 id
-        //                     Status
-        //             }
-                    
+        // Get the credential from the database by calling the mediator with GetVerifiedCredentialByIdRequest
+        var credentialResult = await _mediator.Send(new GetVerifiedCredentialByIdRequest(id));
         
-        //parse the id from string to Guid type 
-        var cId = Guid.Parse(id.ToString());          
+        if (credentialResult.IsFailed)
+        {
+            return NotFound(new { Message = "Credential not found" });
+        }
+
+        var credential = credentialResult.Value;
+
+        // Deserialize the credential to an AchievementCredential
+        var achievementCredential = JsonSerializer.Deserialize<AchievementCredential>(credential.Credential);
+
+        // Call the verification command to re-verify the credential
         
-        // Create the request
-        // var request = new VerifyOpenBadgeRequest(cId);
+        if (achievementCredential is null)
+        {
+            return BadRequest(new { Message = "Invalid credential" });
+        }
+        
+        var verifyResult = await _mediator.Send(new VerifyOpenBadgeRequest(achievementCredential));
 
-        // Send the request to the handler
-        // var result = await _mediator.Send(request);
+        if (verifyResult.IsFailed)
+        {
+            return BadRequest(new { Message = "Verification failed", Details = verifyResult.Errors });
+        }
 
-        // Check if the result was successful
-        // if (result.IsFailed)
-        // {
-        //     return NotFound(result.Errors.First().Message);
-        // }
-        //
-        // return Ok(result.Value);
+        var verifyResponse = verifyResult.Value;
 
-        return Ok(cId);
+        // Return the id and status of the verification
+        return Ok(new
+        {
+            Id = id,
+            Status = verifyResponse.VerificationIsSuccessfull()
+        });
     }
 }
