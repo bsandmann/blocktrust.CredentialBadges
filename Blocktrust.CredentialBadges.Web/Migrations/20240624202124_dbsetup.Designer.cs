@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Blocktrust.CredentialBadges.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240620081026_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240624202124_dbsetup")]
+    partial class dbsetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

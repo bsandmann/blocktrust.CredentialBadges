@@ -26,12 +26,12 @@ public class GenerateSnippetService
     private string GenerateHtmlSnippet(VerifiedCredential credential)
     {
         var request = _httpContextAccessor.HttpContext?.Request;
-        string host = request != null ? $"{request.Scheme}://{request.Host}" : "http://localhost:5159";
+        string host = request != null ? $"{request.Scheme}://{request.Host}" : "https://credentialbadges.azurewebsites.net";
         string statusColor = GetStatusColor(credential.Status);
         string statusIcon = GetStatusIcon(credential.Status);
 
         // Construct the URL or route based on the credential ID
-        string url = $"{host}/credentials/{credential.Id}";
+        string url = $"{host}/verifier/{credential.Id}";
 
         var htmlBuilder = new StringBuilder();
         htmlBuilder.AppendLine($"<div class=\"credential-container\">");

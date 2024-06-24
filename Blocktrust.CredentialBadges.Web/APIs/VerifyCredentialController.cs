@@ -4,6 +4,8 @@ using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCr
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
 using System.Text.Json;
 using Blocktrust.CredentialBadges.OpenBadges;
+using Blocktrust.CredentialBadges.Web.Domain;
+using Blocktrust.CredentialBadges.Web.Enums;
 
 namespace Blocktrust.CredentialBadges.Web.APIs;
 
@@ -49,13 +51,34 @@ public class VerifyCredentialController : ControllerBase
         }
 
         var verifyResponse = verifyResult.Value;
-
-        // Return the id and status of the verification
-        return Ok(new
+  
+        VerificationResponse response = new VerificationResponse
         {
             Id = id,
-            Status = verifyResponse.VerificationIsSuccessfull()
-        });
+            Status = EVerificationStatus.Verified,
+            Name = achievementCredential.CredentialSubject.Achievement.Name,
+            Description = achievementCredential.CredentialSubject.Achievement.Description
+        };
+        
+        if(verifyResponse.CredentialIsNotExpired == false)
+        {
+            response.Status = EVerificationStatus.Expired;
+        }
+        else if(verifyResponse.CredentialIsNotRevoked == false)
+        {
+            response.Status = EVerificationStatus.Revoked;
+        }
+     
+        else if(verifyResponse.SignatureIsValid == false)
+        {
+            response.Status = EVerificationStatus.Invalid;
+        }
+        else if (verifyResponse.CredentialIssuanceDateIsNotInFuture == false)
+        {
+            response.Status = EVerificationStatus.NotDue;
+        }
+        // Return the id and status of the verification
+        return Ok(response);
     }
 }
 

@@ -5,5 +5,6 @@ public enum EVerificationStatus
     Verified,
     Revoked,
     Expired,
-    NotDue
+    NotDue,
+    Invalid
 }

@@ -32,8 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const updateCredentialStatus = async (credentialId) => {
         try {
             console.log('Fetching credential with ID:', credentialId);
-            const response = await fetch(`http://localhost:5159/api/VerifyCredential/${credentialId}`);
-            console.log('Response from verification API:', response);
+            const response = await fetch(`https://credentialbadges.azurewebsites.net/api/VerifyCredential/${credentialId}`);
 
             if (!response.ok) {
                 console.error('Error fetching the credential:', response);
@@ -41,38 +40,57 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const credential = await response.json();
+            console.log('Credential data:', credential);
+
             const statusElement = document.getElementById(`credential-${credentialId}`);
-            let statusClass, statusIcon;
+            let statusClass, statusIcon, statusText;
+
+            // Verified,
+            //     Revoked,
+            //     Expired,
+            //     NotDue,
+            //     Invalid
 
             switch (credential.status) {
-                case "Verified":
+                case 0:
                     statusClass = "text-success";
                     statusIcon = "bi-check-circle-fill";
+                    statusText = "Verified";
+                    
                     break;
-                case "Revoked":
+                case 1:
                     statusClass = "text-danger";
                     statusIcon = "bi-x-circle-fill";
+                    statusText = "Revoked";
                     break;
-                case "Expired":
+                case 2:
                     statusClass = "text-warning";
                     statusIcon = "bi-exclamation-circle-fill";
+                    statusText = "Expired";
                     break;
-                case "NotDue":
+                case 3:
                     statusClass = "text-primary";
                     statusIcon = "bi-clock-fill";
+                    statusText = "NotDue";
+                    break;
+                case 4:
+                    statusClass = "text-danger";
+                    statusIcon = "bi-x-circle-fill";
+                    statusText = "Invalid";
                     break;
                 default:
                     statusClass = "text-muted";
                     statusIcon = "bi-question-circle-fill";
+                    statusText = "Invalid";
                     break;
             }
 
             statusElement.innerHTML = `
                 <div id="credential-${credentialId}" data-credential-id="${credentialId}" class="card">
                     <div class="card-body">
-                        <h5 class="card-title">${credential.Name}</h5>
-                        <p class="card-text">${credential.Description}</p>
-                        <p class="${statusClass}">Status: <i class="bi ${statusIcon}"></i> ${credential.status}</p>
+                        <h5 class="card-title">${credential.name}</h5>
+                        <p class="card-text">${credential.description}</p>
+                        <p class="${statusClass}">Status: <i class="bi ${statusIcon}"></i> ${statusText}</p>
                     </div>
                 </div>
             `;
