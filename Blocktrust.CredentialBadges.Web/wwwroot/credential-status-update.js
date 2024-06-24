@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const credential = await response.json();
-            const statusElement = document.getElementById(`credential-status-${credentialId}`);
+            const statusElement = document.getElementById(`credential-${credentialId}`);
             let statusClass, statusIcon;
 
             switch (credential.status) {
@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
             statusElement.innerHTML = `
                 <div id="credential-${credentialId}" data-credential-id="${credentialId}" class="card">
                     <div class="card-body">
-                        <h5 class="card-title">${credential.name}</h5>
-                        <p class="card-text">${credential.description}</p>
+                        <h5 class="card-title">${credential.Name}</h5>
+                        <p class="card-text">${credential.Description}</p>
                         <p class="${statusClass}">Status: <i class="bi ${statusIcon}"></i> ${credential.status}</p>
                     </div>
                 </div>
