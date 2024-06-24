@@ -10,7 +10,12 @@ public class SnippetsResult
 
 public class GenerateSnippetService
 {
-    private readonly string _jsSnippetCdnUrl = "http://localhost:5159/credential-status-update.js";
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public GenerateSnippetService(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
 
     public SnippetsResult GenerateSnippet(VerifiedCredential credential)
     {
@@ -20,22 +25,26 @@ public class GenerateSnippetService
 
     private string GenerateHtmlSnippet(VerifiedCredential credential)
     {
+        var request = _httpContextAccessor.HttpContext?.Request;
+        string host = request != null ? $"{request.Scheme}://{request.Host}" : "http://localhost:5159";
         string statusColor = GetStatusColor(credential.Status);
         string statusIcon = GetStatusIcon(credential.Status);
 
         // Construct the URL or route based on the credential ID
-        string url = $"/credentials/{credential.Id}";
+        string url = $"{host}/credentials/{credential.Id}";
 
         var htmlBuilder = new StringBuilder();
-        htmlBuilder.AppendLine($"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">");
-        htmlBuilder.AppendLine($"<a id=\"credential-{credential.Id}\" href=\"{url}\" class=\"credential-card\">");
-        htmlBuilder.AppendLine($"  <div class=\"credential-card-body\">");
-        htmlBuilder.AppendLine($"    <h5 class=\"credential-card-title\">{credential.Name}</h5>");
-        htmlBuilder.AppendLine($"    <p class=\"credential-card-text\">{credential.Description}</p>");
-        htmlBuilder.AppendLine($"    <p id=\"credential-status-{credential.Id}\" class=\"{statusColor}\">Status: <i class=\"bi-clock-fill \"></i> </p>");
-        htmlBuilder.AppendLine($"  </div>");
-        htmlBuilder.AppendLine($"</a>");
-        htmlBuilder.AppendLine($"<script src=\"{_jsSnippetCdnUrl}\"></script>");
+        htmlBuilder.AppendLine($"<div class=\"credential-container\">");
+        htmlBuilder.AppendLine($"  <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">");
+        htmlBuilder.AppendLine($"  <a id=\"credential-{credential.Id}\" href=\"{url}\" class=\"credential-card\" data-credential-id=\"{credential.Id}\">");
+        htmlBuilder.AppendLine($"    <div class=\"credential-card-body\">");
+        htmlBuilder.AppendLine($"      <h5 class=\"credential-card-title\">{credential.Name}</h5>");
+        htmlBuilder.AppendLine($"      <p class=\"credential-card-text\">{credential.Description}</p>");
+        htmlBuilder.AppendLine($"      <p id=\"credential-status-{credential.Id}\" class=\"{statusColor}\">Status: <i class=\"bi {statusIcon}\"></i> {credential.Status}</p>");
+        htmlBuilder.AppendLine($"    </div>");
+        htmlBuilder.AppendLine($"  </a>");
+        htmlBuilder.AppendLine($"  <script src=\"{host}/credential-status-update.js\"></script>");
+        htmlBuilder.AppendLine($"</div>");
         return htmlBuilder.ToString();
     }
 
@@ -43,11 +52,11 @@ public class GenerateSnippetService
     {
         return status switch
         {
-            VerifiedCredential.CredentialStatus.Verified => "credential-text-success",
-            VerifiedCredential.CredentialStatus.Revoked => "credential-text-danger",
-            VerifiedCredential.CredentialStatus.Expired => "credential-text-warning",
-            VerifiedCredential.CredentialStatus.NotDue => "credential-text-info",
-            _ => "credential-text-secondary",
+            VerifiedCredential.CredentialStatus.Verified => "text-success",
+            VerifiedCredential.CredentialStatus.Revoked => "text-danger",
+            VerifiedCredential.CredentialStatus.Expired => "text-warning",
+            VerifiedCredential.CredentialStatus.NotDue => "text-primary",
+            _ => "text-muted",
         };
     }
 
