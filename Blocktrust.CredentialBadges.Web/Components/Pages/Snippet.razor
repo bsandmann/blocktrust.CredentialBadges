@@ -2,9 +2,11 @@
 @using System.Text.Json
 @using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge
 @using Blocktrust.CredentialBadges.Core.Common
+@using Blocktrust.CredentialBadges.OpenBadges
 @using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVerifiedCredential
 @using Blocktrust.CredentialBadges.Web.Domain
 @using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService
+@using Blocktrust.CredentialBadges.Web.Services.Images
 @using MediatR
 @inject IMediator Mediator
 
@@ -67,6 +69,10 @@
     [Inject]
     private GenerateSnippetService generateSnippetService { get; set; }
 
+    // Inject the ConvertHostedImageToBase64 service
+    [Inject]
+    private ConvertHostedImageToBase64 ConvertHostedImageToBase64 { get; set; }
+
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !string.IsNullOrEmpty(rawInput))
@@ -104,23 +110,42 @@
             return;
         }
 
+        // Handle image conversion to base64 if needed
+        // var image = "((AchievementCredential)parserResult.Value).CredentialSubject.Achievement.Image;"
+        var image = "https://cdn.pixabay.com/photo/2013/07/12/16/01/badge-150755_1280.png";
+        if (!string.IsNullOrEmpty(image) && !image.StartsWith("data:image/"))
+        {
+            // Convert hosted image to base64
+            var conversionResult = await ConvertHostedImageToBase64.ConvertAsync(image);
+            if (conversionResult.IsSuccess)
+            {
+                image = conversionResult.Value;
+            }
+            else
+            {
+                ErrorMessage = $"Failed to convert image to base64: {conversionResult.Errors.First().Message}";
+                return;
+            }
+        }
+
         var storeVerifiedCredentialRequest = new StoreVerifiedCredentialRequest
         {
-            Name = "Sample Credential",
-            Description = "This is a sample credential issued by the Digital Credentials Consortium to demonstrate the functionality of Verifiable Credentials for wallets and verifiers.",
-            Image = "https://cdn.pixabay.com/photo/2013/07/12/16/01/badge-150755_1280.png",
+            Name = ((AchievementCredential)parserResult.Value).CredentialSubject.Achievement.Name,
+            Description = ((AchievementCredential)parserResult.Value).CredentialSubject.Achievement.Description,
+            Image = image, // Use the processed image (base64)
             Credential = JsonSerializer.Serialize(parserResult.Value),
             Status = VerifiedCredential.CredentialStatus.Verified
         };
-        var result = await Mediator.Send(storeVerifiedCredentialRequest);
 
-        if (!result.IsSuccess)
+        var storeResult = await Mediator.Send(storeVerifiedCredentialRequest);
+
+        if (!storeResult.IsSuccess)
         {
-            Message = $"Failed to store credential: {result.Errors.First().Message}";
+            Message = $"Failed to store credential: {storeResult.Errors.First().Message}";
             AlertClass = "alert-danger";
         }
 
-        var snippetResult = generateSnippetService.GenerateSnippet(result.Value);
+        var snippetResult = generateSnippetService.GenerateSnippet(storeResult.Value);
         snippet = snippetResult.Snippet;
     }
 
