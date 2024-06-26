@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     statusClass = "text-success";
                     statusIcon = "bi-check-circle-fill";
                     statusText = "Verified";
-                    
                     break;
                 case 1:
                     statusClass = "text-danger";
@@ -90,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="card-body">
                         <h5 class="card-title">${credential.name}</h5>
                         <p class="card-text">${credential.description}</p>
+                        ${credential.image ? `<img src="data:image/png;base64,${credential.image}" alt="Credential Image" />` : ''}
                         <p class="${statusClass}">Status: <i class="bi ${statusIcon}"></i> ${statusText}</p>
                     </div>
                 </div>
