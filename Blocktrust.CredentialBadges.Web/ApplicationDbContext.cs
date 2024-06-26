@@ -8,23 +8,9 @@ public class ApplicationDbContext : DbContext
     protected readonly IConfiguration Configuration;
 
     // Constructor that accepts DbContextOptions
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, object? o)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         :base(options)
     {
-    }
-
-    // Constructor that accepts IConfiguration and initializes the Configuration field
-    public ApplicationDbContext(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-
-    // Override the OnConfiguring method to set up the PostgreSQL database provider
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    {
-        // Connect to PostgreSQL using the connection string from app settings
-        options.UseNpgsql(Configuration.GetConnectionString("CredentialBadgesDatabase"));
     }
 
     // DbSet property
