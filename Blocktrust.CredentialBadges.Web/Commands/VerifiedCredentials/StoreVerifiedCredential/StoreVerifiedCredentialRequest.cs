@@ -8,7 +8,7 @@ public class StoreVerifiedCredentialRequest : IRequest<Result<VerifiedCredential
 {
     public string Name { get; set; }
     public string Description { get; set; }
-    public byte[] Image { get; set; }
+    public string Image { get; set; }
     public string Credential { get; set; }
     public VerifiedCredential.CredentialStatus Status { get; set; }
 }

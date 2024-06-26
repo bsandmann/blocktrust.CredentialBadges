@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,7 +27,8 @@ public class VerifiedCredentialEntity
     [StringLength(100, ErrorMessage = "Name must not exceed 100 characters")]
     public string Name { get; set; }
 
-    public byte[] Image { get; set; } = null;
+    [Column(TypeName = "text")]
+    public string Image { get; set; } = null; // Base64-encoded image string
 
     [Required(ErrorMessage = "Credential is required")]
     [Column(TypeName = "text")]
