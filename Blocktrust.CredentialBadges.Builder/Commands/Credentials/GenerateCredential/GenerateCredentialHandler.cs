@@ -35,7 +35,8 @@ public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialReque
             ConnectionId = request.ConnectionId,
             AutomaticIssuance = request.AutomaticIssuance,
             CredentialFormat = request.CredentialFormat,
-            Claims = request.Claims
+            Claims = request.Claims,
+            ValidityPeriod = request.ValidityPeriod,
         }, cancellationToken);
 
         if (createOfferResponse.IsFailed)

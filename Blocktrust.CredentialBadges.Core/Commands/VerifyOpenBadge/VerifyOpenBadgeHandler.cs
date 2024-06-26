@@ -35,7 +35,7 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
             verificationResult.CredentialIsNotExpired = null;
         }
 
-        verificationResult.CredentialIsNotExpired = true;
+        // verificationResult.CredentialIsNotExpired = true;
 
 
         // TODO Then check the revocation
