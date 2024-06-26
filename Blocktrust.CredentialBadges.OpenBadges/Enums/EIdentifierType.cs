@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
+namespace Blocktrust.CredentialBadges.OpenBadges.Enums;
+
 /// <summary>
 /// Enumeration for IdentifierType
 /// </summary>

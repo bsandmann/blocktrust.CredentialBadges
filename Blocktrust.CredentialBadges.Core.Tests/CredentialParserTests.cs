@@ -4,6 +4,7 @@ using Common;
 using FluentAssertions;
 using FluentResults.Extensions.FluentAssertions;
 using OpenBadges;
+using OpenBadges.Enums;
 
 public class CredentialParserTests
 {

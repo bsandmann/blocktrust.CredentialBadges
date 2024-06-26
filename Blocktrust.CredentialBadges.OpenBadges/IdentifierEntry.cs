@@ -1,6 +1,7 @@
 ﻿namespace Blocktrust.CredentialBadges.OpenBadges;
 
 using System.Text.Json.Serialization;
+using Enums;
 
 /// <summary>
 /// <see cref="https://www.imsglobal.org/spec/ob/v3p0/#identifierentry"/>

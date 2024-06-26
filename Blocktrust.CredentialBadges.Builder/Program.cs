@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Blocktrust.CredentialBadges.Builder.Components;
 using Blocktrust.CredentialBadges.Builder.Components.Account;
 using Blocktrust.CredentialBadges.Builder.Data;
+using Blocktrust.CredentialBadges.Core.Services.Clipboard;
 using Blocktrust.CredentialBadges.Web.Services.Images;
+using ApplicationDbContext = Blocktrust.CredentialBadges.Web.ApplicationDbContext;
 
 var builder = WebApplication.CreateBuilder(args);
 

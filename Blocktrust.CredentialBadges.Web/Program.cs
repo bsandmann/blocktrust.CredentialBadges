@@ -1,4 +1,5 @@
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
+using Blocktrust.CredentialBadges.Web;
 using Blocktrust.CredentialBadges.Web.Components;
 using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService;
 using Blocktrust.CredentialBadges.Web.Services.Images;

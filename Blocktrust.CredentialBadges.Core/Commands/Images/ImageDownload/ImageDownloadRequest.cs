@@ -1,4 +1,4 @@
-namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.Images.ImageDownload;
+namespace Blocktrust.CredentialBadges.Core.Commands.Images.ImageDownload;
 
 public class ImageDownloadRequest
 {

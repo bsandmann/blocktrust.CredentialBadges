@@ -1,5 +1,7 @@
 ﻿using Microsoft.JSInterop;
 
+namespace Blocktrust.CredentialBadges.Core.Services.Clipboard;
+
 public class ClipboardService
 {
     private IJSRuntime JSRuntime { get; set; }

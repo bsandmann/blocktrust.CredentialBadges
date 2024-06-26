@@ -1,6 +1,7 @@
 namespace Blocktrust.CredentialBadges.OpenBadges;
 
 using System.Text.Json.Serialization;
+using Enums;
 
 /// <summary>
 /// A collection of information about the accomplishment recognized by the Assertion.

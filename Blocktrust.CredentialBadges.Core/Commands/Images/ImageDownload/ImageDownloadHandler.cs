@@ -1,6 +1,6 @@
-using FluentResults;
+namespace Blocktrust.CredentialBadges.Core.Commands.Images.ImageDownload;
 
-namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.Images.ImageDownload;
+using FluentResults;
 
 public class ImageDownloadHandler
 {

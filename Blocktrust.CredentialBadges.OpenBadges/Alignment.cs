@@ -1,6 +1,7 @@
 namespace Blocktrust.CredentialBadges.OpenBadges;
 
 using System.Text.Json.Serialization;
+using Enums;
 
 /// <summary>
 /// Describes an alignment between an achievement and a node in

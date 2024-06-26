@@ -1,4 +1,4 @@
-namespace Blocktrust.CredentialBadges.OpenBadges;
+namespace Blocktrust.CredentialBadges.OpenBadges.Enums;
 
 using System.Text.Json.Serialization;
 

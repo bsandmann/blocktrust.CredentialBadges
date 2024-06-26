@@ -1,6 +1,7 @@
-
 using Blocktrust.CredentialBadges.Web.Entities;
 using Microsoft.EntityFrameworkCore;
+
+namespace Blocktrust.CredentialBadges.Web;
 
 public class ApplicationDbContext : DbContext 
 {
@@ -27,6 +28,6 @@ public class ApplicationDbContext : DbContext
     }
 
     // DbSet property
-      public DbSet<VerifiedCredentialEntity> VerifiedCredentials { get; set; }
+    public DbSet<VerifiedCredentialEntity> VerifiedCredentials { get; set; }
   
 }
