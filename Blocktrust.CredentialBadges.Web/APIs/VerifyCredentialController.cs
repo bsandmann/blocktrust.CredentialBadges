@@ -57,7 +57,7 @@ public class VerifyCredentialController : ControllerBase
             Id = id,
             Status = EVerificationStatus.Verified,
             Name = achievementCredential.CredentialSubject.Achievement.Name,
-            Description = achievementCredential.CredentialSubject.Achievement.Description
+            Description = achievementCredential.CredentialSubject.Achievement.Description,
         };
         
         if(verifyResponse.CredentialIsNotExpired == false)
