@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Blocktrust.CredentialBadges.Builder.Components;
 using Blocktrust.CredentialBadges.Builder.Components.Account;
 using Blocktrust.CredentialBadges.Builder.Data;
+using Blocktrust.CredentialBadges.Web.Services.Images;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,9 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 builder.Services.AddHttpClient("IdentusAgents");
+
+builder.Services.AddScoped<ImageBytesToBase64>();
+
 
 var app = builder.Build();
 

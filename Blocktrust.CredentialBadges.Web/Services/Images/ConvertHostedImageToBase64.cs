@@ -3,12 +3,12 @@ using FluentResults;
 
 namespace Blocktrust.CredentialBadges.Web.Services.Images;
 
-public class ConvertImageToBase64
+public class ConvertHostedImageToBase64
 {
     private readonly ImageDownloadHandler _imageDownloadHandler;
     private readonly ImageBytesToBase64 _imageBytesToBase64;
 
-    public ConvertImageToBase64(ImageDownloadHandler imageDownloadHandler, ImageBytesToBase64 imageBytesToBase64)
+    public ConvertHostedImageToBase64(ImageDownloadHandler imageDownloadHandler, ImageBytesToBase64 imageBytesToBase64)
     {
         _imageDownloadHandler = imageDownloadHandler;
         _imageBytesToBase64 = imageBytesToBase64;
