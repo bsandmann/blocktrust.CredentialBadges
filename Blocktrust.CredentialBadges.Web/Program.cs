@@ -1,6 +1,7 @@
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
 using Blocktrust.CredentialBadges.Web.Components;
 using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService;
+using Blocktrust.CredentialBadges.Web.Services.Images;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,9 @@ builder.Services.AddHttpClient();
 
 // Add controllers to the services
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<ImageBytesToBase64>();
+
 
 // Add CORS services
 builder.Services.AddCors(options =>
