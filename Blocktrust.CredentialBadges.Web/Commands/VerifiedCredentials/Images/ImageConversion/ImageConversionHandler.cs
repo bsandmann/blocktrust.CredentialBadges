@@ -1,23 +1,24 @@
-using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.Images.ImageDownload;
 using FluentResults;
+using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.Images.ImageDownload;
+using Blocktrust.CredentialBadges.Web.Services.Images;
 
-namespace Blocktrust.CredentialBadges.Web.Services.Images;
+namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.Images.ImageConversion;
 
-public class ConvertHostedImageToBase64
+public class ImageConversionHandler
 {
     private readonly ImageDownloadHandler _imageDownloadHandler;
     private readonly ImageBytesToBase64 _imageBytesToBase64;
 
-    public ConvertHostedImageToBase64(ImageDownloadHandler imageDownloadHandler, ImageBytesToBase64 imageBytesToBase64)
+    public ImageConversionHandler(ImageDownloadHandler imageDownloadHandler, ImageBytesToBase64 imageBytesToBase64)
     {
         _imageDownloadHandler = imageDownloadHandler;
         _imageBytesToBase64 = imageBytesToBase64;
     }
 
-    public async Task<Result<string>> ConvertAsync(string imageUrl)
+    public async Task<Result<string>> HandleAsync(ImageConversionRequest request)
     {
-        var request = new ImageDownloadRequest(imageUrl);
-        var downloadResult = await _imageDownloadHandler.HandleAsync(request);
+        var downloadRequest = new ImageDownloadRequest(request.ImageUrl);
+        var downloadResult = await _imageDownloadHandler.HandleAsync(downloadRequest);
 
         if (downloadResult.IsFailed)
         {

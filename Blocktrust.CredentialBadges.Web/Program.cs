@@ -18,9 +18,13 @@ builder.Services.AddHttpContextAccessor();
 // Register GenerateSnippetService
 builder.Services.AddTransient<GenerateSnippetService>();
 
+// Register MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VerifyOpenBadgeHandler).Assembly));
 // Register all MediatR handlers from the current domain's assemblies
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
+
+// Register HttpClient
+builder.Services.AddHttpClient();
 
 // Add controllers to the services
 builder.Services.AddControllers();

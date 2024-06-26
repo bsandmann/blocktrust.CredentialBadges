@@ -70,8 +70,8 @@
     private GenerateSnippetService generateSnippetService { get; set; }
 
     // Inject the ConvertHostedImageToBase64 service
-    [Inject]
-    private ConvertHostedImageToBase64 ConvertHostedImageToBase64 { get; set; }
+    // [Inject]
+    // private ConvertHostedImageToBase64 ConvertHostedImageToBase64 { get; set; }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
@@ -113,20 +113,20 @@
         // Handle image conversion to base64 if needed
         // var image = "((AchievementCredential)parserResult.Value).CredentialSubject.Achievement.Image;"
         var image = "https://cdn.pixabay.com/photo/2013/07/12/16/01/badge-150755_1280.png";
-        if (!string.IsNullOrEmpty(image) && !image.StartsWith("data:image/"))
-        {
-            // Convert hosted image to base64
-            var conversionResult = await ConvertHostedImageToBase64.ConvertAsync(image);
-            if (conversionResult.IsSuccess)
-            {
-                image = conversionResult.Value;
-            }
-            else
-            {
-                ErrorMessage = $"Failed to convert image to base64: {conversionResult.Errors.First().Message}";
-                return;
-            }
-        }
+        // if (!string.IsNullOrEmpty(image) && !image.StartsWith("data:image/"))
+        // {
+        //     // Convert hosted image to base64
+        //     var conversionResult = await ConvertHostedImageToBase64.ConvertAsync(image);
+        //     if (conversionResult.IsSuccess)
+        //     {
+        //         image = conversionResult.Value;
+        //     }
+        //     else
+        //     {
+        //         ErrorMessage = $"Failed to convert image to base64: {conversionResult.Errors.First().Message}";
+        //         return;
+        //     }
+        // }
 
         var storeVerifiedCredentialRequest = new StoreVerifiedCredentialRequest
         {
