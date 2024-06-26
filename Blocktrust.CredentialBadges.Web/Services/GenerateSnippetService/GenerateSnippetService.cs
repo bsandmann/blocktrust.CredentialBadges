@@ -7,7 +7,6 @@ public class SnippetsResult
 {
     public string Snippet { get; set; }
 }
-
 public class GenerateSnippetService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -40,6 +39,13 @@ public class GenerateSnippetService
         htmlBuilder.AppendLine($"    <div class=\"credential-card-body\">");
         htmlBuilder.AppendLine($"      <h5 class=\"credential-card-title\">{credential.Name}</h5>");
         htmlBuilder.AppendLine($"      <p class=\"credential-card-text\">{credential.Description}</p>");
+
+        // Check if there is an image and add it as Base64 if available
+        if (!string.IsNullOrEmpty(credential.Image))
+        {
+            htmlBuilder.AppendLine($"      <img src=\"data:image/png;base64,{credential.Image}\" alt=\"Credential Image\" />");
+        }
+
         htmlBuilder.AppendLine($"      <p id=\"credential-status-{credential.Id}\" class=\"{statusColor}\">Status: <i class=\"bi {statusIcon}\"></i> {credential.Status}</p>");
         htmlBuilder.AppendLine($"    </div>");
         htmlBuilder.AppendLine($"  </a>");
