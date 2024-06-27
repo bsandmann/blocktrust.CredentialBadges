@@ -28,6 +28,12 @@ The Blocktrust Credential Badges system operates in several steps:
 
 The Blocktrust Credential Badges project began in April 2024 and is expected to conclude around December 2024.
 
+**Current developments:**
+As of end of June we hit Milestone 1 of the project and are able to demonstrate a full workflow. Including the creation of a Demo-Badges, the partial verification, the generation of a snippet, the rendering of the snippet and lastly the presentation of a dedicated verification page of that snippet.
+
+**Next steps:**
+The project will continue with improved presentation of the credential, including images and templates. Another area of development will be the verification of the OpenBadges, which has mostly been mocked for the beginning.
+
 ## Technology Stack
 
 Our project uses the following technologies:
