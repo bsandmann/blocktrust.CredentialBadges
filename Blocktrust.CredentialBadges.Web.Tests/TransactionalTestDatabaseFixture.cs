@@ -9,7 +9,11 @@ public class TransactionalTestDatabaseFixture
     /// <summary>
     /// Replace the connection string with the one that is appropriate for your local test environment.
     /// </summary>
-    private const string ConnectionString = @"Host=192.168.178.163; Database=CredentialBadgesTests; Username=postgres; Password=password";
+    
+    // Bjorn Home 
+    // private const string ConnectionString = @"Host=192.168.178.163; Database=CredentialBadgesTests; Username=postgres; Password=password";
+    // Bjoern Office
+    private const string ConnectionString = @"Host=10.10.20.103; Database=CredentialBadgesTests; Username=postgres; Password=postgres";
 
     public ApplicationDbContext CreateContext()
         => new ApplicationDbContext(
