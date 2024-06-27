@@ -5,6 +5,8 @@
 @using MediatR
 @inject IMediator Mediator
 @inject GenerateSnippetService SnippetService
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <PageTitle>Verifier</PageTitle>
@@ -23,10 +25,26 @@ else if (credential != null)
 {
     <div class="card">
         <div class="card-body">
+            @if (!string.IsNullOrEmpty(credential.Image))
+            {
+                <img src="data:image;base64,@credential.Image" alt="Credential Image" class="img-fluid mb-3" />
+            }
             <h5 class="card-title">@credential.Name</h5>
             <p class="card-text">@credential.Description</p>
             <p id="credential-status" class="@GetStatusColor(credential.Status)">Status: <i id="credential-status-icon" class="bi @GetStatusIcon(credential.Status)"></i> @credential.Status</p>
-            <button class="btn btn-primary" @onclick="RerunVerification">Re-run Verification</button>
+           <button class="btn btn-primary" @onclick="RerunVerification" >Re-run Verification</button>
+            @if (isVerifying)
+            {
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(VerificationMessage))
+            {
+                <div class="alert alert-info mt-3">
+                    @VerificationMessage
+                </div>
+            }
         </div>
     </div>
 }
@@ -35,20 +53,16 @@ else if (credential != null)
     [Parameter] public string SnippetId { get; set; }
     private VerifiedCredential credential;
     private string ErrorMessage;
+    private string _baseUrl;
+    private bool isVerifying = false;
+    private string VerificationMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        _baseUrl = NavigationManager.BaseUri;
         if (Guid.TryParse(SnippetId, out Guid credentialId))
         {
-            var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId));
-            if (result.IsSuccess)
-            {
-                credential = result.Value;
-            }
-            else
-            {
-                ErrorMessage = $"Error: {result.Errors.First().Message}";
-            }
+            await LoadCredential(credentialId);
         }
         else
         {
@@ -56,11 +70,56 @@ else if (credential != null)
         }
     }
 
+    private async Task LoadCredential(Guid credentialId)
+    {
+        var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId));
+        if (result.IsSuccess)
+        {
+            credential = result.Value;
+        }
+        else
+        {
+            ErrorMessage = $"Error: {result.Errors.First().Message}";
+        }
+    }
+
     private async Task RerunVerification()
     {
         if (Guid.TryParse(SnippetId, out Guid credentialId))
         {
-      
+            try
+            {
+                isVerifying = true;
+                VerificationMessage = string.Empty;
+                StateHasChanged();
+
+                var response = await HttpClient.GetAsync($"{_baseUrl}api/VerifyCredential/{credentialId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadFromJsonAsync<VerificationResponse>();
+                    if (jsonResponse != null)
+                    {
+                        credential.Status = jsonResponse.Status;
+                        credential.Name = jsonResponse.Name;
+                        credential.Description = jsonResponse.Description;
+                        credential.Image = jsonResponse.Image;
+                        VerificationMessage = "Verification successful!";
+                    }
+                }
+                else
+                {
+                    VerificationMessage = "Verification failed. Please try again.";
+                }
+            }
+            catch (Exception ex)
+            {
+                VerificationMessage = $"Error during re-verification: {ex.Message}";
+            }
+            finally
+            {
+                isVerifying = false;
+                StateHasChanged();
+            }
         }
         else
         {
@@ -90,5 +149,14 @@ else if (credential != null)
             VerifiedCredential.CredentialStatus.NotDue => "bi-info-circle-fill",
             _ => "bi-question-circle-fill",
         };
+    }
+
+    public class VerificationResponse
+    {
+        public Guid Id { get; set; }
+        public VerifiedCredential.CredentialStatus Status { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Image { get; set; }
     }
 }

@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
             margin-bottom: 1rem;
             color: #6c757d;
         }
+        .credential-container{
+        img{
+        max-width: 100px;
+        }
+        }
     `;
     document.head.appendChild(style);
     console.log('Style added to head');

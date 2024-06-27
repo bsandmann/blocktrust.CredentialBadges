@@ -110,9 +110,8 @@
         }
 
         // Process image URL or base64 data
-        // var image = ((AchievementCredential)parserResult.Value).CredentialSubject.Achievement.Image;
+        var image = ((AchievementCredential)parserResult.Value).CredentialSubject?.Achievement?.Image?.Id.ToString();
 
-        var image ="https://cdn.pixabay.com/photo/2013/07/12/16/01/badge-150755_1280.png";
 
         if (string.IsNullOrEmpty(image))
         {
@@ -120,7 +119,7 @@
             return;
         }
 
-        if (!image.StartsWith("data:image/"))
+        if (image.StartsWith("http"))
         {
             // Download image bytes
             try
