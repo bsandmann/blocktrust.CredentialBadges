@@ -1,4 +1,5 @@
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
+using Blocktrust.CredentialBadges.Core.Crypto;
 using Blocktrust.CredentialBadges.Web;
 using Blocktrust.CredentialBadges.Web.Components;
 using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService;
@@ -31,7 +32,16 @@ builder.Services.AddHttpClient();
 // Add controllers to the services
 builder.Services.AddControllers();
 
+// Register CrpytoService
+builder.Services.AddScoped<IEcService>();
+
 builder.Services.AddScoped<ImageBytesToBase64>();
+
+builder.Services.AddServerSideBlazor()
+    .AddHubOptions(options =>
+    {
+        options.MaximumReceiveMessageSize = 12 * 1024 * 1024; // 12MB
+    });
 
 
 // Add CORS services
