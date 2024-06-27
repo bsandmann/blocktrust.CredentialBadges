@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
             margin-bottom: 1rem;
             color: #6c757d;
         }
+        .credential-container{
+        img{
+        max-width: 100px;
+        }
+        }
     `;
     document.head.appendChild(style);
     console.log('Style added to head');
@@ -89,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="card-body">
                         <h5 class="card-title">${credential.name}</h5>
                         <p class="card-text">${credential.description}</p>
-                        ${credential.image ? `<img src="data:image/png;base64,${credential.image}" alt="Credential Image" />` : ''}
+                        ${credential.Image ? `<img src="data:image/png;base64,${credential.Image}" alt="Credential Image" />` : ''}
                         <p class="${statusClass}">Status: <i class="bi ${statusIcon}"></i> ${statusText}</p>
                     </div>
                 </div>

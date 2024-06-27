@@ -33,7 +33,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 
 // Register CrpytoService
-builder.Services.AddScoped<IEcService>();
+builder.Services.AddScoped<IEcService,EcServiceBouncyCastle>();
 
 builder.Services.AddScoped<ImageBytesToBase64>();
 
