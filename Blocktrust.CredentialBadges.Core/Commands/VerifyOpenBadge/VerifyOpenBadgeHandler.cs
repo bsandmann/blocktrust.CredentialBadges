@@ -1,6 +1,7 @@
 namespace Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
 
 using CheckRevocationStatus;
+using CheckSignature;
 using CheckTrustRegistry;
 using FluentResults;
 using MediatR;
@@ -21,7 +22,14 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
         verificationResult.CheckedOn = checkDate;
 
         // TODO First do the Signature check
-        verificationResult.SignatureIsValid = true;
+        var checkSignatureResult = await _mediator.Send(new CheckSignatureRequest(request.OpenBadgeCredential), cancellationToken);
+        if (checkSignatureResult.IsFailed)
+        {
+            return checkSignatureResult.ToResult();
+        }
+
+        verificationResult.SignatureIsValid = checkSignatureResult.Value == ECheckSignatureResponse.Valid || checkSignatureResult.Value == ECheckSignatureResponse.UnsupportedDidMethod;
+        
 
         // Then check the expiration & Issuance Date
         verificationResult.CredentialIssuanceDateIsNotInFuture = request.OpenBadgeCredential.ValidFrom < checkDate;
