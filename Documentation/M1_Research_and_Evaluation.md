@@ -39,7 +39,7 @@ The development of OpenBadges 3.0 marks a significant shift in the approach to d
 
 ## Compatibility with the Credential-Badges Proposal
 
-The current specification of OpenBadges 3.0 is still in draft state (as of June 2024), but no major changes are expected. In essence, it builds upon the W3C VC 2.0 specification and extends the "CredentialSubject" property of the data model, with only minor expected fields outside that property. This makes it generally compatible with any major SSI solution vendor, including Hyperledger Indy (formerly Atala PRISM).
+The current specification of OpenBadges 3.0 is still in draft state (as of June 2024), but no major changes are expected. In essence, it builds upon the W3C VC 2.0 specification and extends the "CredentialSubject" property of the data model, with only minor expected fields outside that property. This makes it generally compatible with any major SSI solution vendor, including Hyperledger Identus (formerly Atala PRISM).
 
 However, the devil is in the details, and as of now, the current implementation of the Indy agent is not capable of creating credentials fully aligned with the OpenBadges 3.0 specification. These issues are minor and can be addressed in principle:
 
