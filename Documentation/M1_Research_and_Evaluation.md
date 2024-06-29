@@ -45,7 +45,7 @@ While OpenBadges has emerged as a leading standard in the digital credentials sp
 - Nuri Chain: A solution that leverages blockchain technology for credential issuance and verification. [LINK](https://nurichain.com/en )
 - POAP (Proof of Attendance Protocol): A system that uses NFTs to create and distribute proof of attendance for events. [LINK](https://poap.xyz/about-the-protocol )
 
-These alternatives often use NFT-based approaches and are more focused on niche applications, proprietary ecosystem or find it hard to get trackion outside the blockchain community. OpenBadges, on the other hand, has a long history and a broad user base, making it a more established choice for many organizations.
+These alternatives often use NFT-based approaches and are more focused on niche applications, are proprietary ecosystems or find it hard to get traction outside the blockchain community. OpenBadges, on the other hand, has a long history and a broad user base, making it a more established choice for many organizations, particularly in the education sector.
 
 ## Why OpenBadges 3.0?
 After evaluating different solutions, we decided to focus on achieving compatibility with OpenBadges 3.0 for several reasons:
