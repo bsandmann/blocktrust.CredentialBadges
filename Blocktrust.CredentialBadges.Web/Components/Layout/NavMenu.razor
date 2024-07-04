@@ -1,28 +1,37 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Snippet Generator</a>
+﻿<div class="bg-gray-800 text-white p-3 flex items-center">
+    <div class="container mx-auto">
+        <a class="text-xl font-bold" href="">Snippet Generator</a>
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
+<input type="checkbox" title="Navigation menu" class="sr-only peer" />
+<label for="menu-toggle" class="lg:hidden cursor-pointer">
+    <!-- You might want to replace this with an SVG icon -->
+    <span class="block w-6 h-0.5 bg-gray-200 my-1"></span>
+    <span class="block w-6 h-0.5 bg-gray-200 my-1"></span>
+    <span class="block w-6 h-0.5 bg-gray-200 my-1"></span>
+</label>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+<div class="hidden peer-checked:block lg:block" onclick="this.querySelector('input[type=checkbox]').click()">
+    <nav class="flex flex-col space-y-2 p-4 bg-gray-700 lg:bg-transparent">
+        <div>
+            <NavLink class="flex items-center space-x-2 text-gray-300 hover:text-white" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill" aria-hidden="true"></span>
+                <span>Home</span>
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="snippet">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Snippet
+        <div>
+            <NavLink class="flex items-center space-x-2 text-gray-300 hover:text-white" href="snippet">
+                <span class="bi bi-plus-square-fill" aria-hidden="true"></span>
+                <span>Snippet</span>
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="verifier/:id">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Verifier
+        <div>
+            <NavLink class="flex items-center space-x-2 text-gray-300 hover:text-white" href="verifier/:id">
+                <span class="bi bi-list-nested" aria-hidden="true"></span>
+                <span>Verifier</span>
             </NavLink>
         </div>
     </nav>

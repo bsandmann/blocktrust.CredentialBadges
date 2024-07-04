@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*a {*/
+/*}*/
+
+/*.node {*/
+/*    @apply absolute w-28 z-10 select-none*/
+/*}*/
+
+/*.nodegraph {*/
+/*    height: calc(100vh - 65px);*/
+/*}*/
+
+/*.noodle {*/
+/*    pointer-events: none; !* Prevents noodle from blocking mouse events / click events will just pass through *!*/
+/*    fill: none;*/
+/*}*/
+
+/*.material-icon-button {*/
+/*    @apply text-lg bg-gray-100 hover:bg-gray-50 rounded p-0.5 ring-1 ring-gray-200 pl-1*/
+/*}*/
+
+/*.tooltip {*/
+/*    @apply invisible absolute;*/
+/*}*/
+
+/*.has-tooltip:hover .tooltip {*/
+/*    @apply visible z-50*/
+/*}*/
+
+/*.documentation {*/
+/*    @apply p-0 border rounded-lg border-dotted border-amber-400 py-6 px-3*/
+/*}*/
+
+/*.documentation h1 {*/
+/*    @apply font-museo text-slate-500 text-xl mb-3*/
+/*}*/
+
+/*.documentation h2 {*/
+/*    @apply font-museo text-slate-500 text-base mb-3*/
+/*}*/
+
+/*.documentation p {*/
+/*    @apply font-light text-base text-slate-800 mb-3*/
+/*}*/
+
+/*.networkDocumentation{*/
+/*    @apply font-light text-base text-slate-800 mb-3 */
+/*}*/
