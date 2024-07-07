@@ -612,6 +612,14 @@ video {
   position: fixed;
 }
 
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
 .bottom-0 {
   bottom: 0px;
 }

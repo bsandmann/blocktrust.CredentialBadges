@@ -1,0 +1,17 @@
+<!-- Skeletons.razor -->
+
+@page "/skeletons"
+@rendermode InteractiveServer
+
+<h3>Skeletons Example</h3>
+
+<div style="background-color: #ffffff; min-height: 100vh; padding-top: 3rem;">
+    <div style="max-width: 64rem; margin: auto; display: flex; flex-direction: column; align-items: center; gap: 2rem;">
+
+        <!-- Render SkeletonComponent three times -->
+        <SkeletonComponent />
+        <SkeletonComponent />
+        <SkeletonComponent />
+
+    </div>
+</div>
