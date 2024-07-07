@@ -23,7 +23,7 @@
     [Inject] private NavigationManager NavigationManager { get; set; }
     [Parameter] public Guid credentialId { get; set; }
     
-    private List<Template> templates = new List<Template>
+    private List<Template> templates = new()
     {
         new Template { Id = Guid.NewGuid(), Name = "Template 1" },
         new Template { Id = Guid.NewGuid(), Name = "Template 2" },
