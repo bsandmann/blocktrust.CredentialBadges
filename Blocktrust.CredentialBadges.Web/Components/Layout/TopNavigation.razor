@@ -1,0 +1,51 @@
+@* TopNavigation.razor *@
+@rendermode InteractiveServer
+
+<nav class="bg-[#334054] shadow-lg">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <div class="flex space-x-7">
+                <div>
+                    <a href="#" class="flex items-center py-4 px-2">
+                        <span class="font-semibold text-white text-lg">BlocktrustBadges</span>
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center space-x-1">
+                <a href="#" class="py-4 px-2 text-white hover:text-gray-300 transition duration-300">Home</a>
+                <a href="snippetgenerator" class="py-4 px-2 text-white hover:text-gray-300 transition duration-300">Snippet</a>
+                <a href="#" class="py-4 px-2 text-white hover:text-gray-300 transition duration-300">About</a>
+            </div>
+            <div class="md:hidden flex items-center">
+                <button class="outline-none mobile-menu-button">
+                    <svg class="w-6 h-6 text-white"
+                         fill="none"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         stroke-width="2"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="hidden mobile-menu">
+        <ul>
+            <li><a href="#" class="block text-sm px-2 py-4 text-white hover:bg-gray-700 transition duration-300">Home</a></li>
+            <li><a href="#" class="block text-sm px-2 py-4 text-white hover:bg-gray-700 transition duration-300">About</a></li>
+            <li><a href="#" class="block text-sm px-2 py-4 text-white hover:bg-gray-700 transition duration-300">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            JSRuntime.InvokeVoidAsync("initMobileMenu");
+        }
+    }
+}

@@ -1,0 +1,87 @@
+﻿@* @page "/" *@
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVerifiedCredential
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById
+@using Blocktrust.CredentialBadges.Web.Domain
+@using MediatR
+@inject IMediator Mediator
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+<p class="font-xl bg-slate-500 m-2 font-serif">Test </p>
+<span class="material-symbols-outlined">content_copy</span>
+
+<h1>Blocktrust Credential Badges</h1>
+
+<p>This page is part of a Catalyst Proposal to enable the embedding of Verifiable Credentials inside a website.</p>
+<p>The project is currently work in process and will evolve in time.</p>
+
+<a class="" href="/snippet">Snippet Generator Page</a>
+<a href="/verifier/:id">Credential Verification Page</a>
+
+<button class="btn btn-primary mt-3" @onclick="StoreCredential">Store Verified Credential</button>
+<button class="btn btn-info mt-3" @onclick="RetrieveCredential">Retrieve Credential</button>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert @AlertClass mt-3">
+        @Message
+    </div>
+}
+
+@code {
+    private string Message { get; set; }
+    private string AlertClass { get; set; }
+    private Guid CredentialIdToRetrieve = new Guid("77c3b2cc-8091-40e0-95c0-e5652ae9ca73");//sample credential id
+
+    private async Task StoreCredential()
+    {
+        var request = new StoreVerifiedCredentialRequest
+        {
+            Name = "Example Credential",
+            Description = "This is an example credential.",
+            Image = "https://cdn.pixabay.com/photo/2013/07/12/16/01/badge-150755_1280.png", 
+            Credential = "Very long string representing the credential",
+            Status = VerifiedCredential.CredentialStatus.Verified
+        };
+
+        var result = await Mediator.Send(request);
+
+        if (result.IsSuccess)
+        {
+            var credential = result.Value;
+            Message = $"Successfully stored credential with ID: {credential.Id}";
+            AlertClass = "alert-success";
+        }
+        else
+        {
+            Message = $"Failed to store credential: {result.Errors.First().Message}";
+            AlertClass = "alert-danger";
+        }
+    }
+
+    private async Task RetrieveCredential()
+    {
+        if (CredentialIdToRetrieve == Guid.Empty)
+        {
+            Message = "Please provide a valid Credential ID to retrieve.";
+            AlertClass = "alert-danger";
+            return;
+        }
+
+        var request = new GetVerifiedCredentialByIdRequest(CredentialIdToRetrieve);
+
+        var result = await Mediator.Send(request);
+
+        if (result.IsSuccess)
+        {
+            var credential = result.Value;
+            Message = $"Successfully retrieved credential with ID: {credential.Id}. \n Credential: {credential.Credential} \n Description: {credential.Description} \n Status: {credential.Status}";
+            AlertClass = "alert-success";
+        }
+        else
+        {
+            Message = $"Failed to retrieve credential: {result.Errors.First().Message}";
+            AlertClass = "alert-danger";
+        }
+    }
+}
