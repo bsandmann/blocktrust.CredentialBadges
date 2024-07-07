@@ -1,0 +1,23 @@
+@page "/copysnippet/{credentialId:guid}/{selectedTemplateId:guid}"
+
+@rendermode InteractiveServer
+
+<PageTitle>Copy snippet</PageTitle>
+
+<div class="container text-center mt-5">
+    <h1>Copy Snippet</h1>
+    <p>Selected Credential ID: @credentialId</p>
+    <p>Selected Template ID: @selectedTemplateId</p>
+    <button class="btn btn-primary mt-3" @onclick="GenerateSnippet">Generate Snippet</button>
+</div>
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    [Parameter] public Guid credentialId { get; set; }
+    [Parameter] public Guid selectedTemplateId { get; set; }
+
+    private void GenerateSnippet()
+    {
+        // Logic to generate snippet
+    }
+}

@@ -1,4 +1,3 @@
-@* TopNavigation.razor *@
 @rendermode InteractiveServer
 
 <nav class="bg-[#334054] shadow-lg">
@@ -6,15 +5,16 @@
         <div class="flex justify-between items-center">
             <div class="flex space-x-7">
                 <div>
-                    <a href="#" class="flex items-center py-4 px-2">
-                        <span class="font-semibold text-white text-lg">BlocktrustBadges</span>
+                    <a href="/" class="flex items-center py-3 px-2">
+                        <span class="font-semibold text-white text-md">BlocktrustBadges</span>
                     </a>
                 </div>
             </div>
-            <div class="hidden md:flex items-center space-x-1">
-                <a href="#" class="py-4 px-2 text-white hover:text-gray-300 transition duration-300">Home</a>
-                <a href="snippetgenerator" class="py-4 px-2 text-white hover:text-gray-300 transition duration-300">Snippet</a>
-                <a href="#" class="py-4 px-2 text-white hover:text-gray-300 transition duration-300">About</a>
+            <div class="hidden md:flex items-center space-x-4">
+                <NavLink href="/credentialinput" class="py-3 px-2 text-white hover:text-gray-300 transition duration-300" 
+                         activeClass="text-yellow-500">
+                    Generate Snippet
+                </NavLink>
             </div>
             <div class="md:hidden flex items-center">
                 <button class="outline-none mobile-menu-button">
@@ -33,9 +33,10 @@
     </div>
     <div class="hidden mobile-menu">
         <ul>
-            <li><a href="#" class="block text-sm px-2 py-4 text-white hover:bg-gray-700 transition duration-300">Home</a></li>
-            <li><a href="#" class="block text-sm px-2 py-4 text-white hover:bg-gray-700 transition duration-300">About</a></li>
-            <li><a href="#" class="block text-sm px-2 py-4 text-white hover:bg-gray-700 transition duration-300">Contact</a></li>
+            <li><NavLink href="/credentialinput" class="block text-sm px-2 py-4 text-white hover:bg-gray-700 transition duration-300" 
+                         activeClass="bg-gray-800">
+                Generate Snippet
+            </NavLink></li>
         </ul>
     </div>
 </nav>

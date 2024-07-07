@@ -1,0 +1,58 @@
+@page "/previewbadge/{credentialId:guid}"
+
+@rendermode InteractiveServer
+
+
+<PageTitle>Preview Badge</PageTitle>
+
+<div class="container text-center mt-5">
+    <h1>Preview Badge</h1>
+    <p>Selected Credential ID: @credentialId</p>
+    <div class="template-list">
+        @foreach (var template in templates)
+        {
+            <div class="template-item" @onclick="() => SelectTemplate(template.Id)">
+                <p>@template.Name</p>
+            </div>
+        }
+    </div>
+    <button class="btn btn-primary mt-3" @onclick="ContinueToCopySnippet">Continue to Copy Snippet</button>
+</div>
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    [Parameter] public Guid credentialId { get; set; }
+    
+    private List<Template> templates = new List<Template>
+    {
+        new Template { Id = Guid.NewGuid(), Name = "Template 1" },
+        new Template { Id = Guid.NewGuid(), Name = "Template 2" },
+        new Template { Id = Guid.NewGuid(), Name = "Template 3" }
+    };
+    private Guid selectedTemplateId;
+
+    private void SelectTemplate(Guid id)
+    {
+        selectedTemplateId = id;
+    }
+
+    private async Task ContinueToCopySnippet()
+    {
+        if (selectedTemplateId != Guid.Empty)
+        {
+            // Navigate to copy snippet page with credential ID and selected template ID
+            NavigationManager.NavigateTo($"/copysnippet/{credentialId}/{selectedTemplateId}");
+        }
+        else
+        {
+            // Handle case where no template is selected
+            // You can add error handling or UI feedback here
+        }
+    }
+
+    private class Template
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
+}
