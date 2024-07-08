@@ -2,7 +2,7 @@ using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
 using Blocktrust.CredentialBadges.Core.Crypto;
 using Blocktrust.CredentialBadges.Web;
 using Blocktrust.CredentialBadges.Web.Components;
-using Blocktrust.CredentialBadges.Web.Services.GenerateSnippetService;
+using Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 using Blocktrust.CredentialBadges.Web.Services.Images;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +19,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 
 // Register GenerateSnippetService
-builder.Services.AddTransient<GenerateSnippetService>();
+builder.Services.AddTransient<TemplatesService>();
 
 // Register MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VerifyOpenBadgeHandler).Assembly));

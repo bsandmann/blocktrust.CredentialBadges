@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Blocktrust.CredentialBadges.Web.Enums;
 
 namespace Blocktrust.CredentialBadges.Web.Entities;
 
@@ -9,16 +10,9 @@ public class VerifiedCredentialEntity
     [Key]
     public Guid StoredCredentialId { get; set; } // Primary Key
 
-    public enum CredentialStatus
-    {
-        Verified,
-        Revoked,
-        Expired,
-        NotDue
-    }
 
     [Required]
-    public CredentialStatus Status { get; set; } = CredentialStatus.Verified;
+    public EVerificationStatus Status { get; set; } = EVerificationStatus.Invalid;
 
     [StringLength(500, ErrorMessage = "Description must not exceed 500 characters")]
     public string Description { get; set; }
@@ -33,4 +27,8 @@ public class VerifiedCredentialEntity
     [Required(ErrorMessage = "Credential is required")]
     [Column(TypeName = "text")]
     public string Credential { get; set; } // A very long string
+    
+    public object ValidFrom { get; set; } // Date when the credential is valid from
+    
+    public object ValidUntil { get; set; } // Date when the credential is valid until
 }

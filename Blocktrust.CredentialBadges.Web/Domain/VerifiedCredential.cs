@@ -1,34 +1,40 @@
 using Blocktrust.CredentialBadges.Web.Entities;
+using Blocktrust.CredentialBadges.Web.Enums;
 
 namespace Blocktrust.CredentialBadges.Web.Domain;
 
 public class VerifiedCredential
 {
     public Guid Id { get; set; }
-    public CredentialStatus Status { get; set; }
+    
+    public EVerificationStatus Status { get; set; }
     public string Description { get; set; }
     public string Name { get; set; }
     public string Image { get; set; }
     public string Credential { get; set; }
+    public object ValidFrom { get; set; }
+    
+    public object ValidUntil { get; set; }
 
-    public enum CredentialStatus
-    {
-        Verified,
-        Revoked,
-        Expired,
-        NotDue
-    }
+    
+    
+
+   
 
     public VerifiedCredentialEntity ToEntity()
     {
         return new VerifiedCredentialEntity
         {
             StoredCredentialId = Id,
-            Status = (VerifiedCredentialEntity.CredentialStatus)Status,
+            Status = (EVerificationStatus)Status,
             Description = Description,
             Name = Name,
             Image = Image,
-            Credential = Credential
+            Credential = Credential,
+            ValidFrom = ValidFrom,
+            ValidUntil = ValidUntil
+            
+            
         };
     }
 
@@ -37,11 +43,13 @@ public class VerifiedCredential
         return new VerifiedCredential
         {
             Id = entity.StoredCredentialId,
-            Status = (CredentialStatus)entity.Status,
+            Status = (EVerificationStatus)entity.Status,
             Description = entity.Description,
             Name = entity.Name,
             Image = entity.Image,
-            Credential = entity.Credential
+            Credential = entity.Credential,
+            ValidFrom = entity.ValidFrom,
+            ValidUntil = entity.ValidUntil
         };
     }
 }

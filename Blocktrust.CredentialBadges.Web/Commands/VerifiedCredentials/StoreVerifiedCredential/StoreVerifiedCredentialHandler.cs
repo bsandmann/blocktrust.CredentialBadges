@@ -1,5 +1,6 @@
 using Blocktrust.CredentialBadges.Web.Entities;
 using Blocktrust.CredentialBadges.Web.Domain;
+using Blocktrust.CredentialBadges.Web.Enums;
 using FluentResults;
 using MediatR;
 
@@ -25,7 +26,7 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
             Description = request.Description,
             Image = request.Image,
             Credential = request.Credential,
-            Status = (VerifiedCredentialEntity.CredentialStatus)request.Status
+            Status = (EVerificationStatus)request.Status
         };
 
         try
