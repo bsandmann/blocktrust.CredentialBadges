@@ -15,6 +15,9 @@ public class VerifiedCredential
     public object ValidFrom { get; set; }
     
     public object ValidUntil { get; set; }
+    
+    //Isser
+    public string Issuer { get; set; }
 
     
     
@@ -32,7 +35,8 @@ public class VerifiedCredential
             Image = Image,
             Credential = Credential,
             ValidFrom = ValidFrom,
-            ValidUntil = ValidUntil
+            ValidUntil = ValidUntil,
+            Issuer = Issuer
             
             
         };
@@ -49,7 +53,8 @@ public class VerifiedCredential
             Image = entity.Image,
             Credential = entity.Credential,
             ValidFrom = entity.ValidFrom,
-            ValidUntil = entity.ValidUntil
+            ValidUntil = entity.ValidUntil,
+            Issuer = entity.Issuer
         };
     }
 }

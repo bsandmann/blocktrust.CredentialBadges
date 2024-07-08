@@ -31,4 +31,7 @@ public class VerifiedCredentialEntity
     public object ValidFrom { get; set; } // Date when the credential is valid from
     
     public object ValidUntil { get; set; } // Date when the credential is valid until
+    
+    // Issuer
+    public string Issuer { get; set; } // The entity that issued the credential
 }

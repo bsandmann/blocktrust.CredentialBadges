@@ -1,6 +1,7 @@
 @page "/testbadge"
 @using Blocktrust.CredentialBadges.Web.Domain
 @using Blocktrust.CredentialBadges.Web.Enums
+@using Blocktrust.CredentialBadges.Web.Services
 @using Blocktrust.CredentialBadges.Web.Services.TemplatesService
 @inject TemplatesService templatesService
 
@@ -93,13 +94,14 @@
         return new VerifiedCredential
         {
             Id = Guid.NewGuid(),
-            Status = EVerificationStatus.Verified,
-            Description = "Sample Credential Description",
+            Status = EVerificationStatus.Revoked,
+            Description = "Lorem ipsum dolor sit amet consectetur. Cursus lectus convallis pretium odio. Eu at vel in ultricies neque magna.",
             Name = "Sample Credential",
             Image = "https://example.com/credential-image.png",
             Credential = "Credential Information",
             ValidFrom = DateTime.UtcNow.AddDays(-30),
-            ValidUntil = DateTime.UtcNow.AddYears(1)
+            ValidUntil = DateTime.UtcNow.AddYears(1),
+            Issuer = "Sample Issuer",
         };
     }
 }

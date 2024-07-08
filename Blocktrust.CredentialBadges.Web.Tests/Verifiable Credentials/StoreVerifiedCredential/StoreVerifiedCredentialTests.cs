@@ -1,4 +1,6 @@
-﻿namespace Blocktrust.CredentialBadges.Web.Tests;
+﻿using Blocktrust.CredentialBadges.Web.Enums;
+
+namespace Blocktrust.CredentialBadges.Web.Tests;
 
 using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVerifiedCredential;
 using Blocktrust.CredentialBadges.Web.Domain;
@@ -24,7 +26,7 @@ public partial class TestSetup
             Description = "Test Description",
             Image = "https://example.com/image.jpg",
             Credential = "{ \"some\": \"credential data\" }",
-            Status = VerifiedCredential.CredentialStatus.Verified
+            Status = EVerificationStatus.Verified
         };
 
         var handler = new StoreVerifiedCredentialHandler(_context, loggerMock.Object);
@@ -39,7 +41,7 @@ public partial class TestSetup
         result.Value.Description.Should().Be("Test Description");
         result.Value.Image.Should().Be("https://example.com/image.jpg");
         result.Value.Credential.Should().Be("{ \"some\": \"credential data\" }");
-        result.Value.Status.Should().Be(VerifiedCredential.CredentialStatus.Verified);
+        result.Value.Status.Should().Be(EVerificationStatus.Verified);
 
         // Verify the credential was actually added to the database
         var credentialInDb = await _context.Set<VerifiedCredentialEntity>()
@@ -48,6 +50,6 @@ public partial class TestSetup
         credentialInDb!.Description.Should().Be("Test Description");
         credentialInDb.Image.Should().Be("https://example.com/image.jpg");
         credentialInDb.Credential.Should().Be("{ \"some\": \"credential data\" }");
-        credentialInDb.Status.Should().Be(VerifiedCredentialEntity.CredentialStatus.Verified);
+        credentialInDb.Status.Should().Be(EVerificationStatus.Verified);
     }
 }

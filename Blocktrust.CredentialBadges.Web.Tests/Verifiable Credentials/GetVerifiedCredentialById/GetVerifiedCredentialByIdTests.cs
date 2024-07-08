@@ -1,4 +1,6 @@
-﻿namespace Blocktrust.CredentialBadges.Web.Tests;
+﻿using Blocktrust.CredentialBadges.Web.Enums;
+
+namespace Blocktrust.CredentialBadges.Web.Tests;
 
 using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById;
 using Blocktrust.CredentialBadges.Web.Domain;
@@ -21,7 +23,7 @@ public partial class TestSetup
             Description = "Test Description",
             Image = "https://example.com/image.jpg",
             Credential = "{ \"some\": \"credential data\" }",
-            Status = VerifiedCredentialEntity.CredentialStatus.Verified
+            Status = EVerificationStatus.Verified
         };
 
         _context.Set<VerifiedCredentialEntity>().Add(credentialEntity);
@@ -40,7 +42,7 @@ public partial class TestSetup
         result.Value.Description.Should().Be("Test Description");
         result.Value.Image.Should().Be("https://example.com/image.jpg");
         result.Value.Credential.Should().Be("{ \"some\": \"credential data\" }");
-        result.Value.Status.Should().Be(VerifiedCredential.CredentialStatus.Verified);
+        result.Value.Status.Should().Be(EVerificationStatus.Verified);
     }
 
     [Fact]
