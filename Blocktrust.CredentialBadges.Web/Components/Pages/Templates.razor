@@ -12,7 +12,6 @@
         padding: 1rem;
         margin-bottom: 2rem;
         background: #F8FAFC;
-        
     }
 
     .credential-header {
@@ -143,8 +142,8 @@
 <div style="background-color: #ffffff; min-height: 100vh; padding-top: 3rem;">
     <div style="max-width: 64rem; margin: auto; display: flex; flex-direction: column; align-items: center; gap: 2rem;">
 
-        <!-- Light Version -->
-        <div class="credential-container">
+        <!-- Light Version - Image, No Description -->
+        <a href="https://example.com" class="credential-container" id="template1" data-credential-id="credential1" data-template-id="template1">
             <div class="credential-header">
                 <div class="credential-logo">
                     <img src="https://cdn.freebiesupply.com/logos/large/2x/university-of-michigan-logo-png-transparent.png" alt="University of Michigan Logo" style="width: 100%; height: 100%; object-fit: contain;" />
@@ -164,10 +163,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
 
-        <!-- Dark Version -->
-        <div class="credential-container dark-theme">
+        <!-- Dark Version - Image, No Description -->
+        <a href="https://example.com" class="credential-container dark-theme" id="template2" data-credential-id="credential2" data-template-id="template2">
             <div class="credential-header">
                 <div class="credential-logo dark-logo">
                     <img src="https://cdn.freebiesupply.com/logos/large/2x/university-of-michigan-logo-png-transparent.png" alt="University of Michigan Logo" style="width: 100%; height: 100%; object-fit: contain;" />
@@ -187,10 +186,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
 
-        <!-- Light Version With Description -->
-        <div class="credential-container">
+        <!-- Light Version - Image, Description -->
+        <a href="https://example.com" class="credential-container" id="template3" data-credential-id="credential3" data-template-id="template3">
             <div class="credential-header">
                 <div class="credential-logo">
                     <img src="https://cdn.freebiesupply.com/logos/large/2x/university-of-michigan-logo-png-transparent.png" alt="University of Michigan Logo" style="width: 100%; height: 100%; object-fit: contain;" />
@@ -211,10 +210,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
 
-        <!-- Dark Version With Description -->
-        <div class="credential-container dark-theme">
+        <!-- Dark Version - Image, Description -->
+        <a href="https://example.com" class="credential-container dark-theme" id="template4" data-credential-id="credential4" data-template-id="template4">
             <div class="credential-header">
                 <div class="credential-logo dark-logo">
                     <img src="https://cdn.freebiesupply.com/logos/large/2x/university-of-michigan-logo-png-transparent.png" alt="University of Michigan Logo" style="width: 100%; height: 100%; object-fit: contain;" />
@@ -235,7 +234,89 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
+
+        <!-- Light Version - No Image, Description -->
+        <a href="https://example.com" class="credential-container" id="template5" data-credential-id="credential5" data-template-id="template5">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle">University of Michigan</p>
+                    <p class="credential-description">Lorem ipsum dolor sit amet consectetur. Cursus lectus convallis pretium odio. Eu at vel in ultricies neque magna.</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label">Valid from</span>
+                            <span class="credential-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button">
+                            <span class="material-icons credential-verified-icon">verified</span>
+                            <span class="credential-verified-text">Verified</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Dark Version - No Image, Description -->
+        <a href="https://example.com" class="credential-container dark-theme" id="template6" data-credential-id="credential6" data-template-id="template6">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title dark-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle dark-subtitle">University of Michigan</p>
+                    <p class="credential-description dark-description">Lorem ipsum dolor sit amet consectetur. Cursus lectus convallis pretium odio. Eu at vel in ultricies neque magna.</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label dark-validity-label">Valid from</span>
+                            <span class="credential-validity-date dark-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button dark-verified-button">
+                            <span class="material-icons credential-verified-icon credential-verified-icon-dark">verified</span>
+                            <span class="credential-verified-text credential-verified-text-dark">Verified</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Light Version - No Image, No Description -->
+        <a href="https://example.com" class="credential-container" id="template7" data-credential-id="credential7" data-template-id="template7">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle">University of Michigan</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label">Valid from</span>
+                            <span class="credential-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button">
+                            <span class="material-icons credential-verified-icon">verified</span>
+                            <span class="credential-verified-text">Verified</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Dark Version - No Image, No Description -->
+        <a href="https://example.com" class="credential-container dark-theme" id="template8" data-credential-id="credential8" data-template-id="template8">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title dark-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle dark-subtitle">University of Michigan</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label dark-validity-label">Valid from</span>
+                            <span class="credential-validity-date dark-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button dark-verified-button">
+                            <span class="material-icons credential-verified-icon credential-verified-icon-dark">verified</span>
+                            <span class="credential-verified-text credential-verified-text-dark">Verified</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
 
     </div>
 </div>
