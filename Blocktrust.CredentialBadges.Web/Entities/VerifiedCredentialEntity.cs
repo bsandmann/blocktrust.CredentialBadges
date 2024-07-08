@@ -28,9 +28,9 @@ public class VerifiedCredentialEntity
     [Column(TypeName = "text")]
     public string Credential { get; set; } // A very long string
     
-    public object ValidFrom { get; set; } // Date when the credential is valid from
+    public DateTime ValidFrom { get; set; } // Date when the credential is valid from
     
-    public object ValidUntil { get; set; } // Date when the credential is valid until
+    public DateTime ValidUntil { get; set; } // Date when the credential is valid until
     
     // Issuer
     public string Issuer { get; set; } // The entity that issued the credential

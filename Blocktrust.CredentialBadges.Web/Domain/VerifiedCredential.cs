@@ -12,9 +12,9 @@ public class VerifiedCredential
     public string Name { get; set; }
     public string Image { get; set; }
     public string Credential { get; set; }
-    public object ValidFrom { get; set; }
+    public DateTime ValidFrom { get; set; }
     
-    public object ValidUntil { get; set; }
+    public DateTime ValidUntil { get; set; }
     
     //Isser
     public string Issuer { get; set; }

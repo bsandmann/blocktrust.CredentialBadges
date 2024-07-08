@@ -400,3 +400,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+
+Blocktrust.CredentialBadges.Web/appsettings.json
+Blocktrust.CredentialBadges.Builder/appsettings.json
