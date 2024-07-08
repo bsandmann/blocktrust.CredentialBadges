@@ -91,25 +91,49 @@
         font-size: 0.875rem;
     }
     
-    .credential-button-revoked{
+    .credential-button-revoked {
+        background-color: #FEE2E2; /* Red color for revoked */
+        color: #DC2626;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        font-weight: 500;
     }
     
     .credential-revoked-icon {
+        font-size: 1.25rem;
+        margin-right: 0.25rem;
+        color: #DC2626; /* Red color for revoked */
     }
-      .credential-revoked-text {
-        }
-        
-           .credential-button-expired{
-            }
-            
     
-     .credential-expired-icon {
-        }
-        
-         .credential-expired-text {
-            }
-            
-
+    .credential-revoked-text {
+        font-size: 0.875rem;
+        color: #DC2626; /* Red color for revoked */
+    }
+    
+    .credential-button-expired {
+        background-color: #FEF9C3; /* Yellow color for expired */
+        color: #713F12;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .credential-expired-icon {
+        font-size: 1.25rem;
+        margin-right: 0.25rem;
+        color: #713F12; /* Yellow color for expired */
+    }
+    
+    .credential-expired-text {
+        font-size: 0.875rem;
+        color: #713F12; /* Yellow color for expired */
+    }
 
     /* Dark Mode Specific Styles */
     .dark-theme {
@@ -153,10 +177,33 @@
         color: #0F172A;
     }
     
-    /*Revoked*/
+    .dark-button-revoked {
+        background-color: #FEE2E2; /* Red color for revoked */
+        color: #DC2626;
+    }
     
-    /*Expired*/
+    .dark-revoked-icon {
+        color: #DC2626; /* Red color for revoked */
+    }
+    
+    .dark-revoked-text {
+        color: #DC2626; /* Red color for revoked */
+    }
+    
+    .dark-button-expired {
+        background-color: #FEF9C3; /* Yellow color for expired */
+        color: #713F12;
+    }
+    
+    .dark-expired-icon {
+        color: #713F12; /* Yellow color for expired */
+    }
+    
+    .dark-expired-text {
+        color: #713F12; /* Yellow color for expired */
+    }
 </style>
+
 
 
 <!-- Importing Material Icons font -->
@@ -341,6 +388,89 @@
                 </div>
             </div>
         </a>
+        
+        <!-- Light Version - Revoked Credential -->
+        <a href="https://example.com" class="credential-container" id="template10" data-credential-id="credential10" data-template-id="template10">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle">University of Michigan</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label">Issue Date</span>
+                            <span class="credential-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button-revoked">
+                            <span class="material-icons credential-revoked-icon">block</span>
+                            <span class="credential-revoked-text">Revoked</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- Dark Version - Revoked Credential -->
+        <a href="https://example.com" class="credential-container dark-theme" id="template11" data-credential-id="credential11" data-template-id="template11">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title dark-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle dark-subtitle">University of Michigan</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label dark-validity-label">Issue Date</span>
+                            <span class="credential-validity-date dark-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button-revoked">
+                            <span class="material-icons credential-revoked-icon">block</span>
+                            <span class="credential-revoked-text">Revoked</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- Light Version - Expired Credential -->
+        <a href="https://example.com" class="credential-container" id="template12" data-credential-id="credential12" data-template-id="template12">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle">University of Michigan</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label">Issue Date</span>
+                            <span class="credential-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button-expired">
+                            <span class="material-icons credential-expired-icon">access_time</span>
+                            <span class="credential-expired-text">Expired</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- Dark Version - Expired Credential -->
+        <a href="https://example.com" class="credential-container dark-theme" id="template13" data-credential-id="credential13" data-template-id="template13">
+            <div class="credential-header">
+                <div class="credential-details">
+                    <h2 class="credential-title dark-title">Certified .NET Software Development</h2>
+                    <p class="credential-subtitle dark-subtitle">University of Michigan</p>
+                    <div class="credential-validity">
+                        <div>
+                            <span class="credential-validity-label dark-validity-label">Issue Date</span>
+                            <span class="credential-validity-date dark-validity-date">15 March, 2020</span>
+                        </div>
+                        <button class="credential-button-expired">
+                            <span class="material-icons credential-expired-icon">access_time</span>
+                            <span class="credential-expired-text">Expired</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        
+           
 
     </div>
 </div>
