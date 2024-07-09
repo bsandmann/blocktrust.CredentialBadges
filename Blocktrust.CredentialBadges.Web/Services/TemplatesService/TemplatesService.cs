@@ -21,6 +21,10 @@ public class TemplatesService
         string validityLabelClass = theme == "dark" ? "dark-validity-label" : "";
         string validityDateClass = theme == "dark" ? "dark-validity-date" : "";
 
+        string truncatedName = TruncateString(credential.Name, 60);
+        string truncatedIssuer = TruncateString(credential.Issuer, 20);
+        string truncatedDescription = TruncateString(credential.Description, 150);
+
         switch (templateId)
         {
             case "image_no_description_light":
@@ -29,11 +33,11 @@ public class TemplatesService
                         <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
                             <div class='credential-header'>
                                 <div class='credential-logo {logoClass}'>
-                                    <img src='{credential.Image}' alt='{credential.Name}' style='width: 100%; height: 100%; object-fit: contain;' />
+                                    <img src='{credential.Image}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
                                 </div>
                                 <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}'>{credential.Name}</h2>
-                                    <p class='credential-subtitle {subtitleClass}'>{credential.Issuer}</p>
+                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
+                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
                                     <div class='credential-validity'>
                                         <div>
                                             <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
@@ -53,12 +57,12 @@ public class TemplatesService
                         <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
                             <div class='credential-header'>
                                 <div class='credential-logo {logoClass}'>
-                                    <img src='{credential.Image}' alt='{credential.Name}' style='width: 100%; height: 100%; object-fit: contain;' />
+                                    <img src='{credential.Image}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
                                 </div>
                                 <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}'>{credential.Name}</h2>
-                                    <p class='credential-subtitle {subtitleClass}'>{credential.Issuer}</p>
-                                    <p class='credential-description {descriptionClass}'>{credential.Description}</p>
+                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
+                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
+                                    <p class='credential-description {descriptionClass}' title='{credential.Description}'>{truncatedDescription}</p>
                                     <div class='credential-validity'>
                                         <div>
                                             <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
@@ -78,9 +82,9 @@ public class TemplatesService
                         <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
                             <div class='credential-header'>
                                 <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}'>{credential.Name}</h2>
-                                    <p class='credential-subtitle {subtitleClass}'>{credential.Issuer}</p>
-                                    <p class='credential-description {descriptionClass}'>{credential.Description}</p>
+                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
+                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
+                                    <p class='credential-description {descriptionClass}' title='{credential.Description}'>{truncatedDescription}</p>
                                     <div class='credential-validity'>
                                         <div>
                                             <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
@@ -100,8 +104,8 @@ public class TemplatesService
                         <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
                             <div class='credential-header'>
                                 <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}'>{credential.Name}</h2>
-                                    <p class='credential-subtitle {subtitleClass}'>{credential.Issuer}</p>
+                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
+                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
                                     <div class='credential-validity'>
                                         <div>
                                             <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
@@ -121,6 +125,15 @@ public class TemplatesService
 
         return templateBuilder.ToString();
     }
+
+    private string TruncateString(string input, int maxLength)
+    {
+        if (string.IsNullOrEmpty(input) || input.Length <= maxLength)
+            return input;
+        
+        return input.Substring(0, maxLength - 3) + "...";
+    }
+    
 
     private string GetStatusButton(string theme, EVerificationStatus status)
     {

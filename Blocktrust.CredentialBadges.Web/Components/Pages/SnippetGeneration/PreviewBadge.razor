@@ -10,6 +10,8 @@
 @rendermode InteractiveServer
 
 <PageTitle>Preview Badge</PageTitle>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 
 <div class="min-h-screen w-screen bg-[#F0F1F2] flex items-center justify-center p-4">
     <div class="flex flex-col bg-[#FAFAFA] border border-gray-200 rounded-lg shadow-md p-8 w-full max-w-2xl">
@@ -37,10 +39,10 @@
                 <div class="flex overflow-x-auto space-x-4 pb-2">
                     @for (int i = 0; i < Math.Min(templates.Count, 4); i++)
                     {
+                        
                         var index = i;
-                        <div class="flex-shrink-0 w-48 h-48 border border-gray-200 rounded p-2 cursor-pointer @(index == currentTemplateIndex ? "border-blue-500 border-2" : "")"
-                             @onclick="() => SelectTemplate(index)">
-                            @((MarkupString)templates[index])
+                        <div>
+                      @((MarkupString)templates[index])
                         </div>
                     }
                 </div>
@@ -55,7 +57,7 @@
             @onclick="ContinueToCopySnippet" 
             class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center"
             disabled="@(templates.Count == 0)">
-            Continue to Copy Snippet
+            Continue
         </button>
     </div>
 </div>
