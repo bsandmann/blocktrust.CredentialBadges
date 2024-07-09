@@ -16,7 +16,6 @@ public class VerifiedCredential
     
     public DateTime ValidUntil { get; set; }
     
-    //Isser
     public string Issuer { get; set; }
 
     
