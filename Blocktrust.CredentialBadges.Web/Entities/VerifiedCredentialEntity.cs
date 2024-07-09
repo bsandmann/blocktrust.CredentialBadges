@@ -34,4 +34,6 @@ public class VerifiedCredentialEntity
     
     // Issuer
     public string Issuer { get; set; } // The entity that issued the credential
+    
+    public string TemplateId { get; set; } = null; // The template ID of the credential
 }

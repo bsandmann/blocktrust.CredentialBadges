@@ -1,58 +1,146 @@
 @page "/previewbadge/{credentialId:guid}"
-
+@using Blocktrust.CredentialBadges.Web.Domain
+@using Blocktrust.CredentialBadges.Web.Services.TemplatesService
+@using MediatR
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateTemplateId
+@inject IMediator Mediator
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
-
 
 <PageTitle>Preview Badge</PageTitle>
 
-<div class="container text-center mt-5">
-    <h1>Preview Badge</h1>
-    <p>Selected Credential ID: @credentialId</p>
-    <div class="template-list">
-        @foreach (var template in templates)
+<div class="min-h-screen w-screen bg-[#F0F1F2] flex items-center justify-center p-4">
+    <div class="flex flex-col bg-[#FAFAFA] border border-gray-200 rounded-lg shadow-md p-8 w-full max-w-2xl">
+        <h1 class="text-2xl font-bold text-[#334155] mb-2">Preview Badge</h1>
+        <p class="text-[#334155] mb-6">Select a template for your credential</p>
+
+        @if (credential != null && templates.Any())
         {
-            <div class="template-item" @onclick="() => SelectTemplate(template.Id)">
-                <p>@template.Name</p>
+            <div class="mb-6 border border-gray-200 rounded p-4">
+                <h2 class="text-xl font-semibold text-[#334155] mb-2">Selected Template</h2>
+                @((MarkupString)templates[currentTemplateIndex])
+            </div>
+
+            <div class="flex justify-center mb-6 space-x-4">
+                <button @onclick="PreviousTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == 0)">Previous</button>
+                <button @onclick="NextTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == templates.Count - 1)">Next</button>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-[#334155] mb-2">Other Templates</h2>
+                <div class="flex overflow-x-auto space-x-4 pb-2">
+                    @for (int i = 0; i < templates.Count; i++)
+                    {
+                        var index = i;
+                        <div class="flex-shrink-0 w-48 h-48 border border-gray-200 rounded p-2 cursor-pointer @(index == currentTemplateIndex ? "border-blue-500 border-2" : "")"
+                             @onclick="() => SelectTemplate(index)">
+                            @((MarkupString)templates[index])
+                        </div>
+                    }
+                </div>
             </div>
         }
+        else
+        {
+            <p class="text-[#334155] mb-6">No templates available for this credential.</p>
+        }
+
+        <button 
+            @onclick="ContinueToCopySnippet" 
+            class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center"
+            disabled="@(templates.Count == 0)">
+            Continue to Copy Snippet
+        </button>
     </div>
-    <button class="btn btn-primary mt-3" @onclick="ContinueToCopySnippet">Continue to Copy Snippet</button>
 </div>
 
 @code {
-    [Inject] private NavigationManager NavigationManager { get; set; }
     [Parameter] public Guid credentialId { get; set; }
     
-    private List<Template> templates = new()
-    {
-        new Template { Id = Guid.NewGuid(), Name = "Template 1" },
-        new Template { Id = Guid.NewGuid(), Name = "Template 2" },
-        new Template { Id = Guid.NewGuid(), Name = "Template 3" }
-    };
-    private Guid selectedTemplateId;
+    private VerifiedCredential credential;
+    private List<string> templates = new();
+    private List<string> templateIds = new();
+    private int currentTemplateIndex = 0;
 
-    private void SelectTemplate(Guid id)
+    protected override async Task OnInitializedAsync()
     {
-        selectedTemplateId = id;
+        await LoadCredential();
+        await LoadTemplates();
+    }
+
+    private async Task LoadCredential()
+    {
+        var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId));
+        if (result.IsSuccess)
+        {
+            credential = result.Value;
+        }
+        else
+        {
+            // Handle error
+            Console.WriteLine($"Error loading credential: {result.Errors.FirstOrDefault()?.Message}");
+        }
+    }
+
+    private async Task LoadTemplates()
+    {
+        if (credential != null)
+        {
+            var selectTemplateService = new SelectTemplateService(new TemplatesService());
+            var combinedTemplates = selectTemplateService.GetApplicableTemplates(credential);
+            
+            // Split the combined templates string into individual templates
+            templates = combinedTemplates.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            // Extract template IDs from the data-template-id attribute in each template string
+            templateIds = templates.Select(t => 
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(t, @"data-template-id='([^']*)'");
+                return match.Success ? match.Groups[1].Value : string.Empty;
+            }).ToList();
+        }
+    }
+
+    private void PreviousTemplate()
+    {
+        if (currentTemplateIndex > 0)
+        {
+            currentTemplateIndex--;
+        }
+    }
+
+    private void NextTemplate()
+    {
+        if (currentTemplateIndex < templates.Count - 1)
+        {
+            currentTemplateIndex++;
+        }
+    }
+
+    private void SelectTemplate(int index)
+    {
+        currentTemplateIndex = index;
     }
 
     private async Task ContinueToCopySnippet()
     {
-        if (selectedTemplateId != Guid.Empty)
+        if (templates.Any())
         {
-            // Navigate to copy snippet page with credential ID and selected template ID
-            NavigationManager.NavigateTo($"/copysnippet/{credentialId}/{selectedTemplateId}");
+            var selectedTemplateId = templateIds[currentTemplateIndex];
+            
+            // Update the credential's template ID
+            var updateResult = await Mediator.Send(new UpdateCredentialTemplateIdRequest(credentialId, selectedTemplateId));
+            if (updateResult.IsSuccess)
+            {
+                // Navigate to copy snippet page with credential ID and selected template ID
+                NavigationManager.NavigateTo($"/copysnippet/{credentialId}/{selectedTemplateId}");
+            }
+            else
+            {
+                // Handle update error
+                Console.WriteLine($"Error updating credential template ID: {updateResult.Errors.FirstOrDefault()?.Message}");
+            }
         }
-        else
-        {
-            // Handle case where no template is selected
-            // You can add error handling or UI feedback here
-        }
-    }
-
-    private class Template
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
     }
 }

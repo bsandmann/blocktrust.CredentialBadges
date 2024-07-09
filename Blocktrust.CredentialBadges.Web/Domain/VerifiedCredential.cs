@@ -17,6 +17,8 @@ public class VerifiedCredential
     public DateTime ValidUntil { get; set; }
     
     public string Issuer { get; set; }
+    
+    public string TemplateId { get; set; }
 
     
     
@@ -28,14 +30,15 @@ public class VerifiedCredential
         return new VerifiedCredentialEntity
         {
             StoredCredentialId = Id,
-            Status = (EVerificationStatus)Status,
+            Status = Status,
             Description = Description,
             Name = Name,
             Image = Image,
             Credential = Credential,
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
-            Issuer = Issuer
+            Issuer = Issuer,
+            TemplateId = TemplateId
             
             
         };
@@ -46,14 +49,15 @@ public class VerifiedCredential
         return new VerifiedCredential
         {
             Id = entity.StoredCredentialId,
-            Status = (EVerificationStatus)entity.Status,
+            Status = entity.Status,
             Description = entity.Description,
             Name = entity.Name,
             Image = entity.Image,
             Credential = entity.Credential,
             ValidFrom = entity.ValidFrom,
             ValidUntil = entity.ValidUntil,
-            Issuer = entity.Issuer
+            Issuer = entity.Issuer,
+            TemplateId = entity.TemplateId
         };
     }
 }
