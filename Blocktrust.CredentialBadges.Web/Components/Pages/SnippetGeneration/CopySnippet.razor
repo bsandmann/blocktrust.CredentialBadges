@@ -1,23 +1,100 @@
-@page "/copysnippet/{credentialId:guid}/{selectedTemplateId:guid}"
-
+=@page "/copysnippet/{credentialId:guid}/{selectedTemplateId}"
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById
+@using Blocktrust.CredentialBadges.Web.Services.TemplatesService
+@using MediatR
+@inject IMediator Mediator
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<PageTitle>Copy snippet</PageTitle>
+<PageTitle>Copy Code Snippet</PageTitle>
 
-<div class="container text-center mt-5">
-    <h1>Copy Snippet</h1>
-    <p>Selected Credential ID: @credentialId</p>
-    <p>Selected Template ID: @selectedTemplateId</p>
-    <button class="btn btn-primary mt-3" @onclick="GenerateSnippet">Generate Snippet</button>
+<div class="relative min-h-screen w-screen bg-[#F0F1F2] flex items-center justify-center p-4">
+    <!-- Corner images -->
+    <img src="/images/InputPageRectangle.svg" alt="" class="absolute top-36 left-36 w-16 h-16">
+    <img src="/images/InputPageTriangle.svg" alt="" class="absolute top-24 right-24 w-16 h-16">
+    <img src="/images/InputPageTriangle.svg" alt="" class="absolute bottom-24 left-24 w-16 h-16">
+    <img src="/images/InputPageRectangle.svg" alt="" class="absolute bottom-36 right-36 w-16 h-16">
+
+    <!-- Content container -->
+    <div class="flex flex-col bg-[#FAFAFA] border border-gray-200 rounded-lg shadow-md p-8 w-full max-w-2xl">
+        <h1 class="text-2xl font-bold text-[#334155] mb-4">Copy Code Snippet</h1>
+        <p class="text-[#334155] mb-6">Use this code snippet to display your credential badge on your website.</p>
+
+        @if (!string.IsNullOrEmpty(snippetCode))
+        {
+            <div class="bg-gray-100 rounded-lg p-4 mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold text-gray-600">HTML</span>
+                    <button @onclick="CopySnippetToClipboard" class="text-blue-500 hover:text-blue-700 transition-colors">
+                        <span class="material-icons text-lg">content_copy</span>
+                    </button>
+                </div>
+                <pre class="text-sm overflow-x-auto"><code>@snippetCode</code></pre>
+            </div>
+        }
+        else
+        {
+            <p class="text-[#334155] mb-6">Generating snippet...</p>
+        }
+
+        <button 
+            @onclick="GoBack" 
+            class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center">
+            Go Back
+        </button>
+    </div>
 </div>
 
 @code {
-    [Inject] private NavigationManager NavigationManager { get; set; }
     [Parameter] public Guid credentialId { get; set; }
-    [Parameter] public Guid selectedTemplateId { get; set; }
+    [Parameter] public string selectedTemplateId { get; set; }
+    private string snippetCode = string.Empty;
 
-    private void GenerateSnippet()
+    protected override async Task OnInitializedAsync()
     {
-        // Logic to generate snippet
+        await GenerateSnippet();
+    }
+
+    private async Task GenerateSnippet()
+    {
+        try
+        {
+            var credentialResult = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId));
+            
+            if (credentialResult.IsSuccess)
+            {
+                var credential = credentialResult.Value;
+                var templatesService = new TemplatesService();
+                snippetCode = templatesService.GetPopulatedTemplate(selectedTemplateId, "light", credential);
+            }
+            else
+            {
+                snippetCode = "Error: Unable to retrieve the credential.";
+            }
+        }
+        catch (Exception ex)
+        {
+            snippetCode = $"Error: An unexpected error occurred. {ex.Message}";
+        }
+    }
+
+    private async Task CopySnippetToClipboard()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", snippetCode);
+            // Optionally, show a success message here
+            await JSRuntime.InvokeVoidAsync("alert", "Snippet copied to clipboard!");
+        }
+        catch (Exception)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Failed to copy snippet. Please try again.");
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/previewbadge/{credentialId}");
     }
 }
