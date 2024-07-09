@@ -6,6 +6,7 @@
 @using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateTemplateId
 @inject IMediator Mediator
 @inject NavigationManager NavigationManager
+@inject TemplatesService TemplatesService
 @rendermode InteractiveServer
 
 <PageTitle>Preview Badge</PageTitle>
@@ -23,14 +24,18 @@
             </div>
 
             <div class="flex justify-center mb-6 space-x-4">
-                <button @onclick="PreviousTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == 0)">Previous</button>
-                <button @onclick="NextTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == templates.Count - 1)">Next</button>
+                <button @onclick="PreviousTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == 0)">
+                    <span class="material-icons">chevron_left</span>
+                </button>
+                <button @onclick="NextTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == templates.Count - 1)">
+                    <span class="material-icons">chevron_right</span>
+                </button>
             </div>
 
             <div class="mb-6">
                 <h2 class="text-xl font-semibold text-[#334155] mb-2">Other Templates</h2>
                 <div class="flex overflow-x-auto space-x-4 pb-2">
-                    @for (int i = 0; i < templates.Count; i++)
+                    @for (int i = 0; i < Math.Min(templates.Count, 4); i++)
                     {
                         var index = i;
                         <div class="flex-shrink-0 w-48 h-48 border border-gray-200 rounded p-2 cursor-pointer @(index == currentTemplateIndex ? "border-blue-500 border-2" : "")"
@@ -68,6 +73,9 @@
         await LoadCredential();
         await LoadTemplates();
     }
+    
+    
+    
 
     private async Task LoadCredential()
     {
@@ -87,18 +95,16 @@
     {
         if (credential != null)
         {
-            var selectTemplateService = new SelectTemplateService(new TemplatesService());
-            var combinedTemplates = selectTemplateService.GetApplicableTemplates(credential);
-            
-            // Split the combined templates string into individual templates
-            templates = combinedTemplates.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var selectTemplateService = new SelectTemplateService();
+            templateIds = selectTemplateService.GetApplicableTemplateIds(credential);
 
-            // Extract template IDs from the data-template-id attribute in each template string
-            templateIds = templates.Select(t => 
+            templates = new List<string>();
+            foreach (var templateId in templateIds)
             {
-                var match = System.Text.RegularExpressions.Regex.Match(t, @"data-template-id='([^']*)'");
-                return match.Success ? match.Groups[1].Value : string.Empty;
-            }).ToList();
+                string theme = templateId.EndsWith("dark") ? "dark" : "light";
+                string populatedTemplate = TemplatesService.GetPopulatedTemplate(templateId, theme, credential);
+                templates.Add(populatedTemplate);
+            }
         }
     }
 
