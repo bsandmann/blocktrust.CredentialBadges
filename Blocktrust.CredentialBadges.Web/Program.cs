@@ -20,6 +20,8 @@ builder.Services.AddHttpContextAccessor();
 
 // Register GenerateSnippetService
 builder.Services.AddTransient<TemplatesService>();
+builder.Services.AddTransient<SelectTemplateService>();
+
 
 // Register MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VerifyOpenBadgeHandler).Assembly));
