@@ -51,22 +51,9 @@
     private void GenerateSnippet()
     {
         snippetCode = $@"
-<div id='blocktrust-credential-badge-container'>
-    <div id='blocktrust-credential-badge-{credentialId}' class='credential-badge-placeholder' data-template-id='{selectedTemplateId}' data-credential-id='{credentialId}'>
-        <div class='logo-placeholder'></div>
-        <div class='details-placeholder'>
-            <div class='title-placeholder'></div>
-            <div class='subtitle-placeholder'></div>
-            <div class='validity-placeholder'>
-                <div class='validity-label-placeholder'></div>
-                <div class='validity-date-placeholder'></div>
-            </div>
-        </div>
-    </div>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
-    <link rel='stylesheet' href='{domain}/credential-badge-style.css'>
-    <script src='{domain}/credential-badge-script.js'></script>
-</div>";
+<div id='blocktrust-credential-badge-container'><div id='blocktrust-credential-badge-{credentialId}' class='credential-badge-placeholder' data-template-id='{selectedTemplateId}' data-credential-id='{credentialId}'><div class='logo-placeholder'></div><div class='details-placeholder'><div class='title-placeholder'></div><div class='subtitle-placeholder'></div><div class='validity-placeholder'><div class='validity-label-placeholder'></div><div class='validity-date-placeholder'></div></div></div></div><link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'><link rel='stylesheet' href='{domain}/credential-badge-style.css'><script src='{domain}/credential-badge-script.js'></script></div>";
+    
+
     }
 
     private async Task CopySnippetToClipboard()
