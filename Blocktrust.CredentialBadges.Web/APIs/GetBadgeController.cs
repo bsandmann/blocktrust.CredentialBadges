@@ -52,19 +52,19 @@ namespace Blocktrust.CredentialBadges.Web.APIs
             {
                 return BadRequest(new { Message = "Verification failed", Details = verifyResult.Errors });
             }
-
             var verifyResponse = verifyResult.Value;
             var status = EVerificationStatus.Verified;
 
-            if (!verifyResponse.CredentialIsNotExpired != null)
+            if (verifyResponse.CredentialIsNotExpired.HasValue && !verifyResponse.CredentialIsNotExpired.Value)
             {
                 status = EVerificationStatus.Expired;
             }
-            else if (!verifyResponse.CredentialIsNotRevoked != null)
+            else if (verifyResponse.CredentialIsNotRevoked.HasValue && !verifyResponse.CredentialIsNotRevoked.Value)
             {
                 status = EVerificationStatus.Revoked;
             }
-            else if (!verifyResponse.SignatureIsValid)
+            
+            if (!verifyResponse.SignatureIsValid)
             {
                 status = EVerificationStatus.Invalid;
             }
