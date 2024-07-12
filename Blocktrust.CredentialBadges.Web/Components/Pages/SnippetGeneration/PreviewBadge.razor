@@ -12,54 +12,55 @@
 <PageTitle>Preview Badge</PageTitle>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+<div class="flex flex-col bg-[#FFFFFF] w-full items-center ">
+    <h1 class="text-2xl font-bold text-[#334155] mb-2">Preview Badge</h1>
+    <p class="text-[#334155] mb-6">Select a template for your credential</p>
 
-<div class="min-h-screen w-screen bg-[#F0F1F2] flex items-center justify-center p-4">
-    <div class="flex flex-col bg-[#FAFAFA] border border-gray-200 rounded-lg shadow-md p-8 w-full max-w-2xl">
-        <h1 class="text-2xl font-bold text-[#334155] mb-2">Preview Badge</h1>
-        <p class="text-[#334155] mb-6">Select a template for your credential</p>
+    @if (credential != null && templates.Any())
+    {
+        @((MarkupString)templates[currentTemplateIndex])
 
-        @if (credential != null && templates.Any())
-        {
-            <div class="mb-6 border border-gray-200 rounded p-4">
-                <h2 class="text-xl font-semibold text-[#334155] mb-2">Selected Template</h2>
-                @((MarkupString)templates[currentTemplateIndex])
+        <div class="flex justify-center mb-6 space-x-4">
+            <button @onclick="PreviousTemplate" class="bg-[#F8FAFC] text-slate-600 font-medium py-1 px-2 rounded-md cursor-pointer transition-colors flex items-center" disabled="@(currentTemplateIndex == 0)">
+                <span class="material-icons">chevron_left</span>
+            </button>
+            <button @onclick="NextTemplate" class="bg-[#F8FAFC] text-slate-600 font-medium py-1 px-2 rounded-md cursor-pointer transition-colors flex items-center" disabled="@(currentTemplateIndex == templates.Count - 1)">
+                <span class="material-icons">chevron_right</span>
+            </button>
+        </div>
+
+        <div class="w-[50vw] flex justify-end mb-6">
+            <button @onclick="ToggleTheme" class="bg-[#334155] text-[#F8FAFC] font-medium py-1 px-2 rounded-full hover:bg-[#475569] transition-colors flex items-center">
+                <span class="material-icons text-xs">
+                    @(isDarkMode ? "brightness_7" : "brightness_3")
+                </span>
+            </button>
+        </div>
+
+        <div class="mb-6">
+    
+            <div class="flex overflow-x-auto space-x-4 pb-2">
+                @for (int i = 0; i < Math.Min(templates.Count, 4); i++)
+                {
+                    var index = i;
+                    <div>
+                        @((MarkupString)templates[index])
+                    </div>
+                }
             </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-[#334155] mb-6">No templates available for this credential.</p>
+    }
 
-            <div class="flex justify-center mb-6 space-x-4">
-                <button @onclick="PreviousTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == 0)">
-                    <span class="material-icons">chevron_left</span>
-                </button>
-                <button @onclick="NextTemplate" class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors" disabled="@(currentTemplateIndex == templates.Count - 1)">
-                    <span class="material-icons">chevron_right</span>
-                </button>
-            </div>
-
-            <div class="mb-6">
-                <h2 class="text-xl font-semibold text-[#334155] mb-2">Other Templates</h2>
-                <div class="flex overflow-x-auto space-x-4 pb-2">
-                    @for (int i = 0; i < Math.Min(templates.Count, 4); i++)
-                    {
-                        
-                        var index = i;
-                        <div>
-                      @((MarkupString)templates[index])
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-        else
-        {
-            <p class="text-[#334155] mb-6">No templates available for this credential.</p>
-        }
-
-        <button 
-            @onclick="ContinueToCopySnippet" 
-            class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center"
-            disabled="@(templates.Count == 0)">
-            Continue
-        </button>
-    </div>
+    <button 
+        @onclick="ContinueToCopySnippet" 
+        class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center"
+        disabled="@(templates.Count == 0)">
+        Continue
+    </button>
 </div>
 
 @code {
@@ -69,15 +70,13 @@
     private List<string> templates = new();
     private List<string> templateIds = new();
     private int currentTemplateIndex = 0;
+    private bool isDarkMode = false;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadCredential();
         await LoadTemplates();
     }
-    
-    
-    
 
     private async Task LoadCredential()
     {
@@ -103,9 +102,17 @@
             templates = new List<string>();
             foreach (var templateId in templateIds)
             {
-                string theme = templateId.EndsWith("dark") ? "dark" : "light";
-                string populatedTemplate = TemplatesService.GetPopulatedTemplate(templateId, theme, credential);
-                templates.Add(populatedTemplate);
+                string theme = isDarkMode ? "dark" : "light";
+                if ((isDarkMode && templateId.EndsWith("dark")) || (!isDarkMode && templateId.EndsWith("light")))
+                {
+                    string populatedTemplate = TemplatesService.GetPopulatedTemplate(templateId, theme, credential);
+                    templates.Add(populatedTemplate);
+                }
+            }
+
+            if (templates.Count > 0)
+            {
+                currentTemplateIndex = 0;
             }
         }
     }
@@ -126,9 +133,10 @@
         }
     }
 
-    private void SelectTemplate(int index)
+    private void ToggleTheme()
     {
-        currentTemplateIndex = index;
+        isDarkMode = !isDarkMode;
+        LoadTemplates();
     }
 
     private async Task ContinueToCopySnippet()

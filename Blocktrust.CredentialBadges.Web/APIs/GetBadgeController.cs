@@ -77,7 +77,7 @@ namespace Blocktrust.CredentialBadges.Web.APIs
             {
                 Id = id,
                 Name = achievementCredential.CredentialSubject.Achievement.Name,
-                Issuer = achievementCredential.Issuer.ToString(),
+                Issuer = achievementCredential.Issuer.Id.ToString(),
                 Description = achievementCredential.CredentialSubject.Achievement.Description,
                 Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id?.ToString(),
                 Status = status,
