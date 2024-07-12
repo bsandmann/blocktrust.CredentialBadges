@@ -11,29 +11,30 @@ public class SelectTemplateService
         bool hasImage = !string.IsNullOrEmpty(credential.Image);
         bool hasDescription = !string.IsNullOrEmpty(credential.Description);
 
+        // Templates that require both image and description
         if (hasImage && hasDescription)
         {
             applicableTemplateIds.Add("image_description_light");
             applicableTemplateIds.Add("image_description_dark");
         }
-        
-        if (hasImage && !hasDescription)
+
+        // Templates that require image but no description
+        if (hasImage)
         {
             applicableTemplateIds.Add("image_no_description_light");
             applicableTemplateIds.Add("image_no_description_dark");
         }
-        
-        if (!hasImage && hasDescription)
+
+        // Templates that require description but no image
+        if (hasDescription)
         {
             applicableTemplateIds.Add("noimage_description_light");
             applicableTemplateIds.Add("noimage_description_dark");
         }
-        
-        if (!hasImage && !hasDescription)
-        {
-            applicableTemplateIds.Add("noimage_no_description_light");
-            applicableTemplateIds.Add("noimage_no_description_dark");
-        }
+
+        // Templates that require neither image nor description
+        applicableTemplateIds.Add("noimage_no_description_light");
+        applicableTemplateIds.Add("noimage_no_description_dark");
 
         return applicableTemplateIds;
     }

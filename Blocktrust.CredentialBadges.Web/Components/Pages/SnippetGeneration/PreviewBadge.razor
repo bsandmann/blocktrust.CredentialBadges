@@ -18,7 +18,10 @@
 
     @if (credential != null && templates.Any())
     {
-        @((MarkupString)templates[currentTemplateIndex])
+        <div class="min-h-[30vh]">
+                    @((MarkupString)templates[currentTemplateIndex])
+
+        </div>
 
         <div class="flex justify-center mb-6 space-x-4">
             <button @onclick="PreviousTemplate" class="bg-[#F8FAFC] text-slate-600 font-medium py-1 px-2 rounded-md cursor-pointer transition-colors flex items-center" disabled="@(currentTemplateIndex == 0)">
@@ -39,12 +42,14 @@
 
         <div class="mb-6">
     
-            <div class="flex overflow-x-auto space-x-4 pb-2">
+            <div class="flex space-x-4 pb-2 max-w-[70vw] overflow-x-scroll badges-scroll">
                 @for (int i = 0; i < Math.Min(templates.Count, 4); i++)
                 {
                     var index = i;
                     <div>
-                        @((MarkupString)templates[index])
+                        <a @onclick:preventDefault @onclick="() => SelectTemplate(index)" href="#" class="badge-container @(index == currentTemplateIndex ? "badge-selected" : "")">
+                            @((MarkupString)templates[index])
+                        </a>
                     </div>
                 }
             </div>
@@ -131,6 +136,11 @@
         {
             currentTemplateIndex++;
         }
+    }
+
+    private void SelectTemplate(int index)
+    {
+        currentTemplateIndex = index;
     }
 
     private void ToggleTheme()
