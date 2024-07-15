@@ -1,0 +1,164 @@
+﻿@page "/prevhome"
+@using MediatR
+@using Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId
+@using Blocktrust.CredentialBadges.Builder.Commands.Offers.AcceptOffer
+@using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetRecordById
+@using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetCredential
+@inject IMediator Mediator
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h1>Home</h1>
+
+<div class="form-group">
+    <label for="thIdInput">Transaction ID</label>
+    <InputText id="thIdInput" class="form-control" @bind-Value="ThId" />
+</div>
+
+<button class="btn btn-primary" @onclick="() => GetOfferByThId()">Get Offer Id by ThId</button>
+
+@if (IsGettingOfferByThId)
+{
+    <p>Getting Offer Id by ThId&hellip;</p>
+}
+else if (OfferThId is not null)
+{
+    <p>Offer Id: @OfferThId</p>
+}
+
+<div class="form-group">
+    <label for="recordIdInput">Record ID</label>
+    <InputText id="recordIdInput" class="form-control" @bind-Value="RecordId" />
+</div>
+
+<div class="form-group">
+    <label for="subjectIdInput">Subject ID</label>
+    <InputText id="subjectIdInput" class="form-control" @bind-Value="SubjectId" />
+</div>
+
+<button class="btn btn-primary" @onclick="() => AcceptOffer()">Accept Offer</button>
+
+@if (IsAcceptingOffer)
+{
+    <p>Accepting Offer&hellip;</p>
+}
+else if (AcceptOfferResult is not null)
+{
+    <p>Accept Offer Result: @AcceptOfferResult</p>
+}
+
+<div class="form-group">
+    <label for="getRecordIdInput">Record ID</label>
+    <InputText id="getRecordIdInput" class="form-control" @bind-Value="GetRecordId" />
+</div>
+
+<button class="btn btn-primary" @onclick="() => GetRecordById()">Get Record By Id</button>
+
+@if (IsGettingRecordById)
+{
+    <p>Getting Record by Id&hellip;</p>
+}
+else if (RecordByIdResult is not null)
+{
+    <p>Record Claims: @RecordByIdResult</p>
+}
+
+<div class="form-group">
+    <label for="getCredentialRecordIdInput">Credential Record ID</label>
+    <InputText id="getCredentialRecordIdInput" class="form-control" @bind-Value="GetCredentialRecordId" />
+</div>
+
+<button class="btn btn-primary" @onclick="() => GetCredential()">Get Credential</button>
+
+@if (IsGettingCredential)
+{
+    <p>Getting Credential&hellip;</p>
+}
+else if (CredentialResult is not null)
+{
+    <p>Credential: @CredentialResult</p>
+}
+
+@code {
+    private bool IsGettingOfferByThId = false;
+    private string? OfferThId = null;
+    private string ThId = string.Empty;
+
+    private bool IsAcceptingOffer = false;
+    private string? AcceptOfferResult = null;
+    private string RecordId = string.Empty;
+    private string SubjectId = string.Empty;
+
+    private bool IsGettingRecordById = false;
+    private string? RecordByIdResult = null;
+    private string GetRecordId = string.Empty;
+
+    private bool IsGettingCredential = false;
+    private string? CredentialResult = null;
+    private string GetCredentialRecordId = string.Empty;
+
+    private async Task GetOfferByThId()
+    {
+        IsGettingOfferByThId = true;
+        OfferThId = null;
+        var result = await Mediator.Send(new GetOfferByThIdRequest(ThId));
+        IsGettingOfferByThId = false;
+        if (result.IsFailed)
+        {
+            OfferThId = "Failed: " + result.Errors.First().Message;
+        }
+        else
+        {
+            OfferThId = result.Value;
+        }
+    }
+
+    private async Task AcceptOffer()
+    {
+        IsAcceptingOffer = true;
+        AcceptOfferResult = null;
+        var result = await Mediator.Send(new AcceptOfferRequest(RecordId, SubjectId));
+        IsAcceptingOffer = false;
+        if (result.IsFailed)
+        {
+            AcceptOfferResult = "Failed: " + result.Errors.First().Message;
+        }
+        else
+        {
+            AcceptOfferResult = "Success: " + result.Value;
+        }
+    }
+
+    private async Task GetRecordById()
+    {
+        IsGettingRecordById = true;
+        RecordByIdResult = null;
+        var result = await Mediator.Send(new GetRecordByIdRequest(GetRecordId));
+        IsGettingRecordById = false;
+        if (result.IsFailed)
+        {
+            RecordByIdResult = "Failed: " + result.Errors.First().Message;
+        }
+        else
+        {
+            RecordByIdResult = result.Value.Claims.ToString();
+        }
+    }
+
+    private async Task GetCredential()
+    {
+        IsGettingCredential = true;
+        CredentialResult = null;
+        var result = await Mediator.Send(new GetCredentialRequest (GetCredentialRecordId));
+        IsGettingCredential = false;
+        if (result.IsFailed)
+        {
+            CredentialResult = "Failed: " + result.Errors.First().Message;
+        }
+        else
+        {
+            CredentialResult = result.Value;
+        }
+    }
+}

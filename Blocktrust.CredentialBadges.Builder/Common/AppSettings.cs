@@ -13,5 +13,4 @@ public class AppSettings
     public string AdminAgentAdminKey { get; set; }
     public string UserAgentAdminKey { get; set; }
     
-    
 }
