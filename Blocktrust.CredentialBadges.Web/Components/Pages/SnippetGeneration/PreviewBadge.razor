@@ -74,8 +74,8 @@
     private VerifiedCredential credential;
     private List<string> templates = new();
     private List<string> templateIds = new();
-    private int currentTemplateIndex = 0;
-    private bool isDarkMode = false;
+    private int currentTemplateIndex;
+    private bool isDarkMode;
 
     protected override async Task OnInitializedAsync()
     {
@@ -153,7 +153,8 @@
     {
         if (templates.Any())
         {
-            var selectedTemplateId = templateIds[currentTemplateIndex];
+            var filteredTemplateIds = templateIds.Where(x => (isDarkMode && x.EndsWith("dark")) || (!isDarkMode && x.EndsWith("light"))).ToList();
+            var selectedTemplateId = filteredTemplateIds[currentTemplateIndex];
             
             // Update the credential's template ID
             var updateResult = await Mediator.Send(new UpdateCredentialTemplateIdRequest(credentialId, selectedTemplateId));
