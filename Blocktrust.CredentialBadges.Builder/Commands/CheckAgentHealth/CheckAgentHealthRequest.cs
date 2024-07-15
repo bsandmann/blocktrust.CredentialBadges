@@ -12,7 +12,7 @@ public class CheckAgentHealthRequest : IRequest<Result<string>>
             throw new ArgumentOutOfRangeException(nameof(agentNumber), "Agent number must be 1 or 2");
         }
         
-       AgentNumber = agentNumber; 
+        AgentNumber = agentNumber; 
     } 
     
     public int AgentNumber { get; set; }
