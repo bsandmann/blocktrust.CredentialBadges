@@ -1,0 +1,47 @@
+@inherits LayoutComponentBase
+
+<div class="min-h-screen flex">
+    <nav class="bg-gray-800 w-64 min-h-screen p-6">
+        <div class="flex items-center mb-6">
+            <span class="material-icons text-white">admin_panel_settings</span>
+            <h1 class="text-white text-xl ml-3">Admin</h1>
+        </div>
+        <ul>
+            <li class="mb-2">
+                <NavLink class="text-gray-400 hover:text-white flex items-center" href="/admin/dashboard" Match="NavLinkMatch.All">
+                    <span class="material-icons mr-2">dashboard</span>Dashboard
+                </NavLink>
+            </li>
+            <li class="mb-2">
+                <NavLink class="text-gray-400 hover:text-white flex items-center" href="/admin/requests" Match="NavLinkMatch.Prefix">
+                    <span class="material-icons mr-2">inbox</span>Requests
+                </NavLink>
+                <ul class="ml-6 mt-2">
+                    <li>
+                        <NavLink class="text-gray-400 hover:text-white flex items-center" href="/admin/requests/pending">
+                            <span class="material-icons mr-2">hourglass_empty</span>Pending
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink class="text-gray-400 hover:text-white flex items-center" href="/admin/requests/approved">
+                            <span class="material-icons mr-2">check_circle</span>Approved
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink class="text-gray-400 hover:text-white flex items-center" href="/admin/requests/declined">
+                            <span class="material-icons mr-2">cancel</span>Declined
+                        </NavLink>
+                    </li>
+                </ul>
+            </li>
+            <li class="mb-2">
+                <NavLink class="text-gray-400 hover:text-white flex items-center" href="/admin/profile">
+                    <span class="material-icons mr-2">person</span>Profile
+                </NavLink>
+            </li>
+        </ul>
+    </nav>
+    <div class="flex-1 p-6 bg-gray-100">
+        @Body
+    </div>
+</div>

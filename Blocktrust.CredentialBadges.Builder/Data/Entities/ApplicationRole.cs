@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace PaymentPortal.Entities;
+namespace Blocktrust.CredentialBadges.Builder.Data.Entities;
 
 public class ApplicationRole : IdentityRole<Guid>
 {
