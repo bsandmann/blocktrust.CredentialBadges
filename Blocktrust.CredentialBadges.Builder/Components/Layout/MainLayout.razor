@@ -1,13 +1,26 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <main>
-      @Body
-    </main>
-</div>
+<div class="min-h-screen flex flex-col">
+    <!-- Top Navigation -->
+    <nav class="bg-white text-slate-700 p-4 flex justify-between items-center shadow">
+        <div class="flex items-center space-x-4">
+            <a href="/new-did" class="flex items-center space-x-2 hover:text-slate-900">
+                <span class="material-icons">add_circle_outline</span>
+                <span>New Did</span>
+            </a>
+            <a href="/connections" class="flex items-center space-x-2 hover:text-slate-900">
+                <span class="material-icons">link</span>
+                <span>Connections</span>
+            </a>
+            <a href="/credentials" class="flex items-center space-x-2 hover:text-slate-900">
+                <span class="material-icons">badge</span>
+                <span>Credentials</span>
+            </a>
+        </div>
+    </nav>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+    <!-- Main Content -->
+    <div class="flex-grow p-4">
+        @Body
+    </div>
 </div>
