@@ -630,20 +630,18 @@ video {
   align-items: center;
 }
 
-.justify-between {
-  justify-content: space-between;
+.justify-end {
+  justify-content: flex-end;
 }
 
-.space-x-2 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+.justify-evenly {
+  justify-content: space-evenly;
 }
 
-.space-x-4 > :not([hidden]) ~ :not([hidden]) {
+.space-x-8 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
-  margin-right: calc(1rem * var(--tw-space-x-reverse));
-  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+  margin-right: calc(2rem * var(--tw-space-x-reverse));
+  margin-left: calc(2rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .bg-gray-100 {
@@ -667,6 +665,14 @@ video {
 
 .p-6 {
   padding: 1.5rem;
+}
+
+.pr-28 {
+  padding-right: 7rem;
+}
+
+.pr-10 {
+  padding-right: 2.5rem;
 }
 
 .text-2xl {
@@ -712,12 +718,6 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.shadow {
-  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
 .transition {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
@@ -726,12 +726,61 @@ video {
   transition-duration: 150ms;
 }
 
-.hover\:text-slate-900:hover {
-  --tw-text-opacity: 1;
-  color: rgb(15 23 42 / var(--tw-text-opacity));
+/* Custom styles for navigation links */
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  /* Required for absolute positioning */
+  padding-bottom: 6px;
+  /* Adjust as needed */
+  transition: color 0.3s ease;
+  /* Smooth transition for color */
+  color: #374151;
+  /* slate-700 text color */
+  font-weight: 600;
+  /* Semibold font weight */
+  text-decoration: none;
+  /* Remove default underline */
+}
+
+.nav-link:hover {
+  color: #1f2937;
+  /* Darker slate-700 text color on hover */
+}
+
+.nav-link.active {
+  color: #1f2937;
+  /* Darker slate-700 text color for active link */
+}
+
+/* Underline styles */
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  /* Center horizontally */
+  transform: translateX(-50%);
+  width: 50%;
+  /* Half the width of the item */
+  height: 2px;
+  /* Height of the underline */
+  background-color: #374151;
+  /* slate-700 color */
+  transition: width 0.6s ease, background-color 0.8s ease;
+  /* Smooth transitions */
 }
 
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
+
+
+
+
+

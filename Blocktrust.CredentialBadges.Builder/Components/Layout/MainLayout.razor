@@ -2,20 +2,20 @@
 
 <div class="min-h-screen flex flex-col">
     <!-- Top Navigation -->
-    <nav class="bg-white text-slate-700 p-4 flex justify-between items-center shadow">
-        <div class="flex items-center space-x-4">
-            <a href="/new-did" class="flex items-center space-x-2 hover:text-slate-900">
+    <nav class="bg-white text-slate-700 p-4 flex justify-end items-center ">
+        <div class="flex items-center space-x-8">
+            <NavLink href="/new-did" class="nav-link gap-1" Match="NavLinkMatch.All">
                 <span class="material-icons">add_circle_outline</span>
                 <span>New Did</span>
-            </a>
-            <a href="/connections" class="flex items-center space-x-2 hover:text-slate-900">
+            </NavLink>
+            <NavLink href="/connections" class="nav-link gap-1" Match="NavLinkMatch.All">
                 <span class="material-icons">link</span>
                 <span>Connections</span>
-            </a>
-            <a href="/credentials" class="flex items-center space-x-2 hover:text-slate-900">
+            </NavLink>
+            <NavLink href="/credentials" class="nav-link gap-1" Match="NavLinkMatch.All">
                 <span class="material-icons">badge</span>
                 <span>Credentials</span>
-            </a>
+            </NavLink>
         </div>
     </nav>
 
