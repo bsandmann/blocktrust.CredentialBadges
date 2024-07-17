@@ -86,8 +86,8 @@ public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Re
                 return Result.Fail(didResult.Errors);
             }
 
-            // Return success result
-            return Result.Ok();
+            // Return both did and api key
+            
         }
         catch (Exception ex)
         {
@@ -112,3 +112,4 @@ public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Re
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }
+
