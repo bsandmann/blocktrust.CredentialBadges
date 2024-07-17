@@ -8782,7 +8782,7 @@ namespace Blocktrust.CredentialBadges.IdentusClientApi
         public System.Collections.Generic.ICollection<ManagedDIDKeyTemplate> PublicKeys { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("services")]
-        public System.Collections.Generic.ICollection<Service> Services { get; set; } = default!;
+        public object[] Services { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("contexts")]
         public System.Collections.Generic.ICollection<string> Contexts { get; set; } = default!;
@@ -10636,7 +10636,7 @@ namespace Blocktrust.CredentialBadges.IdentusClientApi
         [System.Text.Json.Serialization.JsonPropertyName("purpose")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
-        public Purpose Purpose { get; set; } = default!;
+        public string Purpose { get; set; } = default!;
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
