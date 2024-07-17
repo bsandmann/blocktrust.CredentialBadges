@@ -1,31 +1,20 @@
 using FluentResults;
 using MediatR;
-using Microsoft.Extensions.Options;
-using Blocktrust.CredentialBadges.Builder.Common;
 
 namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
 
-public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Result>
+public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Result<DidAndApiKeyResponse>>
 {
     private readonly IMediator _mediator;
-    private readonly HttpClient _httpClient;
-    private readonly AppSettings _appSettings;
     private readonly ILogger<NewDidAndApiKeyHandler> _logger;
 
-    public NewDidAndApiKeyHandler(IMediator mediator, IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings, ILogger<NewDidAndApiKeyHandler> logger)
+    public NewDidAndApiKeyHandler(IMediator mediator, ILogger<NewDidAndApiKeyHandler> logger)
     {
         _mediator = mediator;
-        _httpClient = httpClientFactory.CreateClient("UserAgent");
-        _appSettings = appSettings.Value;
         _logger = logger;
-
-        // Set the base URL and header for the HttpClient
-        _httpClient.BaseAddress = new Uri(_appSettings.UserAgentBaseUrl);
-        _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.Add("x-admin-api-key", _appSettings.UserAgentAdminKey);
     }
 
-    public async Task<Result> Handle(NewDidAndApiKeyRequest request, CancellationToken cancellationToken)
+    public async Task<Result<DidAndApiKeyResponse>> Handle(NewDidAndApiKeyRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -39,7 +28,7 @@ public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Re
             var walletResult = await _mediator.Send(registerWalletRequest, cancellationToken);
             if (walletResult.IsFailed)
             {
-                return Result.Fail(walletResult.Errors);
+                return Result.Fail<DidAndApiKeyResponse>(walletResult.Errors);
             }
 
             var walletId = walletResult.Value;
@@ -55,7 +44,7 @@ public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Re
             var entityIdResult = await _mediator.Send(registerEntityRequest, cancellationToken);
             if (entityIdResult.IsFailed)
             {
-                return Result.Fail(entityIdResult.Errors);
+                return Result.Fail<DidAndApiKeyResponse>(entityIdResult.Errors);
             }
 
             var entityId = entityIdResult.Value;
@@ -71,28 +60,31 @@ public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Re
             var apiKeyResult = await _mediator.Send(registerApiKeyRequest, cancellationToken);
             if (apiKeyResult.IsFailed)
             {
-                return Result.Fail(apiKeyResult.Errors);
+                return Result.Fail<DidAndApiKeyResponse>(apiKeyResult.Errors);
             }
 
-            // Step 4: Get DID using the API key
+            // Step 4: Get DID using the API key via another mediator request
             var getDidRequest = new GetDidRequest
             {
-                ApiKey = apiKeyResult.Value
+                ApiKey = apiKey
             };
 
             var didResult = await _mediator.Send(getDidRequest, cancellationToken);
             if (didResult.IsFailed)
             {
-                return Result.Fail(didResult.Errors);
+                return Result.Fail<DidAndApiKeyResponse>(didResult.Errors);
             }
 
-            // Return both did and api key
-            
+            return Result.Ok(new DidAndApiKeyResponse
+            {
+                Did = didResult.Value,
+                ApiKey = apiKey
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error handling NewDidAndApiKeyRequest");
-            return Result.Fail(ex.Message);
+            return Result.Fail<DidAndApiKeyResponse>(ex.Message);
         }
     }
 
@@ -112,4 +104,3 @@ public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Re
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }
-

@@ -29,7 +29,7 @@
 
         if (result.IsSuccess)
         {
-            resultMessage = "DID and API Key registered successfully.";
+            resultMessage = $" Registered DID: {result.Value.Did}, API Key, {result.Value.ApiKey}";
         }
         else
         {
