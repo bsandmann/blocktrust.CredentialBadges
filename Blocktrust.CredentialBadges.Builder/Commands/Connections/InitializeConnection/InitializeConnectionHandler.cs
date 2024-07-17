@@ -21,7 +21,7 @@ public class InitializeConnectionHandler : IRequestHandler<InitializeConnectionR
         // Set the base URL and header for the HttpClient
         _httpClient.BaseAddress = new Uri(_appSettings.AdminAgentBaseUrl);
         _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.Add("x-admin-api-key", _appSettings.AdminAgentAdminKey);
+        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.AdminApiKey);
     }
 
     public async Task<Result<InitializeConnectionResponse>> Handle(InitializeConnectionRequest request, CancellationToken cancellationToken)

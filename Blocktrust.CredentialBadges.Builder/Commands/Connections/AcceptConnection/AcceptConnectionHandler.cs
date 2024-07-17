@@ -3,58 +3,54 @@ using Blocktrust.CredentialBadges.IdentusClientApi;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.Connections
+namespace Blocktrust.CredentialBadges.Builder.Commands.Connections;
+
+public class AcceptConnectionHandler : IRequestHandler<AcceptConnectionRequest, Result<AcceptConnectionResponse>>
 {
-    public class AcceptConnectionHandler : IRequestHandler<AcceptConnectionRequest, Result<AcceptConnectionResponse>>
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<AcceptConnectionHandler> _logger;
+
+    public AcceptConnectionHandler(IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings, ILogger<AcceptConnectionHandler> logger)
     {
-        private readonly HttpClient _httpClient;
-        private readonly AppSettings _appSettings;
-        private readonly ILogger<AcceptConnectionHandler> _logger;
+        _logger = logger;
+        _httpClient = httpClientFactory.CreateClient("UserAgent");
+        _httpClient.BaseAddress = new Uri(appSettings.Value.UserAgentBaseUrl);
+        _httpClient.DefaultRequestHeaders.Clear();
+    }
 
-        public AcceptConnectionHandler(IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings, ILogger<AcceptConnectionHandler> logger)
-        {
-            _appSettings = appSettings.Value;
-            _logger = logger;
-            _httpClient = httpClientFactory.CreateClient("UserAgent");
-
-            // Set the base URL and header for the HttpClient
-            _httpClient.BaseAddress = new Uri(_appSettings.UserAgentBaseUrl);
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add("x-admin-api-key", _appSettings.UserAgentAdminKey);
-        }
-
-        public async Task<Result<AcceptConnectionResponse>> Handle(AcceptConnectionRequest request, CancellationToken cancellationToken)
+    public async Task<Result<AcceptConnectionResponse>> Handle(AcceptConnectionRequest request, CancellationToken cancellationToken)
+    {
+        try
         {
             var identusClient = new IdentusClient(_httpClient)
             {
-                BaseUrl = _appSettings.UserAgentBaseUrl // Ensure the base URL is set
+                BaseUrl = _httpClient.BaseAddress.ToString()
             };
 
-            try
+            if (!string.IsNullOrEmpty(request.ApiKey))
             {
-                var acceptInvitationRequest = new AcceptConnectionInvitationRequest
-                {
-                    Invitation = request.InvitationUrl
-                };
-
-                var response = await identusClient.AcceptConnectionInvitationAsync(acceptInvitationRequest, cancellationToken);
-                var result = new AcceptConnectionResponse
-                {
-                    ConnectionId = response.ConnectionId.ToString()
-                };
-
-                return Result.Ok(result);
+                _httpClient.DefaultRequestHeaders.Remove("apiKey");
+                _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
             }
-            catch (Exception ex)
+
+            var acceptInvitationRequest = new AcceptConnectionInvitationRequest
             {
-                _logger.LogError(ex, "Error accepting connection");
-                return Result.Fail<AcceptConnectionResponse>(ex.Message);
-            }
+                Invitation = request.InvitationUrl
+            };
+
+            var response = await identusClient.AcceptConnectionInvitationAsync(acceptInvitationRequest, cancellationToken);
+            var result = new AcceptConnectionResponse
+            {
+                ConnectionId = response.ConnectionId.ToString()
+            };
+
+            return Result.Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting connection");
+            return Result.Fail<AcceptConnectionResponse>(ex.Message);
         }
     }
 }
