@@ -1,11 +1,12 @@
-using Blocktrust.CredentialBadges.Builder.Data;
-using Blocktrust.CredentialBadges.Builder.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using FluentResults;
+using Blocktrust.CredentialBadges.Builder.Data;
+using Blocktrust.CredentialBadges.Builder.Domain;
 
 namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetAllBuilderCredentials;
 
-public class GetAllBuilderCredentialsHandler : IRequestHandler<GetAllBuilderCredentialsRequest, List<BuilderCredential>>
+public class GetAllBuilderCredentialsHandler : IRequestHandler<GetAllBuilderCredentialsRequest, Result<List<BuilderCredential>>>
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<GetAllBuilderCredentialsHandler> _logger;
@@ -16,13 +17,23 @@ public class GetAllBuilderCredentialsHandler : IRequestHandler<GetAllBuilderCred
         _logger = logger;
     }
 
-    public async Task<List<BuilderCredential>> Handle(GetAllBuilderCredentialsRequest request, CancellationToken cancellationToken)
+    public async Task<Result<List<BuilderCredential>>> Handle(GetAllBuilderCredentialsRequest request, CancellationToken cancellationToken)
     {
-        var entities = await _context.BuilderCredentials.ToListAsync(cancellationToken);
-        var domainModels = entities.Select(entity => BuilderCredential.FromEntity(entity)).ToList();
+        try
+        {
+            var entities = await _context.BuilderCredentials
+                .ToListAsync(cancellationToken);
 
-        _logger.LogInformation("{Count} BuilderCredentials retrieved", domainModels.Count);
+            var credentials = entities
+                .Select(entity => BuilderCredential.FromEntity(entity))
+                .ToList();
 
-        return domainModels;
+            return Result.Ok(credentials);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all builder credentials");
+            return Result.Fail<List<BuilderCredential>>("Failed to retrieve builder credentials");
+        }
     }
 }

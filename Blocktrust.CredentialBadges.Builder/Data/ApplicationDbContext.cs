@@ -27,6 +27,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     {
         base.OnModelCreating(builder);
 
+        // Seed roles
         var adminRole = new ApplicationRole
         {
             Id = Guid.NewGuid(),
@@ -36,14 +37,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
         var nonAdminRole = new ApplicationRole
         {
-            Id = Guid.NewGuid(), 
+            Id = Guid.NewGuid(),
             Name = "nonAdminRole",
             NormalizedName = "NONADMINROLE"
         };
 
         builder.Entity<ApplicationRole>().HasData(adminRole, nonAdminRole);
-    }
-    
-    public DbSet<BuilderCredentialEntity> BuilderCredentials { get; set; }
 
+        // Configure BuilderCredentialEntity
+        builder.Entity<BuilderCredentialEntity>(entity =>
+        {
+            entity.HasKey(e => e.CredentialId);
+        });
+    }
+
+    public DbSet<BuilderCredentialEntity> BuilderCredentials { get; set; }
 }
