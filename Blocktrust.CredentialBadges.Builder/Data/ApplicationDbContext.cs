@@ -43,4 +43,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
         builder.Entity<ApplicationRole>().HasData(adminRole, nonAdminRole);
     }
+    
+    public DbSet<BuilderCredentialEntity> BuilderCredentials { get; set; }
+
 }
