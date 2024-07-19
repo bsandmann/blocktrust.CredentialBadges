@@ -1,12 +1,12 @@
-@page "/admin/profile"
-@using Blocktrust.CredentialBadges.Builder.Components.Layout
-@using Blocktrust.CredentialBadges.Builder.Data
+@page "/profile"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
+@using Blocktrust.CredentialBadges.Builder.Data
 @using System.Security.Claims
+@rendermode InteractiveServer
+
 
 @attribute [Authorize]
-@layout AdminLayout
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
