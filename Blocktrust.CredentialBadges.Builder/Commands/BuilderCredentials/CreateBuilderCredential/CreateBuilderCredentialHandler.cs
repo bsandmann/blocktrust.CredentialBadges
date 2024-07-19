@@ -29,7 +29,8 @@ public class CreateBuilderCredentialHandler : IRequestHandler<CreateBuilderCrede
             Status = request.Status,
             IssuerConnectionId = request.IssuerConnectionId,
             SubjectConnectionId = request.SubjectConnectionId,
-            CredentialSubject = request.CredentialSubject
+            CredentialSubject = request.CredentialSubject,
+            UserId = request.UserId
         };
 
         try

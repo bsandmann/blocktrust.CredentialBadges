@@ -15,4 +15,7 @@ public class CreateBuilderCredentialRequest : IRequest, IRequest<Result<BuilderC
     public Guid IssuerConnectionId { get; set; }
     public Guid SubjectConnectionId { get; set; }
     public string CredentialSubject { get; set; }
+    
+    public string UserId { get; set; }
+
 }

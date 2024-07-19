@@ -13,15 +13,15 @@ public class BuilderCredentialEntity
     public DateTime Date { get; set; }
 
     [Required]
-    [MaxLength(100)]
+    [MaxLength(256)]
     public string Label { get; set; }
 
     [Required]
-    [MaxLength(100)]
+    [MaxLength(500)]
     public string SubjectDid { get; set; }
 
     [Required]
-    [MaxLength(100)]
+    [MaxLength(500)]
     public string IssuerDid { get; set; }
 
     [Required]
@@ -36,4 +36,9 @@ public class BuilderCredentialEntity
     [Required]
     [Column(TypeName = "text")]
     public string CredentialSubject { get; set; }
+    
+    [Required]
+    [MaxLength(256)]
+    
+    public string UserId { get; set; }
 }

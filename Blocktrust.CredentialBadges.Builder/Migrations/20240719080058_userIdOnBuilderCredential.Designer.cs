@@ -3,6 +3,7 @@ using System;
 using Blocktrust.CredentialBadges.Builder.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Blocktrust.CredentialBadges.Builder.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240719080058_userIdOnBuilderCredential")]
+    partial class userIdOnBuilderCredential
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,13 +119,13 @@ namespace Blocktrust.CredentialBadges.Builder.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("820c077c-69c6-4489-912c-c9f3e2737864"),
+                            Id = new Guid("ea7f7c07-c7c3-4b39-96b7-e1afd5ecb58c"),
                             Name = "adminRole",
                             NormalizedName = "ADMINROLE"
                         },
                         new
                         {
-                            Id = new Guid("a0fcc7a6-3a1f-43f2-b07b-7f01a9b4205a"),
+                            Id = new Guid("97a5aa8b-a2c9-4806-9787-7caaf76b51a9"),
                             Name = "nonAdminRole",
                             NormalizedName = "NONADMINROLE"
                         });

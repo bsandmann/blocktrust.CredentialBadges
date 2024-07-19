@@ -14,6 +14,9 @@ public class BuilderCredential
     public Guid IssuerConnectionId { get; set; }
     public Guid SubjectConnectionId { get; set; }
     public string CredentialSubject { get; set; }
+    
+    public string UserId { get; set; }
+
 
     public static BuilderCredential FromEntity(BuilderCredentialEntity entity)
     {
@@ -27,7 +30,9 @@ public class BuilderCredential
             Status = entity.Status,
             IssuerConnectionId = entity.IssuerConnectionId,
             SubjectConnectionId = entity.SubjectConnectionId,
-            CredentialSubject = entity.CredentialSubject
+            CredentialSubject = entity.CredentialSubject,
+            UserId = entity.UserId
+            
         };
     }
 
@@ -43,7 +48,8 @@ public class BuilderCredential
             Status = Status,
             IssuerConnectionId = IssuerConnectionId,
             SubjectConnectionId = SubjectConnectionId,
-            CredentialSubject = CredentialSubject
+            CredentialSubject = CredentialSubject,
+            UserId = UserId
         };
     }
 }
