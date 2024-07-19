@@ -1,8 +1,126 @@
 @page "/admin/dashboard"
 @using Blocktrust.CredentialBadges.Builder.Components.Layout
+@using Blocktrust.CredentialBadges.Builder.Domain
+@using Blocktrust.CredentialBadges.Builder.Enums
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @layout AdminLayout
+@using MediatR
+@using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetAllBuilderCredentials
+@inject IMediator Mediator
 
 <h2 class="text-2xl font-bold">Dashboard</h2>
 <p>Welcome to the admin dashboard!</p>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Approved Tablets -->
+    <div class="bg-white p-4 rounded shadow-md border border-gray-300">
+        <h3 class="text-xl font-semibold text-gray-800">Total Approved</h3>
+        <p class="text-3xl font-bold text-green-600">@totalApproved</p>
+    </div>
+
+    <!-- Pending Tablets -->
+    <div class="bg-white p-4 rounded shadow-md border border-gray-300">
+        <h3 class="text-xl font-semibold text-gray-800">Total Pending</h3>
+        <p class="text-3xl font-bold text-yellow-600">@totalPending</p>
+    </div>
+</div>
+
+<!-- Recent Requests Table -->
+<div class="bg-white p-4 rounded shadow-md border border-gray-300">
+    <h3 class="text-xl font-semibold text-gray-800">Recent Requests</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-300 rounded">
+            <thead>
+                <tr class="bg-slate-100">
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Label</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Subject DID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in recentRequests)
+                {
+                    <tr class="border-t border-gray-300">
+                        <td class="px-6 py-4 whitespace-nowrap">@request.Date.ToShortDateString()</td>
+                        <td class="px-6 py-4 whitespace-nowrap">@TruncateString(request.Label, 20)</td>
+                        <td class="px-6 py-4 whitespace-nowrap">@TruncateString(request.SubjectDid, 15)</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if (request.Status == EBuilderCredentialStatus.Pending)
+                            {
+                                <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs">Pending</span>
+                            }
+                            else if (request.Status == EBuilderCredentialStatus.Approved)
+                            {
+                                <span class="bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs">Approved</span>
+                            }
+                            else if (request.Status == EBuilderCredentialStatus.Declined)
+                            {
+                                <span class="bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs">Declined</span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if (request.Status == EBuilderCredentialStatus.Pending)
+                            {
+                                <button class="text-red-600 hover:text-red-800" @onclick="() => DeclineRequest(request.CredentialId)">
+                                    <span class="material-icons">cancel</span>
+                                </button>
+                                <button class="text-gray-600 hover:text-gray-800" @onclick="() => ViewRequest(request.CredentialId)">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="text-gray-600 hover:text-gray-800" @onclick="() => ViewRequest(request.CredentialId)">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private int totalApproved;
+    private int totalPending;
+    private List<BuilderCredential> recentRequests = new List<BuilderCredential>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Mediator.Send(new GetAllBuilderCredentialsRequest());
+        if (result.IsSuccess)
+        {
+            var credentials = result.Value;
+            totalApproved = credentials.Count(c => c.Status == EBuilderCredentialStatus.Approved);
+            totalPending = credentials.Count(c => c.Status == EBuilderCredentialStatus.Pending);
+
+            // Get recent 5 requests
+            recentRequests = credentials.OrderByDescending(c => c.Date).Take(5).ToList();
+        }
+        else
+        {
+            // Handle error
+            Console.WriteLine("Error retrieving credentials: " + result.Errors.First().Message);
+        }
+    }
+
+    private void DeclineRequest(Guid requestId)
+    {
+        // Implement your decline logic here
+    }
+
+    private void ViewRequest(Guid requestId)
+    {
+        // Implement your view logic here
+    }
+
+    private string TruncateString(string value, int maxLength)
+    {
+        return value.Length <= maxLength ? value : value.Substring(0, maxLength) + "...";
+    }
+}
