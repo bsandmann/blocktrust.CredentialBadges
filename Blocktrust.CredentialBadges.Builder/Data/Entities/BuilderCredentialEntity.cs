@@ -22,7 +22,7 @@ public class BuilderCredentialEntity
 
     [Required]
     [MaxLength(500)]
-    public string IssuerDid { get; set; }
+    public string? IssuerDid { get; set; }
 
     [Required]
     public EBuilderCredentialStatus Status { get; set; }
@@ -41,4 +41,6 @@ public class BuilderCredentialEntity
     [MaxLength(256)]
     
     public string UserId { get; set; }
+    
+    public Guid? ThId { get; set; }
 }

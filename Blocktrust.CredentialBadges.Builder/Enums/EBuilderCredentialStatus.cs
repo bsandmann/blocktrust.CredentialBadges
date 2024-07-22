@@ -4,5 +4,10 @@ public enum EBuilderCredentialStatus
 {
     Pending,
     Approved,
-    Declined
+    Declined,
+    WaitingAcceptance,
+    RequestSent,
+    CredentialReceived,
+    Revoked,
+    Expired
 }
