@@ -7,6 +7,7 @@ public class AcceptOfferRequest : IRequest<Result<string>>
 {
     public string RecordId { get; set; }
     public string SubjectId { get; set; }
+    public string? ApiKey { get; set; }
 
     public AcceptOfferRequest(string recordId, string subjectId)
     {

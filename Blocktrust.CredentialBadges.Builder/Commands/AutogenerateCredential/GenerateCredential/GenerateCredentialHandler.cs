@@ -1,14 +1,13 @@
+using Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.GetCredential;
+using Blocktrust.CredentialBadges.Builder.Commands.Offers.AcceptOffer;
+using Blocktrust.CredentialBadges.Builder.Commands.Offers.CreateOffer;
+using Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId;
+using Blocktrust.CredentialBadges.Builder.Common;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Options;
-using Blocktrust.CredentialBadges.Builder.Common;
-using Blocktrust.CredentialBadges.Builder.Commands.Offers.CreateOffer;
-using Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId;
-using Blocktrust.CredentialBadges.IdentusClientApi;
-using Blocktrust.CredentialBadges.Builder.Commands.Offers.AcceptOffer;
-using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetCredential;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.Credentials.GenerateCredential;
+namespace Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.GenerateCredential;
 
 public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialRequest, Result<string>>
 {
@@ -61,7 +60,7 @@ public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialReque
 
             if (getOfferResponse.IsSuccess)
             {
-                var recordId = getOfferResponse.Value;
+                var recordId = getOfferResponse.Value.RecordId;
 
                 // Accept the offer
                 var acceptOfferResponse = await _mediator.Send(new AcceptOfferRequest(recordId, request.SubjectId), cancellationToken);

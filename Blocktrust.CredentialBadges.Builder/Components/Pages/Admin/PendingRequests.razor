@@ -9,6 +9,8 @@
 @attribute [Authorize]
 @layout AdminLayout
 @inject IMediator Mediator
+@rendermode InteractiveServer
+
 
 <div class="max-w-4xl mx-auto px-4 py-8">
     <h2 class="text-2xl font-bold">Pending Requests</h2>
@@ -51,7 +53,11 @@
     </div>
 
 @code {
-    private List<BuilderCredential> credentials = new List<BuilderCredential>();
+    private List<BuilderCredential> credentials = new();
+    
+    
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,8 +75,7 @@
 
     private void ViewCredential(BuilderCredential credential)
     {
-        // Navigate to detailed view of the credential
-        // Example: NavigationManager.NavigateTo($"/credentials/{credential.CredentialId}");
+         NavigationManager.NavigateTo($"/admin/requests/{credential.CredentialId}");
     }
 
     private async Task DeclineCredential(BuilderCredential credential)

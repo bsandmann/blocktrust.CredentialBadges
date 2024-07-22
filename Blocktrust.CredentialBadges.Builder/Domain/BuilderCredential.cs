@@ -18,6 +18,8 @@ public class BuilderCredential
     public string UserId { get; set; }
     
     public Guid? ThId { get; set; }
+    
+    public Guid? RecordIdOnAgent { get; set; }
 
 
     public static BuilderCredential FromEntity(BuilderCredentialEntity entity)
@@ -34,7 +36,8 @@ public class BuilderCredential
             SubjectConnectionId = entity.SubjectConnectionId,
             CredentialSubject = entity.CredentialSubject,
             UserId = entity.UserId,
-            ThId = entity.ThId
+            ThId = entity.ThId,
+            RecordIdOnAgent = entity.RecordIdOnAgent
             
         };
     }
@@ -53,7 +56,8 @@ public class BuilderCredential
             SubjectConnectionId = SubjectConnectionId,
             CredentialSubject = CredentialSubject,
             UserId = UserId,
-            ThId = ThId
+            ThId = ThId,
+            RecordIdOnAgent = RecordIdOnAgent
         };
     }
 }

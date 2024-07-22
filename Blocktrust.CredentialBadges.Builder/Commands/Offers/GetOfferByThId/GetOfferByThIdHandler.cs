@@ -6,7 +6,7 @@ using Blocktrust.CredentialBadges.Builder.Common;
 
 namespace Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId;
 
-public class GetOfferByThIdHandler : IRequestHandler<GetOfferByThIdRequest, Result<string>>
+public class GetOfferByThIdHandler : IRequestHandler<GetOfferByThIdRequest, Result<IssueCredentialRecord>>
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<GetOfferByThIdHandler> _logger;
@@ -19,7 +19,7 @@ public class GetOfferByThIdHandler : IRequestHandler<GetOfferByThIdRequest, Resu
         _logger = logger;
     }
 
-    public async Task<Result<string>> Handle(GetOfferByThIdRequest request, CancellationToken cancellationToken)
+    public async Task<Result<IssueCredentialRecord>> Handle(GetOfferByThIdRequest request, CancellationToken cancellationToken)
     {
         _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
         var identusClient = new IdentusClient(_httpClient)
@@ -34,10 +34,11 @@ public class GetOfferByThIdHandler : IRequestHandler<GetOfferByThIdRequest, Resu
             if (response.Contents.Count > 0)
             {
                 var lastOffer = response.Contents.OrderByDescending(x => x.CreatedAt).FirstOrDefault();
-                return Result.Ok(lastOffer?.RecordId);
+                return Result.Ok(lastOffer);
             }
 
-            return Result.Fail("No offers found.");
+            return Result.Fail("No offer found");
+
         }
         catch (ApiException ex)
         {

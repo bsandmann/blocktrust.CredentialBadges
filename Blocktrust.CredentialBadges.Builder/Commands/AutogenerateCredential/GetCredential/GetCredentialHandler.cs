@@ -1,9 +1,8 @@
+using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetRecordById;
 using FluentResults;
 using MediatR;
-using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetRecordById;
 
-
-namespace Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetCredential;
+namespace Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.GetCredential;
 
 public class GetCredentialHandler : IRequestHandler<GetCredentialRequest, Result<string>>
 {

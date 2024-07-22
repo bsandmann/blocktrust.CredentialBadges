@@ -21,7 +21,15 @@ public class AcceptOfferHandler : IRequestHandler<AcceptOfferRequest, Result<str
 
     public async Task<Result<string>> Handle(AcceptOfferRequest request, CancellationToken cancellationToken)
     {
-        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+        //if api key is null, use agent 2 api key
+        if (string.IsNullOrEmpty(request.ApiKey))
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+        else
+        {
+            _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
+            
+        }
+        
         var identusClient = new IdentusClient(_httpClient)
         {
             BaseUrl = _appSettings.Agent2BaseUrl

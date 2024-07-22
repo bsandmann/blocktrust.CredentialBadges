@@ -3,7 +3,7 @@
 @using Blocktrust.CredentialBadges.Builder.Commands.Offers.GetOfferByThId
 @using Blocktrust.CredentialBadges.Builder.Commands.Offers.AcceptOffer
 @using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetRecordById
-@using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetCredential
+@using Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.GetCredential
 @inject IMediator Mediator
 @rendermode InteractiveServer
 
@@ -110,7 +110,7 @@ else if (CredentialResult is not null)
         }
         else
         {
-            OfferThId = result.Value;
+            OfferThId = result.Value.RecordId;
         }
     }
 

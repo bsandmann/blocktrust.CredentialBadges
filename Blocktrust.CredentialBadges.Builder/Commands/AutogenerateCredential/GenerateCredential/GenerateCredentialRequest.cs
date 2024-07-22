@@ -2,7 +2,7 @@ using Blocktrust.CredentialBadges.IdentusClientApi;
 using FluentResults;
 using MediatR;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.Credentials.GenerateCredential;
+namespace Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.GenerateCredential;
 
 public class GenerateCredentialRequest : CreateIssueCredentialRecordRequest, IRequest<Result<string>>
 {

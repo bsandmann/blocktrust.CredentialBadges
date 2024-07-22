@@ -43,4 +43,6 @@ public class BuilderCredentialEntity
     public string UserId { get; set; }
     
     public Guid? ThId { get; set; }
+    
+    public Guid? RecordIdOnAgent { get; set; }
 }
