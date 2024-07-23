@@ -35,8 +35,8 @@ public class GetDidHandler : IRequestHandler<GetDidRequest, Result<string>>
                     {
                         new
                         {
-                            id = "my-issuing-key",
-                            purpose = "assertionMethod"
+                            id = "auth-1",
+                            purpose = "authentication"
                         }
                     },
                     services = Array.Empty<object>()

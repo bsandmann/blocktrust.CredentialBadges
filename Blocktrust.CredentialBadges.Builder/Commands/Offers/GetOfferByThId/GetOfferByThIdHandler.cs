@@ -21,7 +21,16 @@ public class GetOfferByThIdHandler : IRequestHandler<GetOfferByThIdRequest, Resu
 
     public async Task<Result<IssueCredentialRecord>> Handle(GetOfferByThIdRequest request, CancellationToken cancellationToken)
     {
-        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+        if(request.ApiKey != null)
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
+        }
+        else
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+        }   
         var identusClient = new IdentusClient(_httpClient)
         {
             BaseUrl = _appSettings.Agent2BaseUrl

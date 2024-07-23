@@ -40,6 +40,12 @@
                 <input type="text" class="w-full border border-gray-300 rounded p-2" @bind="apiKey" />
             </div>
 
+            <div class="flex items-center mb-4">
+                <button class="text-slate-500 hover:text-slate-700 flex items-center" @onclick="SaveToLocalStorage">
+                    <span class="material-icons mr-1">save</span> Save
+                </button>
+            </div>
+
             <button class="bg-slate-700 min-w-36 h-12 text-white p-2 rounded" @onclick="Connect" disabled="@isConnecting">
                 @if (isConnecting)
                 {
@@ -140,25 +146,29 @@
         JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
         Console.WriteLine($"Copied {text} to clipboard.");
     }
+
+    private async Task SaveToLocalStorage()
+    {
+        await JS.InvokeVoidAsync("localStorage.setItem", "did", did);
+        await JS.InvokeVoidAsync("localStorage.setItem", "apiKey", apiKey);
+        successMessage = "DID and API Key saved to local storage";
+        StateHasChanged();
+    }
     
-            public string ExtractBase64FromInvitation(string invitationUrl)
-            {
-                const string marker = "_oob=";
-                int startIndex = invitationUrl.IndexOf(marker);
-            
-                if (startIndex == -1)
-                {
-                    throw new ArgumentException("Invalid invitation URL format: '_oob=' marker not found.");
-                }
-            
-                startIndex += marker.Length; 
-            
-                string base64String = invitationUrl.Substring(startIndex);
-            
-                return base64String;
-            }
-
+    public string ExtractBase64FromInvitation(string invitationUrl)
+    {
+        const string marker = "_oob=";
+        int startIndex = invitationUrl.IndexOf(marker);
+    
+        if (startIndex == -1)
+        {
+            throw new ArgumentException("Invalid invitation URL format: '_oob=' marker not found.");
+        }
+    
+        startIndex += marker.Length; 
+    
+        string base64String = invitationUrl.Substring(startIndex);
+    
+        return base64String;
+    }
 }
-
-
-

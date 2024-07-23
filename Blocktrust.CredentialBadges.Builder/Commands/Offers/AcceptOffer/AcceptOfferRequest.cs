@@ -14,4 +14,11 @@ public class AcceptOfferRequest : IRequest<Result<string>>
         RecordId = recordId;
         SubjectId = subjectId;
     }
+
+    public AcceptOfferRequest(string recordId, string subjectId, string apiKey)
+    {
+        RecordId = recordId;
+        SubjectId = subjectId;
+        ApiKey = apiKey;
+    }
 }

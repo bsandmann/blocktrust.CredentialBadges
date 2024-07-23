@@ -8,10 +8,7 @@ public class AcceptBuilderCredentialRequest : IRequest<Result<BuilderCredential>
 {
     public string ThId { get; set; }
     public string SubjectId { get; set; }
-
-    public AcceptBuilderCredentialRequest(string thId, string subjectId)
-    {
-        ThId = thId;
-        SubjectId = subjectId;
-    }
+    
+    public string ApiKey { get; set; }
+    
 }

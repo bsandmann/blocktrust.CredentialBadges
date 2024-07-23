@@ -26,7 +26,7 @@ public class AcceptBuilderCredentialHandler : IRequestHandler<AcceptBuilderCrede
     public async Task<Result<BuilderCredential>> Handle(AcceptBuilderCredentialRequest request, CancellationToken cancellationToken)
     {
         // Fetch the credential by ThId
-        var offerResult = await _mediator.Send(new GetOfferByThIdRequest(request.ThId), cancellationToken);
+        var offerResult = await _mediator.Send(new GetOfferByThIdRequest(request.ThId, request.ApiKey), cancellationToken);
         
         if (offerResult.IsFailed)
         {
@@ -36,7 +36,7 @@ public class AcceptBuilderCredentialHandler : IRequestHandler<AcceptBuilderCrede
         var issueCredentialRecord = offerResult.Value;
 
         // Accept the offer using RecordId and SubjectId
-        var acceptResult = await _mediator.Send(new AcceptOfferRequest(issueCredentialRecord.RecordId, request.SubjectId), cancellationToken);
+        var acceptResult = await _mediator.Send(new AcceptOfferRequest(issueCredentialRecord.RecordId, request.SubjectId, request.ApiKey), cancellationToken);
 
         if (acceptResult.IsFailed)
         {

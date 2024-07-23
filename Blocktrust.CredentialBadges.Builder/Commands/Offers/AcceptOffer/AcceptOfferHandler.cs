@@ -21,15 +21,17 @@ public class AcceptOfferHandler : IRequestHandler<AcceptOfferRequest, Result<str
 
     public async Task<Result<string>> Handle(AcceptOfferRequest request, CancellationToken cancellationToken)
     {
-        //if api key is null, use agent 2 api key
+        // Ensure the subject DID is in short form
+        request.SubjectId = GetShortDid(request.SubjectId);
+
+        // if api key is null, use agent 2 api key
         if (string.IsNullOrEmpty(request.ApiKey))
             _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
         else
         {
             _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
-            
         }
-        
+
         var identusClient = new IdentusClient(_httpClient)
         {
             BaseUrl = _appSettings.Agent2BaseUrl
@@ -37,19 +39,37 @@ public class AcceptOfferHandler : IRequestHandler<AcceptOfferRequest, Result<str
 
         try
         {
-            var acceptCredentialOfferRequest = new AcceptCredentialOfferRequest
+            AcceptCredentialOfferRequest acceptCredentialOfferRequest = new AcceptCredentialOfferRequest
             {
                 SubjectId = request.SubjectId
             };
 
             var response = await identusClient.AcceptCredentialOfferAsync(request.RecordId, acceptCredentialOfferRequest, cancellationToken);
-                
+
             return Result.Ok(response.RecordId);
         }
         catch (ApiException ex)
         {
             _logger.LogError(ex, "Error accepting offer");
             return Result.Fail(ex.Message);
+        }
+    }
+
+    private string GetShortDid(string did)
+    {
+        // Split the DID by colons
+        var parts = did.Split(':');
+
+        // Check if the DID has more than three parts (indicating long form)
+        if (parts.Length > 3)
+        {
+            // Return the first three parts joined by colons
+            return string.Join(":", parts[0], parts[1], parts[2]);
+        }
+        else
+        {
+            // Return the DID itself if it is already in short form
+            return did;
         }
     }
 }
