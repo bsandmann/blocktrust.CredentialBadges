@@ -14,6 +14,9 @@ public class AppSettings
     public string UserAgentAdminKey { get; set; }
     
     public string AdminApiKey { get; set; }
+    
+    
+    public string IssuingDID { get; set; }
 
     
 }

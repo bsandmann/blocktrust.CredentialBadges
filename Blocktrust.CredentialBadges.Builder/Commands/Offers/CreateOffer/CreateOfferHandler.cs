@@ -21,10 +21,10 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<Off
 
     public async Task<Result<OfferResponse>> Handle(CreateOfferRequest request, CancellationToken cancellationToken)
     {
-        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.AdminAgentAdminKey);
+        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.AdminApiKey);
         var identusClient = new IdentusClient(_httpClient);
 
-        identusClient.BaseUrl = _appSettings.Agent1BaseUrl; // or Agent2BaseUrl 
+        identusClient.BaseUrl = _appSettings.Agent1BaseUrl; 
 
         try
         {
