@@ -7,22 +7,23 @@
 @layout AdminLayout
 @using MediatR
 @using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetAllBuilderCredentials
+@using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.UpdateBuilderCredential
 @inject IMediator Mediator
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
-
 
 <h2 class="text-2xl font-bold">Dashboard</h2>
 <p>Welcome to the admin dashboard!</p>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <!-- Approved Tablets -->
-    <div class="bg-white p-4 rounded shadow-md border border-gray-300">
+<div class="flex px-2.5 gap-4">
+    <!-- Total Approved -->
+    <div class="bg-white p-4 w-full rounded shadow-md border border-gray-300">
         <h3 class="text-xl font-semibold text-gray-800">Total Approved</h3>
         <p class="text-3xl font-bold text-green-600">@totalApproved</p>
     </div>
 
-    <!-- Pending Tablets -->
-    <div class="bg-white p-4 rounded shadow-md border border-gray-300">
+    <!-- Total Pending -->
+    <div class="bg-white w-full p-4 rounded shadow-md border border-gray-300">
         <h3 class="text-xl font-semibold text-gray-800">Total Pending</h3>
         <p class="text-3xl font-bold text-yellow-600">@totalPending</p>
     </div>
@@ -64,7 +65,7 @@
                             }
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                            <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-600 disabled:bg-gray-100 disabled:cursor-not-allowed" 
+                            <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-600" 
                                     @onclick="() => DeclineRequest(request.CredentialId)" 
                                     disabled="@(request.Status != EBuilderCredentialStatus.Pending)">
                                 Decline
@@ -84,9 +85,15 @@
 @code {
     private int totalApproved;
     private int totalPending;
-    private List<BuilderCredential> recentRequests = new List<BuilderCredential>();
+    private int totalDeclined;
+    private List<BuilderCredential> recentRequests = new();
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardData();
+    }
+
+    private async Task LoadDashboardData()
     {
         var result = await Mediator.Send(new GetAllBuilderCredentialsRequest());
         if (result.IsSuccess)
@@ -94,6 +101,7 @@
             var credentials = result.Value;
             totalApproved = credentials.Count(c => c.Status == EBuilderCredentialStatus.Approved);
             totalPending = credentials.Count(c => c.Status == EBuilderCredentialStatus.Pending);
+            totalDeclined = credentials.Count(c => c.Status == EBuilderCredentialStatus.Declined);
 
             // Get recent 5 requests
             recentRequests = credentials.OrderByDescending(c => c.Date).Take(5).ToList();
@@ -105,20 +113,30 @@
         }
     }
 
-    private void DeclineRequest(Guid requestId)
+    private async Task DeclineRequest(Guid requestId)
     {
-        // Implement your decline logic here
+        var updateRequest = new UpdateBuilderCredentialRequest
+        {
+            CredentialId = requestId,
+            Status = EBuilderCredentialStatus.Declined,
+        };
+
+        var result = await Mediator.Send(updateRequest);
+
+        if (result.IsSuccess)
+        {
+            await LoadDashboardData();
+        }
+        else
+        {
+            Console.WriteLine("Error declining credential: " + result.Errors.First().Message);
+        }
     }
 
     private void ViewRequest(Guid requestId)
     {
-        // Implement your view logic here
+        NavigationManager.NavigateTo($"/admin/requests/{requestId}");
     }
-    // private void ViewCredential(BuilderCredential credential)
-    // {
-    //     NavigationManager.NavigateTo($"/credentials/{credential.CredentialId}");
-    // }
-
 
     private string TruncateString(string value, int maxLength)
     {

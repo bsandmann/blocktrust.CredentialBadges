@@ -25,6 +25,9 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<Off
         var identusClient = new IdentusClient(_httpClient);
 
         identusClient.BaseUrl = _appSettings.Agent1BaseUrl; 
+        
+        // Ensure the subject DID is in short form
+        request.IssuingDID = GetShortDid(request.IssuingDID);
 
         try
         {
@@ -45,6 +48,24 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<Off
             _logger.LogError(ex, "Error creating offer");
             return Result.Fail(ex.Message);
       
+        }
+    }
+    
+    private string GetShortDid(string did)
+    {
+        // Split the DID by colons
+        var parts = did.Split(':');
+
+        // Check if the DID has more than three parts (indicating long form)
+        if (parts.Length > 3)
+        {
+            // Return the first three parts joined by colons
+            return string.Join(":", parts[0], parts[1], parts[2]);
+        }
+        else
+        {
+            // Return the DID itself if it is already in short form
+            return did;
         }
     }
 }
