@@ -19,4 +19,7 @@ public class UpdateBuilderCredentialRequest : IRequest<Result<BuilderCredential>
     public string? UserId { get; set; }
     public Guid? ThId { get; set; }
     public Guid? RecordIdOnAgent { get; set; }
+    
+    
+    public string? VerifiableCredential { get; set; }
 }

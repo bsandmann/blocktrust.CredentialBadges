@@ -72,6 +72,10 @@ public class UpdateBuilderCredentialHandler : IRequestHandler<UpdateBuilderCrede
         {
             entity.RecordIdOnAgent = request.RecordIdOnAgent.Value;
         }
+        if (request.VerifiableCredential != null)
+        {
+            entity.VerifiableCredential = request.VerifiableCredential;
+        }
 
         try
         {

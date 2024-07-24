@@ -17,5 +17,12 @@ public class CreateBuilderCredentialRequest : IRequest, IRequest<Result<BuilderC
     public string CredentialSubject { get; set; }
     
     public string UserId { get; set; }
+    
+    public Guid ThId { get; set; }
+    
+    public Guid RecordIdOnAgent { get; set; }
+    
+    public string VerifiableCredential { get; set; }
+    
 
 }

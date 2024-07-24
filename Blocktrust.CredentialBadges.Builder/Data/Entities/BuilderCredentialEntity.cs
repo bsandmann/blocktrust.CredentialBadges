@@ -45,4 +45,8 @@ public class BuilderCredentialEntity
     public Guid? ThId { get; set; }
     
     public Guid? RecordIdOnAgent { get; set; }
+    
+    [Column(TypeName = "text")]
+    public string? VerifiableCredential { get; set; }
+    
 }

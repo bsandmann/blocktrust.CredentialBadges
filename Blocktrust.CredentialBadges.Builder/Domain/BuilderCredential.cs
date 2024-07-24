@@ -20,6 +20,8 @@ public class BuilderCredential
     public Guid? ThId { get; set; }
     
     public Guid? RecordIdOnAgent { get; set; }
+    
+    public string? VerifiableCredential { get; set; }
 
 
     public static BuilderCredential FromEntity(BuilderCredentialEntity entity)
@@ -37,7 +39,8 @@ public class BuilderCredential
             CredentialSubject = entity.CredentialSubject,
             UserId = entity.UserId,
             ThId = entity.ThId,
-            RecordIdOnAgent = entity.RecordIdOnAgent
+            RecordIdOnAgent = entity.RecordIdOnAgent,
+            VerifiableCredential = entity.VerifiableCredential
             
         };
     }
@@ -57,7 +60,8 @@ public class BuilderCredential
             CredentialSubject = CredentialSubject,
             UserId = UserId,
             ThId = ThId,
-            RecordIdOnAgent = RecordIdOnAgent
+            RecordIdOnAgent = RecordIdOnAgent,
+            VerifiableCredential = VerifiableCredential
         };
     }
 }

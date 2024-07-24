@@ -30,7 +30,11 @@ public class CreateBuilderCredentialHandler : IRequestHandler<CreateBuilderCrede
             IssuerConnectionId = request.IssuerConnectionId,
             SubjectConnectionId = request.SubjectConnectionId,
             CredentialSubject = request.CredentialSubject,
-            UserId = request.UserId
+            UserId = request.UserId,
+            ThId = request.ThId,
+            RecordIdOnAgent = request.RecordIdOnAgent,
+            VerifiableCredential = request.VerifiableCredential
+            
         };
 
         try

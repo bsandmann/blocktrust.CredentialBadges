@@ -21,7 +21,14 @@ public class GetRecordByIdHandler : IRequestHandler<GetRecordByIdRequest, Result
 
     public async Task<Result<IssueCredentialRecord>> Handle(GetRecordByIdRequest request, CancellationToken cancellationToken)
     {
-        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+        if(request.ApiKey != null)
+        {
+            _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
+        }
+        else
+        {
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+        }
         var identusClient = new IdentusClient(_httpClient)
         {
             BaseUrl = _appSettings.Agent2BaseUrl
