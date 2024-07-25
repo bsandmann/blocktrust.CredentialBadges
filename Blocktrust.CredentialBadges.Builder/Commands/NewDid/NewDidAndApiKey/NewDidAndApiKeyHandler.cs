@@ -1,7 +1,11 @@
-using FluentResults;
-using MediatR;
+namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid.NewDidAndApiKey;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
+using FluentResults;
+using GetDid;
+using MediatR;
+using RegisterApiKey;
+using RegisterEntity;
+using RegisterWallet;
 
 public class NewDidAndApiKeyHandler : IRequestHandler<NewDidAndApiKeyRequest, Result<DidAndApiKeyResponse>>
 {

@@ -1,9 +1,11 @@
 @page "/connections"
 @using Blocktrust.CredentialBadges.Builder.Commands.Connections
+@using Blocktrust.CredentialBadges.Builder.Commands.Connections.AcceptConnection
+@using Blocktrust.CredentialBadges.Builder.Commands.Connections.InitializeConnection
 @using MediatR
 @inject IMediator Mediator
 @inject IJSRuntime JS
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -32,12 +34,12 @@
 
             <div class="mb-4">
                 <label class="block text-slate-700 mb-1">DID</label>
-                <input type="text" class="w-full border border-gray-300 rounded p-2" @bind="did" />
+                <input type="text" class="w-full border border-gray-300 rounded p-2" @bind="did"/>
             </div>
 
             <div class="mb-4">
                 <label class="block text-slate-700 mb-1">API Key</label>
-                <input type="text" class="w-full border border-gray-300 rounded p-2" @bind="apiKey" />
+                <input type="text" class="w-full border border-gray-300 rounded p-2" @bind="apiKey"/>
             </div>
 
             <div class="flex items-center mb-4">
@@ -74,7 +76,7 @@
     private string errorMessageDisplay => string.IsNullOrEmpty(errorMessage) ? "none" : "block";
     private string successMessageDisplay => string.IsNullOrEmpty(successMessage) ? "none" : "block";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
         if (!isInitialized)
         {
@@ -114,16 +116,16 @@
     {
         isConnecting = true;
         StateHasChanged();
-        
+
         string base64String = ExtractBase64FromInvitation(invitationUrl);
 
-        var request = new AcceptConnectionRequest
+        var acceptConnectionRequest = new AcceptConnectionRequest
         {
             ApiKey = apiKey,
             InvitationUrl = base64String
         };
 
-        var result = await Mediator.Send(request);
+        var result = await Mediator.Send(acceptConnectionRequest);
 
         if (result.IsSuccess)
         {
@@ -154,21 +156,22 @@
         successMessage = "DID and API Key saved to local storage";
         StateHasChanged();
     }
-    
+
     public string ExtractBase64FromInvitation(string invitationUrl)
     {
         const string marker = "_oob=";
         int startIndex = invitationUrl.IndexOf(marker);
-    
+
         if (startIndex == -1)
         {
             throw new ArgumentException("Invalid invitation URL format: '_oob=' marker not found.");
         }
-    
-        startIndex += marker.Length; 
-    
+
+        startIndex += marker.Length;
+
         string base64String = invitationUrl.Substring(startIndex);
-    
+
         return base64String;
     }
+
 }

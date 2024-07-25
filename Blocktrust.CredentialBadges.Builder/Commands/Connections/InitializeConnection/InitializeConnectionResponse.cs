@@ -1,4 +1,4 @@
-namespace Blocktrust.CredentialBadges.Builder.Commands.Connections;
+namespace Blocktrust.CredentialBadges.Builder.Commands.Connections.InitializeConnection;
 
 public class InitializeConnectionResponse
 {

@@ -3,7 +3,7 @@
 @using MediatR
 @inject IMediator Mediator
 @inject ILogger<CreateOfferHandler> Logger
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <h3>Create Credential Offer</h3>
 

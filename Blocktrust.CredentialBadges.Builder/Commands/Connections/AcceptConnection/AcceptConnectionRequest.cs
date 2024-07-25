@@ -1,7 +1,7 @@
+namespace Blocktrust.CredentialBadges.Builder.Commands.Connections.AcceptConnection;
+
 using FluentResults;
 using MediatR;
-
-namespace Blocktrust.CredentialBadges.Builder.Commands.Connections;
 
 public class AcceptConnectionRequest : IRequest<Result<AcceptConnectionResponse>>
 {

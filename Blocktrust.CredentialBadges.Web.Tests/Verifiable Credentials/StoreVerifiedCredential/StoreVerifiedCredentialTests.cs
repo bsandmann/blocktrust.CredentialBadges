@@ -26,7 +26,8 @@ public partial class TestSetup
             Description = "Test Description",
             Image = "https://example.com/image.jpg",
             Credential = "{ \"some\": \"credential data\" }",
-            Status = EVerificationStatus.Verified
+            Status = EVerificationStatus.Verified,
+            Issuer = "Test Issuer",
         };
 
         var handler = new StoreVerifiedCredentialHandler(_context, loggerMock.Object);

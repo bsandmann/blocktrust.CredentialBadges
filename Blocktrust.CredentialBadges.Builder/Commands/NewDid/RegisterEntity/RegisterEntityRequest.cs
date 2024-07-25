@@ -1,7 +1,7 @@
-using MediatR;
-using FluentResults;
+namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid.RegisterEntity;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
+using FluentResults;
+using MediatR;
 
 public class RegisterEntityRequest : IRequest<Result<Guid>>
 {

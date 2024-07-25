@@ -5,7 +5,7 @@
 @using Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetRecordById
 @using Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.GetCredential
 @inject IMediator Mediator
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Home</PageTitle>
 

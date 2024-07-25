@@ -1,8 +1,8 @@
-using MediatR;
-using FluentResults;
-using Blocktrust.CredentialBadges.Builder.Domain;
+namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetBuilderCrdentialByUserId;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetBuilderCredentialsByUserId;
+using Blocktrust.CredentialBadges.Builder.Domain;
+using FluentResults;
+using MediatR;
 
 public class GetBuilderCredentialsByUserIdRequest : IRequest<Result<List<BuilderCredential>>>
 {

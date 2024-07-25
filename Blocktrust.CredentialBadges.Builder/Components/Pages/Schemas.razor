@@ -1,7 +1,7 @@
 @page "/schemas"
 @using MediatR
 @inject IMediator Mediator
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @* @using Blocktrust.CredentialBadges.Builder.Commands.CheckAgentHealth *@
 
 

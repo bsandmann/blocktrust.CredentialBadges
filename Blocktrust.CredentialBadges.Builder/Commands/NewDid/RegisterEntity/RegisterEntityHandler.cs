@@ -1,10 +1,10 @@
+namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid.RegisterEntity;
+
 using Blocktrust.CredentialBadges.Builder.Common;
 using Blocktrust.CredentialBadges.IdentusClientApi;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Options;
-
-namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
 
 public class RegisterEntityHandler : IRequestHandler<RegisterEntityRequest, Result<Guid>>
 {

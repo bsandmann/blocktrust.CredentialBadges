@@ -2,7 +2,7 @@
 @using Blocktrust.CredentialBadges.Builder.Commands.CheckAgentHealth
 @using MediatR
 @inject IMediator Mediator
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Home</PageTitle>
 

@@ -1,7 +1,7 @@
-using MediatR;
-using FluentResults;
+namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid.RegisterWallet;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
+using FluentResults;
+using MediatR;
 
 public class RegisterWalletRequest : IRequest<Result<Guid>>
 {

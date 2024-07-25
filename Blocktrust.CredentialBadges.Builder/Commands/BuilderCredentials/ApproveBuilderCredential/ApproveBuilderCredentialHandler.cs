@@ -31,8 +31,6 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
     {
         try
         {
-
-
             // Retrieve the credential entity
             var entity = await _context.BuilderCredentials
                 .FirstOrDefaultAsync(c => c.CredentialId == request.CredentialId, cancellationToken);

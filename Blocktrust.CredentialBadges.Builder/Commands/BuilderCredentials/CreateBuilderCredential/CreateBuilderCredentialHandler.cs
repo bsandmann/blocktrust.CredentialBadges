@@ -34,7 +34,6 @@ public class CreateBuilderCredentialHandler : IRequestHandler<CreateBuilderCrede
             ThId = request.ThId,
             RecordIdOnAgent = request.RecordIdOnAgent,
             VerifiableCredential = request.VerifiableCredential
-            
         };
 
         try

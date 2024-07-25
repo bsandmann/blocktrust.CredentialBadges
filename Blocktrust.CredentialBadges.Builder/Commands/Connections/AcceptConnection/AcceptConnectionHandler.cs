@@ -1,10 +1,10 @@
+namespace Blocktrust.CredentialBadges.Builder.Commands.Connections.AcceptConnection;
+
 using Blocktrust.CredentialBadges.Builder.Common;
 using Blocktrust.CredentialBadges.IdentusClientApi;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Options;
-
-namespace Blocktrust.CredentialBadges.Builder.Commands.Connections;
 
 public class AcceptConnectionHandler : IRequestHandler<AcceptConnectionRequest, Result<AcceptConnectionResponse>>
 {

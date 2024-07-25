@@ -1,4 +1,4 @@
-namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
+namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid.NewDidAndApiKey;
 
 public class DidAndApiKeyResponse
 {

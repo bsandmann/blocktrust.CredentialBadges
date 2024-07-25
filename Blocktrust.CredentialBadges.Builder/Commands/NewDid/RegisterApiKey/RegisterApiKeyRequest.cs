@@ -1,7 +1,7 @@
-using MediatR;
-using FluentResults;
+namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid.RegisterApiKey;
 
-namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
+using FluentResults;
+using MediatR;
 
 public class RegisterApiKeyRequest : IRequest<Result<string>>
 {

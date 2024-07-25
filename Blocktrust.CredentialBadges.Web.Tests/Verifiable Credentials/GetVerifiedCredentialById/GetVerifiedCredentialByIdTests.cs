@@ -23,10 +23,11 @@ public partial class TestSetup
             Description = "Test Description",
             Image = "https://example.com/image.jpg",
             Credential = "{ \"some\": \"credential data\" }",
-            Status = EVerificationStatus.Verified
+            Status = EVerificationStatus.Verified,
+            Issuer = "Test Issuer",
         };
 
-        _context.Set<VerifiedCredentialEntity>().Add(credentialEntity);
+        _context.VerifiedCredentials.Add(credentialEntity);
         await _context.SaveChangesAsync();
 
         var handler = new GetVerifiedCredentialByIdHandler(_context);

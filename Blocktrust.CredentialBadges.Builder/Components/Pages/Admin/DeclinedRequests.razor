@@ -8,7 +8,7 @@
 @attribute [Authorize]
 @layout AdminLayout
 @inject IMediator Mediator
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 
 <div class="max-w-4xl mx-auto px-4 py-8">

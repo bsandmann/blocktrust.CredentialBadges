@@ -3,9 +3,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Blocktrust.CredentialBadges.Builder.Data
 @using System.Security.Claims
-@rendermode InteractiveServer
-
-
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
 
 @inject UserManager<ApplicationUser> UserManager

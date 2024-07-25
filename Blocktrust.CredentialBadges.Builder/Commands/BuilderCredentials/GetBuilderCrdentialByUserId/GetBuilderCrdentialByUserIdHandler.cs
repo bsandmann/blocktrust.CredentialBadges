@@ -1,10 +1,10 @@
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using FluentResults;
+namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetBuilderCrdentialByUserId;
+
 using Blocktrust.CredentialBadges.Builder.Data;
 using Blocktrust.CredentialBadges.Builder.Domain;
-
-namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetBuilderCredentialsByUserId;
+using FluentResults;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 public class GetBuilderCredentialsByUserIdHandler : IRequestHandler<GetBuilderCredentialsByUserIdRequest, Result<List<BuilderCredential>>>
 {

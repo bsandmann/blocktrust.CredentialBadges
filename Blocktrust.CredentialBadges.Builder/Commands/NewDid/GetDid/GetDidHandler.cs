@@ -1,11 +1,11 @@
+namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid.GetDid;
+
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Blocktrust.CredentialBadges.Builder.Common;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Blocktrust.CredentialBadges.Builder.Commands.NewDid;
 
 public class GetDidHandler : IRequestHandler<GetDidRequest, Result<string>>
 {
