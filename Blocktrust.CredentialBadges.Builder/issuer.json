@@ -6,9 +6,5 @@
   "entityId": "c8189de7-1ca1-485b-a6e7-06b4c4d98875",
   "entityApiKey": "9d3e7b3f66e17132",
   "entityDid": "did:prism:7e2dc793804699ea6c11570f02fb43eb32f9066f540d2b173209481b958c8504:CoQBCoEBEkIKDm15LWlzc3Vpbmcta2V5EAJKLgoJc2VjcDI1NmsxEiECHMWgUM3HbC8942TkwHyBulPNiE-JaVdO2uO4Vp5fREASOwoHbWFzdGVyMBABSi4KCXNlY3AyNTZrMRIhAlUNGDTlTX9ivHD_6Kiv1dxtZzdEpCO8fTDBewycsaEw",
-
-  "connection": {
-    "connectionId": "e9df055a-57f8-4ef2-87c6-bc035f4256f0",
-    "thid": "e9df055a-57f8-4ef2-87c6-bc035f4256f0"
-  }
+  
 }
