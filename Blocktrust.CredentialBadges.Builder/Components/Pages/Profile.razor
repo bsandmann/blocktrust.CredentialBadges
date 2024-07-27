@@ -5,13 +5,13 @@
 @using System.Security.Claims
 @rendermode InteractiveServer
 
-
 @attribute [Authorize]
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 
 <h2 class="text-2xl font-bold">Profile</h2>
 <p>Manage your profile here.</p>
@@ -45,6 +45,6 @@ else
     private async Task Logout()
     {
         await SignInManager.SignOutAsync();
-        NavigationManager.NavigateTo("/");
+        await JSRuntime.InvokeVoidAsync("redirectTo", "/Account/Logout");
     }
 }
