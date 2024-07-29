@@ -1,50 +1,36 @@
 @page "/profile"
+@inject NavigationManager NavigationManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Profile> Logger
+@using Blocktrust.CredentialBadges.Builder.Data
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
-@using Blocktrust.CredentialBadges.Builder.Data
-@using System.Security.Claims
-@rendermode InteractiveServer
-
 @attribute [Authorize]
 
-@inject UserManager<ApplicationUser> UserManager
-@inject SignInManager<ApplicationUser> SignInManager
-@inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
+
+
 
 <h2 class="text-2xl font-bold">Profile</h2>
 <p>Manage your profile here.</p>
 
-@if (user != null)
-{
-    <div>
-        <p><strong>Name:</strong> @user.UserName</p>
-        <button class="btn btn-danger" @onclick="Logout">Logout</button>
-    </div>
-}
-else
-{
-    <p>Loading user information...</p>
-}
+<button class="btn btn-danger" @onclick="LogoutUser">
+    <span class="oi oi-power-standby" aria-hidden="true"></span> Logout
+</button>
 
 @code {
-    private ApplicationUser? user;
-
-    protected override async Task OnInitializedAsync()
+    private async Task LogoutUser()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (!string.IsNullOrEmpty(userId))
+        try
         {
-            user = await UserManager.FindByIdAsync(userId);
+            await SignInManager.SignOutAsync();
+            Logger.LogInformation("User logged out.");
+            NavigationManager.NavigateTo("/", forceLoad: true);
         }
-    }
-
-    private async Task Logout()
-    {
-        await SignInManager.SignOutAsync();
-        await JSRuntime.InvokeVoidAsync("redirectTo", "/Account/Logout");
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred during logout.");
+        }
     }
 }

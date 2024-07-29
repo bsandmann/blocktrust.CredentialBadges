@@ -1,9 +1,12 @@
 @page "/new-did"
 @using Blocktrust.CredentialBadges.Builder.Commands.NewDid
 @using MediatR
+@using Microsoft.AspNetCore.Authorization
 @inject IMediator Mediator
 @inject IJSRuntime JS
 @rendermode InteractiveServer
+@attribute [Authorize]
+
 
 <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
