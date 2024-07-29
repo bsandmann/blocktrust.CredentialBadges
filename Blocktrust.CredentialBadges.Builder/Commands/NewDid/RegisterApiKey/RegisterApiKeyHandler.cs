@@ -11,6 +11,8 @@ public class RegisterApiKeyHandler : IRequestHandler<RegisterApiKeyRequest, Resu
     private readonly HttpClient _httpClient;
     private readonly AppSettings _appSettings;
     private readonly ILogger<RegisterApiKeyHandler> _logger;
+    
+    
 
     public RegisterApiKeyHandler(IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings, ILogger<RegisterApiKeyHandler> logger)
     {
