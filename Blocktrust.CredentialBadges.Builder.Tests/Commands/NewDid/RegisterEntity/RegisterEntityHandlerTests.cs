@@ -44,18 +44,7 @@ public class RegisterEntityHandlerTests
         // Initialize HttpClientFactory
         _httpClientFactory = new TestHttpClientFactory(_appSettings);
     }
-    /// <summary>
-    ///  Method to generate a random name
-    /// </summary>
-    /// <param name="length"></param>
-    /// <returns></returns>
-    private string GenerateRandomName(int length)
-    {
-        var random = new Random();
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-    }
+
     /// <summary>
     /// Method to register a wallet under which an entity will be registered
     /// </summary>
@@ -65,27 +54,15 @@ public class RegisterEntityHandlerTests
         var registerWalletHandler = new RegisterWalletHandler(_httpClientFactory, _appSettings, _walletLogger);
         var request = new RegisterWalletRequest
         {
-            Seed = GenerateRandomHexString(128), // Generate a random seed
-            Name = GenerateRandomName(10)         // Generate a random name
+            Seed = TestHelpers.GenerateRandomHexString(128), // Generate a random seed
+            Name = TestHelpers.GenerateRandomName(10)         // Generate a random name
         };
 
         var result = await registerWalletHandler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeTrue(); // Ensure wallet registration was successful
         return result.Value;
     }
-    /// <summary>
-    ///  Method to generate a random hex string
-    /// </summary>
-    /// <param name="length"></param>
-    /// <returns></returns>
-    private string GenerateRandomHexString(int length)
-    {
-        var random = new Random();
-        var buffer = new byte[length / 2];
-        random.NextBytes(buffer);
-        return BitConverter.ToString(buffer).Replace("-", "").ToLower();
-    }
-
+  
     /// <summary>
     /// Test for successful entity registration
     /// </summary>
@@ -97,7 +74,7 @@ public class RegisterEntityHandlerTests
         var handler = new RegisterEntityHandler(_httpClientFactory, _appSettings, _logger);
         var request = new RegisterEntityRequest
         {
-            Name = GenerateRandomName(10),
+            Name = TestHelpers.GenerateRandomName(10),
             WalletId = walletId // Use the registered wallet ID
         };
 
@@ -120,7 +97,7 @@ public class RegisterEntityHandlerTests
         var handler = new RegisterEntityHandler(_httpClientFactory, _appSettings, _logger);
         var request = new RegisterEntityRequest
         {
-            Name = GenerateRandomName(10),
+            Name = TestHelpers.GenerateRandomName(10),
             WalletId = walletId // Use the registered wallet ID
         };
 
