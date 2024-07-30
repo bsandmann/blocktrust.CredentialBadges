@@ -8,13 +8,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Blocktrust.CredentialBadges.Builder.Tests.Commands.Credentials.GetRecordByIdHandler;
-
+/// <summary>
+///  Test for fetching credential record by id
+/// </summary>
 public class GetRecordByIdHandlerTests
 {
     private readonly IOptions<AppSettings> _appSettings;
     private readonly ILogger<Builder.Commands.Credentials.GetRecordById.GetRecordByIdHandler> _logger;
     private readonly TestHttpClientFactory _httpClientFactory;
-
+    /// <summary>
+    ///   Constructor to initialize the test class
+    /// </summary>
     public GetRecordByIdHandlerTests()
     {
         // Setup service collection
@@ -38,7 +42,10 @@ public class GetRecordByIdHandlerTests
         // Initialize HttpClientFactory
         _httpClientFactory = new TestHttpClientFactory(_appSettings);
     }
-
+    /// <summary>
+    ///  Test to get credential record by id when record exists
+    /// </summary>
+    
     // [Fact]
     // public async Task Handle_WithValidRequest_ShouldReturnSuccessResult()
     // {
@@ -54,6 +61,10 @@ public class GetRecordByIdHandlerTests
     //     result.Value.Should().NotBeNull();
     //     result.Value.Should().BeOfType<IssueCredentialRecord>();
     // }
+    
+    /// <summary>
+    ///  Test to get credential record by id when record does not exist
+    /// </summary>
 
     [Fact]
     public async Task Handle_WithInvalidRequest_ShouldReturnFailResult()
@@ -70,6 +81,9 @@ public class GetRecordByIdHandlerTests
         result.Errors.Should().ContainSingle().Which.Message.Should().Contain("Error retrieving credential record");
     }
 
+    /// <summary>
+    ///  Test to get credential record by id when record exists
+    /// </summary>
     [Fact]
     public async Task Handle_WithCustomApiKey_ShouldUseProvidedApiKey()
     {
@@ -88,6 +102,9 @@ public class GetRecordByIdHandlerTests
     }
 }
 
+/// <summary>
+///  Test HttpClientFactory
+/// </summary>
 public class TestHttpClientFactory : IHttpClientFactory
 {
     private readonly IOptions<AppSettings> _appSettings;
@@ -106,7 +123,9 @@ public class TestHttpClientFactory : IHttpClientFactory
         return client;
     }
 }
-
+/// <summary>
+///  Test HttpMessageHandler
+/// </summary>
 public class TestHttpMessageHandler : HttpMessageHandler
 {
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

@@ -1,24 +1,25 @@
-using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetAllBuilderCredentials;
+using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetBuilderCredentialsByUserId;
 using Blocktrust.CredentialBadges.Builder.Data;
 using Blocktrust.CredentialBadges.Builder.Data.Entities;
+using Blocktrust.CredentialBadges.Builder.Enums;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Blocktrust.CredentialBadges.Builder.Enums;
 
-namespace Blocktrust.CredentialBadges.Tests.Commands.BuilderCredentials;
+namespace Blocktrust.CredentialBadges.Builder.Tests.Commands.BuilderCredentials.GetBuilderCredentialsByUserId;
 /// <summary>
-///  Test for fetching all builder credentials
+/// Test for fetching all builder credentials by user id
 /// </summary>
-public class GetAllBuilderCredentialsHandlerTests : IDisposable
+public class GetBuilderCredentialsByUserIdHandlerTests : IDisposable
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger<GetAllBuilderCredentialsHandler> _logger;
-    private readonly GetAllBuilderCredentialsHandler _handler;
+    private readonly ILogger<GetBuilderCredentialsByUserIdHandler> _logger;
+    private readonly GetBuilderCredentialsByUserIdHandler _handler;
+    
     /// <summary>
-    ///  Constructor to initialize the test class
+    /// Constructor to initialize the test class
     /// </summary>
-    public GetAllBuilderCredentialsHandlerTests()
+    public GetBuilderCredentialsByUserIdHandlerTests()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql("Host=localhost; Database=BuilderDatabase; Username=postgres; Password=Post@0DB")
@@ -26,8 +27,8 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
 
         _context = new ApplicationDbContext(options);
         _context.Database.EnsureCreated();
-        _logger = new LoggerFactory().CreateLogger<GetAllBuilderCredentialsHandler>();
-        _handler = new GetAllBuilderCredentialsHandler(_context, _logger);
+        _logger = new LoggerFactory().CreateLogger<GetBuilderCredentialsByUserIdHandler>();
+        _handler = new GetBuilderCredentialsByUserIdHandler(_context, _logger);
     }
 
     /// <summary>
@@ -40,12 +41,13 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
     }
 
     /// <summary>
-    ///  Test to get all builder credentials when credentials exist
+    ///  Test to get all builder credentials by user id
     /// </summary>
     [Fact]
-    public async Task Handle_ShouldReturnAllBuilderCredentials_WhenCredentialsExist()
+    public async Task Handle_ShouldReturnBuilderCredentials_WhenCredentialsExistForUserId()
     {
         // Arrange
+        var userId = "testuser";
         var credentials = new List<BuilderCredentialEntity>
         {
             new()
@@ -59,7 +61,7 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
                 IssuerConnectionId = Guid.NewGuid(),
                 SubjectConnectionId = Guid.NewGuid(),
                 CredentialSubject = "Test Subject 1",
-                UserId = "testuser1",
+                UserId = userId,
                 ThId = Guid.NewGuid(),
                 RecordIdOnAgent = Guid.NewGuid(),
                 VerifiableCredential = "Test VC 1"
@@ -75,7 +77,7 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
                 IssuerConnectionId = Guid.NewGuid(),
                 SubjectConnectionId = Guid.NewGuid(),
                 CredentialSubject = "Test Subject 2",
-                UserId = "testuser2",
+                UserId = userId,
                 ThId = Guid.NewGuid(),
                 RecordIdOnAgent = Guid.NewGuid(),
                 VerifiableCredential = "Test VC 2"
@@ -85,26 +87,32 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
         await _context.BuilderCredentials.AddRangeAsync(credentials);
         await _context.SaveChangesAsync();
 
-        var request = new GetAllBuilderCredentialsRequest();
+        var request = new GetBuilderCredentialsByUserIdRequest
+        {
+            UserId = userId
+        };
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        //COUNT TWO OR MORE 
-        result.Value.Should().HaveCountGreaterOrEqualTo(2);
-     
+        result.Value.Should().HaveCount(2);
+        result.Value[0].UserId.Should().Be(userId);
+        result.Value[1].UserId.Should().Be(userId);
     }
 
     /// <summary>
-    ///  Test to get all builder credentials when no credentials exist
+    ///  Test to get all builder credentials by user id
     /// </summary>
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoCredentialsExist()
+    public async Task Handle_ShouldReturnEmptyList_WhenNoCredentialsExistForUserId()
     {
         // Arrange
-        var request = new GetAllBuilderCredentialsRequest();
+        var request = new GetBuilderCredentialsByUserIdRequest
+        {
+            UserId = "nonexistentuser"
+        };
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -115,17 +123,20 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
     }
 
     /// <summary>
-    ///  Test to get all builder credentials with invalid context 
+    ///  Test to get all builder credentials by user id
     /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnFailResult_WhenExceptionOccurs()
     {
         // Arrange
-        var handlerWithFaultyContext = new GetAllBuilderCredentialsHandler(null, _logger);
-        var request = new GetAllBuilderCredentialsRequest();
+        var faultyHandler = new GetBuilderCredentialsByUserIdHandler(null, _logger);
+        var request = new GetBuilderCredentialsByUserIdRequest
+        {
+            UserId = "testuser"
+        };
 
         // Act
-        var result = await handlerWithFaultyContext.Handle(request, CancellationToken.None);
+        var result = await faultyHandler.Handle(request, CancellationToken.None);
 
         // Assert
         result.IsFailed.Should().BeTrue();

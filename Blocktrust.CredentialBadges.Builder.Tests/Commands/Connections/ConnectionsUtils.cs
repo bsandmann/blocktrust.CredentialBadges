@@ -1,19 +1,10 @@
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Blocktrust.CredentialBadges.Builder.Commands.Connections;
 using Blocktrust.CredentialBadges.Builder.Common;
-using Blocktrust.CredentialBadges.IdentusClientApi;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Xunit;
 
 
 namespace Blocktrust.CredentialBadges.Builder.Tests.Commands.Connections;
+
 
 public class TestHttpClientFactory : IHttpClientFactory
 {
@@ -35,6 +26,8 @@ public class TestHttpClientFactory : IHttpClientFactory
         return client;
     }
 }
+
+
 
 public class TestHttpMessageHandler : HttpMessageHandler
 {

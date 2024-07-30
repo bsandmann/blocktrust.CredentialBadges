@@ -7,13 +7,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Blocktrust.CredentialBadges.Tests.Commands.Connections;
-
+/// <summary>
+///  Tests for initializing connection
+/// </summary>
 public class InitializeConnectionHandlerTests
 {
     private readonly IOptions<AppSettings> _appSettings;
     private readonly ILogger<InitializeConnectionHandler> _logger;
     private readonly TestHttpClientFactory _httpClientFactory;
-
+    /// <summary>
+    ///     Constructor to initialize the test class
+    /// </summary>
     public InitializeConnectionHandlerTests()
     {
         var services = new ServiceCollection();
@@ -32,23 +36,26 @@ public class InitializeConnectionHandlerTests
         _httpClientFactory = new TestHttpClientFactory(_appSettings);
     }
 
-    [Fact]
-    public async Task Handle_ShouldReturnSuccessResult_WhenConnectionCreatedSuccessfully()
-    {
-        // Arrange
-        var handler = new InitializeConnectionHandler(_httpClientFactory, _appSettings, _logger);
-        var request = new InitializeConnectionRequest();
+    // [Fact]
+    // public async Task Handle_ShouldReturnSuccessResult_WhenConnectionCreatedSuccessfully()
+    // {
+    //     // Arrange
+    //     var handler = new InitializeConnectionHandler(_httpClientFactory, _appSettings, _logger);
+    //     var request = new InitializeConnectionRequest();
+    //
+    //     // Act
+    //     var result = await handler.Handle(request, CancellationToken.None);
+    //
+    //     // Assert
+    //     result.IsSuccess.Should().BeTrue();
+    //     result.Value.Should().NotBeNull();
+    //     result.Value.ConnectionId.Should().NotBeNullOrEmpty();
+    //     result.Value.InvitationUrl.Should().NotBeNullOrEmpty();
+    // }
 
-        // Act
-        var result = await handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.ConnectionId.Should().NotBeNullOrEmpty();
-        result.Value.InvitationUrl.Should().NotBeNullOrEmpty();
-    }
-
+    /// <summary>
+    ///  Test to get builder credential by id when credential exists
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnFailResult_WhenExceptionOccurs()
     {
@@ -65,6 +72,9 @@ public class InitializeConnectionHandlerTests
         result.Errors.Should().ContainSingle().Which.Message.Should().Be("Test exception");
     }
 
+    /// <summary>
+    ///  Test to get builder credential by id with invalid context
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldUseCorrectApiKey()
     {

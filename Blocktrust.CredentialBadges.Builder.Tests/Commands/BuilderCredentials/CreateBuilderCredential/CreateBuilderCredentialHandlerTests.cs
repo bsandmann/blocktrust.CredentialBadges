@@ -7,12 +7,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Blocktrust.CredentialBadges.Tests.Commands.BuilderCredentials;
 
+/// <summary>
+///  Test for creating a builder credential
+/// </summary>
 public class CreateBuilderCredentialHandlerTests : IDisposable
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<CreateBuilderCredentialHandler> _logger;
     private readonly CreateBuilderCredentialHandler _handler;
-
+    /// <summary>
+    ///     Constructor to initialize the test class
+    /// </summary>
     public CreateBuilderCredentialHandlerTests()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -25,12 +30,18 @@ public class CreateBuilderCredentialHandlerTests : IDisposable
         _handler = new CreateBuilderCredentialHandler(_context, _logger);
     }
 
+    /// <summary>
+    ///     Clean up the test class
+    /// </summary>
     public void Dispose()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
     }
 
+    /// <summary>
+    ///   Test to create a builder credential
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldCreateBuilderCredential_WhenRequestIsValid()
     {
@@ -75,6 +86,9 @@ public class CreateBuilderCredentialHandlerTests : IDisposable
         var savedCredential = await _context.BuilderCredentials.FirstOrDefaultAsync(c => c.CredentialId == result.Value.CredentialId);
         savedCredential.Should().NotBeNull();
     }
+    /// <summary>
+    ///  Test to create a builder credential with invalid data
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnFailResult_WhenInvalidDataProvided()
     {
