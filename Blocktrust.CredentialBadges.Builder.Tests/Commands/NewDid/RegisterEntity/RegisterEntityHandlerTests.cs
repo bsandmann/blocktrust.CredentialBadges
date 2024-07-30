@@ -108,4 +108,6 @@ public class RegisterEntityHandlerTests
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message.Contains("Invalid request parameters\n\nStatus: 400\nResponse: \n"));
     }
+    
+    
 }
