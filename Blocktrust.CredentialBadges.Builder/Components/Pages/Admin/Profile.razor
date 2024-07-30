@@ -1,53 +1,58 @@
 @page "/admin/profile"
-@using Blocktrust.CredentialBadges.Builder.Components.Layout
-@using Blocktrust.CredentialBadges.Builder.Data
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Identity
-@using System.Security.Claims
 
-@attribute [Authorize]
-@layout AdminLayout
-
-@inject UserManager<ApplicationUser> UserManager
-@inject SignInManager<ApplicationUser> SignInManager
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 
-@rendermode InteractiveServer
+<PageTitle>Profile</PageTitle>
 
+<AuthorizeView Roles="adminRole">
 
-<h2 class="text-2xl font-bold">Profile</h2>
-<p>Manage your profile here.</p>
-
-@if (user != null)
-{
-    <div>
-        <p><strong>Name:</strong> @user.UserName</p>
-        <button class="btn btn-danger" @onclick="Logout">Logout</button>
+<div class="container mx-auto p-6 max-w-xl bg-white rounded-lg shadow-md mt-10">
+    <div class="text-center">
+        <h1 class="text-3xl font-bold mb-4">User Profile</h1>
+        <p class="text-xl mb-8">Welcome, @username!</p>
     </div>
-}
-else
-{
-    <p>Loading user information...</p>
-}
+
+    <form action="Account/Logout" method="post" class="text-center">
+        <AntiforgeryToken />
+        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+        <button type="submit" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
+            <span class="bi bi-box-arrow-right mr-2" aria-hidden="true"></span> Logout
+        </button>
+    </form>
+</div>
+
+</AuthorizeView>
+
 
 @code {
-    private ApplicationUser? user;
+    private string? currentUrl;
+    private string? username;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
 
-        if (!string.IsNullOrEmpty(userId))
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
         {
-            user = await UserManager.FindByIdAsync(userId);
+            username = user.Identity.Name;
         }
     }
 
-    private async Task Logout()
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        await SignInManager.SignOutAsync();
-        NavigationManager.NavigateTo("/");
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }

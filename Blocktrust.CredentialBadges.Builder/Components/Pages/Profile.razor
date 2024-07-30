@@ -1,36 +1,55 @@
 @page "/profile"
-@inject NavigationManager NavigationManager
-@inject SignInManager<ApplicationUser> SignInManager
-@inject ILogger<Profile> Logger
-@using Blocktrust.CredentialBadges.Builder.Data
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Identity
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 @attribute [Authorize]
 
 
-@rendermode InteractiveServer
+<PageTitle>Profile</PageTitle>
 
+<div class="container mx-auto p-6 max-w-xl bg-white rounded-lg shadow-md mt-10">
+    <div class="text-center">
+        <h1 class="text-3xl font-bold mb-4">User Profile</h1>
+        <p class="text-xl mb-8">Welcome, @username!</p>
+    </div>
 
-
-<h2 class="text-2xl font-bold">Profile</h2>
-<p>Manage your profile here.</p>
-
-<button class="btn btn-danger" @onclick="LogoutUser">
-    <span class="oi oi-power-standby" aria-hidden="true"></span> Logout
-</button>
+    <form action="Account/Logout" method="post" class="text-center">
+        <AntiforgeryToken />
+        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+        <button type="submit" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
+            <span class="bi bi-box-arrow-right mr-2" aria-hidden="true"></span> Logout
+        </button>
+    </form>
+</div>
 
 @code {
-    private async Task LogoutUser()
+    private string? currentUrl;
+    private string? username;
+
+    protected override async Task OnInitializedAsync()
     {
-        try
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
         {
-            await SignInManager.SignOutAsync();
-            Logger.LogInformation("User logged out.");
-            NavigationManager.NavigateTo("/", forceLoad: true);
+            username = user.Identity.Name;
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "An error occurred during logout.");
-        }
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
