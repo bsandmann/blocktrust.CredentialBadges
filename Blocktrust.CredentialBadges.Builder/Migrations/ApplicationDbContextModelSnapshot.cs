@@ -116,13 +116,13 @@ namespace Blocktrust.CredentialBadges.Builder.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2d3278e5-0fee-461a-81a2-b7e4e4df81f8"),
+                            Id = new Guid("c131feb1-f7b1-404e-b31b-a9eb6094f0d9"),
                             Name = "adminRole",
                             NormalizedName = "ADMINROLE"
                         },
                         new
                         {
-                            Id = new Guid("9bf6af0e-26d5-4bd0-9646-5e33ff7d85ea"),
+                            Id = new Guid("d89e9303-e49c-4083-af96-9dbc6833dfa4"),
                             Name = "nonAdminRole",
                             NormalizedName = "NONADMINROLE"
                         });

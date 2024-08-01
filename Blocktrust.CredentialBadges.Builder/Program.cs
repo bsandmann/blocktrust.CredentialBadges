@@ -85,4 +85,5 @@ app.MapRazorComponents<App>()
 
 app.MapAdditionalIdentityEndpoints();
 
+app.UseStatusCodePagesWithRedirects("/");
 app.Run();

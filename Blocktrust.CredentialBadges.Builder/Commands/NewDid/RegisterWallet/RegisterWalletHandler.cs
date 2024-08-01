@@ -47,6 +47,7 @@ public class RegisterWalletHandler : IRequestHandler<RegisterWalletRequest, Resu
         {
             _logger.LogError(ex, "Error creating wallet");
             return Result.Fail<Guid>(ex.Message);
+            
         }
     }
 }

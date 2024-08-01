@@ -1,4 +1,8 @@
+@page "/admin/dashboard"
 @page "/admin/requests"
+@page "/admin/requests/pending"
+@page "/admin/requests/approved"
+@page "/admin/requests/declined"
 @using Blocktrust.CredentialBadges.Builder.Domain
 @using Blocktrust.CredentialBadges.Builder.Enums
 @using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetAllBuilderCredentials
@@ -10,109 +14,181 @@
 @layout AdminLayout
 @inject IMediator Mediator
 @inject NavigationManager NavigationManager
-
 @rendermode InteractiveServer
+@implements IDisposable
 
-<div class="max-w-4xl mx-auto px-4 py-8">
-    <h2 class="text-2xl font-bold">Requests</h2>
-    <p class="text-gray-600 mb-4">Manage all requests here.</p>
+            <AuthorizeView Roles="adminRole">
 
-    <table class="w-full bg-white border border-gray-300 rounded">
-        <thead>
-            <tr class="bg-slate-100">
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Label</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Subject DID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var credential in credentials)
-            {
-                <tr class="border-t border-gray-300">
-                    <td class="px-6 py-4 whitespace-nowrap">@credential.Date.ToShortDateString()</td>
-                    <td class="px-6 py-4 whitespace-nowrap" title="@credential.Label">@TruncateText(credential.Label, 20)</td>
-                    <td class="px-6 py-4 whitespace-nowrap" title="@credential.SubjectDid">@TruncateText(credential.SubjectDid, 20)</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="@(GetStatusClass(credential.Status)) px-2 py-1 rounded-full text-xs">@GetStatusText(credential.Status)</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                        <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-600 disabled:bg-gray-100 disabled:cursor-not-allowed" 
-                                @onclick="() => DeclineCredential(credential)" 
-                                disabled="@(credential.Status != EBuilderCredentialStatus.Pending)">
-                            Decline
-                        </button>
-                        <button class="bg-slate-700 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-slate-800" 
-                                @onclick="() => ViewCredential(credential)">
-                            View
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+                <div class="max-w-4xl mx-auto px-4 py-8">
+                    @if (IsCurrentPage("/admin/dashboard"))
+                    {
+                        <h2 class="text-2xl font-bold">Dashboard</h2>
+                        <p>Welcome to the admin dashboard!</p>
 
-@code {
-    private List<BuilderCredential> credentials = new List<BuilderCredential>();
+                        <div class="flex px-2.5 gap-4 mb-4">
+                            <div class="bg-white p-4 w-full rounded shadow-md border border-gray-300">
+                                <h3 class="text-xl font-semibold text-gray-800">Total Approved</h3>
+                                <p class="text-3xl font-bold text-green-600">@totalApproved</p>
+                            </div>
+                            <div class="bg-white w-full p-4 rounded shadow-md border border-gray-300">
+                                <h3 class="text-xl font-semibold text-gray-800">Total Pending</h3>
+                                <p class="text-3xl font-bold text-yellow-600">@totalPending</p>
+                            </div>
+                        </div>
+        
+                        <h3 class="text-xl font-bold">Recent requests</h3>
+
+                    }
+                    else
+                    {
+                        <h2 class="text-2xl font-bold">@GetPageTitle()</h2>
+                        <p class="text-gray-600 mb-4">@GetPageDescription()</p>
+                    }
+
+                    <table class="w-full bg-white border border-gray-300 rounded">
+                        <thead>
+                        <tr class="bg-slate-100">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Label</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Subject DID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var credential in FilteredCredentials())
+                        {
+                            <tr class="border-t border-gray-300">
+                                <td class="px-6 py-4 whitespace-nowrap">@credential.Date.ToShortDateString()</td>
+                                <td class="px-6 py-4 whitespace-nowrap" title="@credential.Label">@TruncateText(credential.Label, 20)</td>
+                                <td class="px-6 py-4 whitespace-nowrap" title="@credential.SubjectDid">@TruncateText(credential.SubjectDid, 20)</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="@GetStatusClass(credential.Status) px-2 py-1 rounded-full text-xs">@GetStatusText(credential.Status)</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
+                                    @if (credential.Status == EBuilderCredentialStatus.Pending)
+                                    {
+                                        <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-600" 
+                                                @onclick="() => DeclineCredential(credential)">
+                                            Decline
+                                        </button>
+                                    }
+                                  
+                        
+                        
+                                    <button class="bg-slate-700 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-slate-800" 
+                                            @onclick="() => ViewCredential(credential)">
+                                        View
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                </AuthorizeView>
+
+            @code {
+    private List<BuilderCredential> credentials = new();
+    private int totalApproved;
+    private int totalPending;
+
+    [Parameter]
+    public string CurrentRoute { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await Mediator.Send(new GetAllBuilderCredentialsRequest());
-        if (result.IsSuccess)
+        CurrentRoute = NavigationManager.Uri;
+        NavigationManager.LocationChanged += HandleLocationChanged;
+        await LoadCredentials();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (CurrentRoute != NavigationManager.Uri)
         {
-            credentials = result.Value;
-        }
-        else
-        {
-            // Handle error
-            Console.WriteLine("Error retrieving credentials: " + result.Errors.First().Message);
+            CurrentRoute = NavigationManager.Uri;
+            await LoadCredentials();
+            StateHasChanged();
         }
     }
 
-    private void ViewCredential(BuilderCredential credential)
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
     {
-        // Navigate to detailed view of the credential
-        NavigationManager.NavigateTo($"/credentials/{credential.CredentialId}");
+        CurrentRoute = e.Location;
+        await LoadCredentials();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+    private async Task LoadCredentials()
+    {
+        if (credentials.Count == 0)
+        {
+            var result = await Mediator.Send(new GetAllBuilderCredentialsRequest());
+            if (result.IsSuccess)
+            {
+                credentials = result.Value;
+            }
+            else
+            {
+                Console.WriteLine("Error retrieving credentials: " + result.Errors.First().Message);
+            }
+        }
+
+        totalApproved = credentials.Count(c => c.Status != EBuilderCredentialStatus.Pending && c.Status != EBuilderCredentialStatus.Declined);
+        totalPending = credentials.Count(c => c.Status == EBuilderCredentialStatus.Pending);
+    }
+
+    private IEnumerable<BuilderCredential> FilteredCredentials()
+    {
+        if (IsCurrentPage("/admin/requests/pending"))
+            return credentials.Where(c => c.Status == EBuilderCredentialStatus.Pending);
+        else if (IsCurrentPage("/admin/requests/approved"))
+            return credentials.Where(c => c.Status != EBuilderCredentialStatus.Pending && c.Status != EBuilderCredentialStatus.Declined);
+        else if (IsCurrentPage("/admin/requests/declined"))
+            return credentials.Where(c => c.Status == EBuilderCredentialStatus.Declined);
+        else if (IsCurrentPage("/admin/dashboard"))
+            return credentials.OrderByDescending(c => c.Date).Take(5);
+        else
+            return credentials;
     }
 
     private async Task DeclineCredential(BuilderCredential credential)
     {
-        // Create an update request with Declined status
         var updateRequest = new UpdateBuilderCredentialRequest
         {
             CredentialId = credential.CredentialId,
             Status = EBuilderCredentialStatus.Declined,
-            VerifiableCredential = credential.VerifiableCredential // You need to pass the current credential object
+            VerifiableCredential = credential.VerifiableCredential
         };
 
         var updateResult = await Mediator.Send(updateRequest);
 
         if (updateResult.IsSuccess)
         {
-            // Update the local list of credentials to reflect the change
-            var updatedCredential = credentials.FirstOrDefault(c => c.CredentialId == credential.CredentialId);
-            if (updatedCredential != null)
-            {
-                updatedCredential.Status = EBuilderCredentialStatus.Declined;
-            }
-            // Refresh the state of the component
+            credential.Status = EBuilderCredentialStatus.Declined;
             StateHasChanged();
         }
         else
         {
-            // Handle error
             Console.WriteLine("Error declining credential: " + updateResult.Errors.First().Message);
         }
+    }
+
+    private void ViewCredential(BuilderCredential credential)
+    {
+        NavigationManager.NavigateTo($"/admin/requests/{credential.CredentialId}");
     }
 
     private string TruncateText(string text, int maxLength)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
-        {
             return text;
-        }
         return text.Substring(0, maxLength) + "...";
     }
 
@@ -134,17 +210,29 @@
 
     private string GetStatusText(EBuilderCredentialStatus status)
     {
-        return status switch
-        {
-            EBuilderCredentialStatus.WaitingAcceptance => "Waiting Acceptance",
-            EBuilderCredentialStatus.RequestSent => "Request Sent",
-            EBuilderCredentialStatus.CredentialReceived => "Credential Received",
-            EBuilderCredentialStatus.Revoked => "Revoked",
-            EBuilderCredentialStatus.Expired => "Expired",
-            EBuilderCredentialStatus.Approved => "Approved",
-            EBuilderCredentialStatus.Pending => "Pending",
-            EBuilderCredentialStatus.Declined => "Declined",
-            _ => "Unknown",
-        };
+        return status.ToString();
+    }
+
+    private bool IsCurrentPage(string route)
+    {
+        return CurrentRoute.EndsWith(route);
+    }
+
+    private string GetPageTitle()
+    {
+        if (IsCurrentPage("/admin/requests")) return "Requests";
+        if (IsCurrentPage("/admin/requests/pending")) return "Pending Requests";
+        if (IsCurrentPage("/admin/requests/approved")) return "Approved Requests";
+        if (IsCurrentPage("/admin/requests/declined")) return "Declined Requests";
+        return "Requests";
+    }
+
+    private string GetPageDescription()
+    {
+        if (IsCurrentPage("/admin/requests")) return "Manage all requests here.";
+        if (IsCurrentPage("/admin/requests/pending")) return "Manage pending requests here.";
+        if (IsCurrentPage("/admin/requests/approved")) return "Manage approved requests here.";
+        if (IsCurrentPage("/admin/requests/declined")) return "Manage declined requests here.";
+        return "Manage requests here.";
     }
 }

@@ -21,7 +21,8 @@ public class GetRecordByIdHandler : IRequestHandler<GetRecordByIdRequest, Result
 
     public async Task<Result<IssueCredentialRecord>> Handle(GetRecordByIdRequest request, CancellationToken cancellationToken)
     {
-        if(request.ApiKey != null)
+      
+        if (!string.IsNullOrEmpty(request.ApiKey))
         {
             _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
         }
@@ -29,6 +30,8 @@ public class GetRecordByIdHandler : IRequestHandler<GetRecordByIdRequest, Result
         {
             _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
         }
+        
+        
         var identusClient = new IdentusClient(_httpClient)
         {
             BaseUrl = _appSettings.Agent2BaseUrl
@@ -37,12 +40,14 @@ public class GetRecordByIdHandler : IRequestHandler<GetRecordByIdRequest, Result
         try
         {
             var response = await identusClient.GetCredentialRecordAsync(request.RecordId, cancellationToken);
+            
+            Console.WriteLine(response);
             return Result.Ok(response);
         }
         catch (ApiException ex)
         {
             _logger.LogError(ex, "Error retrieving credential record");
-            return Result.Fail(ex.Message);
+            return Result.Fail($"Error retrieving credential record: {ex.Message}");
         }
     }
 }

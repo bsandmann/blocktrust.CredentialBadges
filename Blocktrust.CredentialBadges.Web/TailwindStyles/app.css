@@ -82,3 +82,54 @@
 }
 
 
+
+
+
+
+
+
+
+
+
+
+/* Custom styles for navigation links */
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    padding-bottom: 8px;
+    transition: color 0.5s ease;
+    color: #374151;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    color: #1f2937;
+}
+
+.nav-link.active {
+    color: #1f2937;
+}
+
+/* Underline styles */
+.nav-link:hover::after,
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 3px;
+    background-color: #374151;
+    transition: width 0.5s ease, background-color 0.5s ease;
+}
+
+
+
+
+
+
+
+

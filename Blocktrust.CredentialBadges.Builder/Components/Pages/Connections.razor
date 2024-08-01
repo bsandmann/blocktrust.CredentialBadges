@@ -3,9 +3,12 @@
 @using Blocktrust.CredentialBadges.Builder.Commands.Connections.AcceptConnection
 @using Blocktrust.CredentialBadges.Builder.Commands.Connections.InitializeConnection
 @using MediatR
+@using Microsoft.AspNetCore.Authorization
 @inject IMediator Mediator
 @inject IJSRuntime JS
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize]
+
 
 <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -173,5 +176,4 @@
 
         return base64String;
     }
-
 }

@@ -17,6 +17,8 @@ public class AppSettings
     
     
     public string IssuingDID { get; set; }
+    
+    public string SnippetBaseUrl { get; set; }
 
     
 }
