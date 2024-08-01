@@ -70,7 +70,8 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
                 CredentialFormat = "JWT",
                 IssuingDID = _appSettings.IssuingDID,
                 ConnectionId = entity.IssuerConnectionId,
-                AutomaticIssuance = true
+                AutomaticIssuance = true,
+                ValidityPeriod = 300000000
             };
 
             var offerResult = await _mediator.Send(offerRequest, cancellationToken);

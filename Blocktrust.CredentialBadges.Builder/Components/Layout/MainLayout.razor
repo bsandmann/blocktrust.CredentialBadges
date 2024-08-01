@@ -4,27 +4,37 @@
 
 <div class="min-h-screen flex flex-col">
     <!-- Top Navigation -->
-    <nav class="bg-white text-slate-700 p-4 flex justify-end items-center">
+    <nav class="bg-white text-slate-700 p-4 flex justify-between px-8 items-center">
+        <a href="/" class="flex justify-center items-center" Match="NavLinkMatch.All">
+            <svg id="Ebene_1" style="height: 28px; fill: #0f172a;" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.92 35.92"><path d="M8.91,13.84,9,23.5a.24.24,0,0,1-.36.2l-1.31-.78a.26.26,0,0,1-.11-.2l0-8.88Z"></path>
+                                <path class="cls-1" d="M27.91,22v2.1a1.36,1.36,0,0,1-.67,1.18L16.42,31.57a1.44,1.44,0,0,1-.7.19,1.36,1.36,0,0,1-.67-.19L4.29,25.29a1.39,1.39,0,0,1-.68-1.18V7.54A1.37,1.37,0,0,1,4.3,6.37l.49-.29,1.74,1-1,.59a.22.22,0,0,0-.12.21V23.74a.23.23,0,0,0,.12.2l10.1,5.9a.23.23,0,0,0,.25,0L26,23.94a.25.25,0,0,0,.12-.2V22Z"></path>
+                                <path class="cls-1" d="M4.79,6.08,15,.18A1.47,1.47,0,0,1,15.72,0a1.43,1.43,0,0,1,.67.18L30.84,8.41a1.35,1.35,0,0,1,.69,1.18V26.17a1.36,1.36,0,0,1-.68,1.18L16.4,35.74a1.26,1.26,0,0,1-.68.18,1.32,1.32,0,0,1-.69-.18L7,31.07l.89-1.54L15.6,34a.33.33,0,0,0,.24,0l13.8-8a.27.27,0,0,0,.12-.21V10a.23.23,0,0,0-.12-.2L15.84,1.9a.33.33,0,0,0-.24,0L6.53,7.13Z"></path>
+                                <path class="cls-1" d="M8.31,8.21l6.75-3.87a1.4,1.4,0,0,1,.67-.18,1.47,1.47,0,0,1,.68.18l10.82,6.17a1.38,1.38,0,0,1,.68,1.18v6.76H26.14V12.07a.23.23,0,0,0-.13-.2L15.85,6.07a.25.25,0,0,0-.24,0L9,9.85a.26.26,0,0,0-.12.21v1.59H7.12V9.82a1.58,1.58,0,0,1,.8-1.39Z"></path>
+                                <path class="cls-1" d="M3.88,27.19,3,28.7.67,27.37A1.33,1.33,0,0,1,0,26.22V5.14A.24.24,0,0,1,.24,4.9h1.3l.09,0a.21.21,0,0,1,.14.21V25.85a.22.22,0,0,0,.13.2Z"></path></svg>
+            <span class=" text-3xl text-slate-900 font-semibold">BlocktrustCredentials</span>
+        </a>
         <div class="flex items-center space-x-8">
-            <NavLink href="/" class="nav-link gap-1" Match="NavLinkMatch.All">
-                <span class="material-icons">home</span>
-                <span>Home</span>
-            </NavLink>
+ 
 
             <!-- Conditional rendering based on role -->
             <AuthorizeView Roles="adminRole">
                 <Authorized>
-                    @* <NavLink href="/admin/connections" class="nav-link gap-1" Match="NavLinkMatch.All"> *@
-                    @*     <span class="material-icons">link</span> *@
-                    @*     <span>Connections</span> *@
-                    @* </NavLink> *@
                     <NavLink href="/admin/dashboard" class="nav-link gap-1" Match="NavLinkMatch.All">
-                        <span class="material-icons">admin_panel_settings</span>
-                        <span>Admin Panel</span>
+                        <span class="material-icons">dashboard</span>
+                    <span>Dashboard</span>
                     </NavLink>
+                    <NavLink href="/admin/profile" class="nav-link gap-1" Match="NavLinkMatch.All">
+                        <span class="material-icons">account_circle</span>
+                        <span>Profile</span>
+                    </NavLink>
+
                 </Authorized>
                 <NotAuthorized>
-                    
+                               <NavLink href="/" class="nav-link gap-1" Match="NavLinkMatch.All">
+                                    <span class="material-icons">home</span>
+                                    <span>Home</span>
+                                </NavLink>
+
                     <NavLink href="/new-did" class="nav-link gap-1" Match="NavLinkMatch.All">
                         <span class="material-icons">add_circle_outline</span>
                         <span>New Did</span>
@@ -49,13 +59,12 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="flex-grow p-4">
+    <div class="flex-grow p-0">
         @Body
     </div>
 </div>
 
 @code {
-    private string userName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,7 +78,6 @@
 
         if (user.Identity.IsAuthenticated)
         {
-            userName = user.Identity.Name;
         }
     }
 }

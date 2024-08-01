@@ -1,9 +1,11 @@
 @page "/admin/profile"
 @using Microsoft.AspNetCore.Authorization
+@using Blocktrust.CredentialBadges.Builder.Components.Layout
 
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
+@layout AdminLayout
 
 <PageTitle>Profile</PageTitle>
 
