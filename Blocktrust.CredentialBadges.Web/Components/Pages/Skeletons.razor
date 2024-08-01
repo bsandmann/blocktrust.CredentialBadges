@@ -1,7 +1,7 @@
 <!-- Skeletons.razor -->
 
 @page "/skeletons"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <h3>Skeletons Example</h3>
 

@@ -1,7 +1,7 @@
 @page "/copysnippet/{credentialId:guid}/{selectedTemplateId}"
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <div class="relative min-h-screen w-screen bg-[#F0F1F2] flex items-center justify-center">
     <!-- Corner images -->
@@ -21,7 +21,7 @@
             <div class="flex justify-between items-center mb-2">
                 <span class="text-[#334155] font-medium">HTML</span>
                 <button @onclick="CopySnippetToClipboard" class="text-[#334155] hover:text-[#475569]">
-                    <span class="material-icons">content_copy</span>
+                    <span class="material-symbols-outlined">content_copy</span>
                 </button>
             </div>
             <pre class="bg-white p-4 rounded-md overflow-x-auto"><code class="text-sm text-[#334155]">@snippetCode</code></pre>

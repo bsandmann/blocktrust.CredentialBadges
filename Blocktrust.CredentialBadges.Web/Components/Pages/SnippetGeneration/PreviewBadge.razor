@@ -7,7 +7,7 @@
 @inject IMediator Mediator
 @inject NavigationManager NavigationManager
 @inject TemplatesService TemplatesService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Preview Badge</PageTitle>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -25,16 +25,16 @@
 
         <div class="flex justify-center mb-6 space-x-4">
             <button @onclick="PreviousTemplate" class="bg-[#F8FAFC] text-slate-600 font-medium py-1 px-2 rounded-md cursor-pointer transition-colors flex items-center" disabled="@(currentTemplateIndex == 0)">
-                <span class="material-icons">chevron_left</span>
+                <span class="material-symbols-outlined">chevron_left</span>
             </button>
             <button @onclick="NextTemplate" class="bg-[#F8FAFC] text-slate-600 font-medium py-1 px-2 rounded-md cursor-pointer transition-colors flex items-center" disabled="@(currentTemplateIndex == templates.Count - 1)">
-                <span class="material-icons">chevron_right</span>
+                <span class="material-symbols-outlined">chevron_right</span>
             </button>
         </div>
 
         <div class="w-[50vw] flex justify-end mb-6">
             <button @onclick="ToggleTheme" class="bg-[#334155] text-[#F8FAFC] font-medium py-1 px-2 rounded-full hover:bg-[#475569] transition-colors flex items-center">
-                <span class="material-icons text-xs">
+                <span class="material-symbols-outlined text-xs">
                     @(isDarkMode ? "brightness_7" : "brightness_3")
                 </span>
             </button>

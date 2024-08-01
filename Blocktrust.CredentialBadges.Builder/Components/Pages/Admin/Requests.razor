@@ -14,7 +14,7 @@
 @layout AdminLayout
 @inject IMediator Mediator
 @inject NavigationManager NavigationManager
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @implements IDisposable
 
             <AuthorizeView Roles="adminRole">

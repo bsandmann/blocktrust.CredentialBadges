@@ -17,28 +17,28 @@
     </a>
     <div class="flex items-center space-x-8">
         <NavLink href="/credentialinput" class="nav-link gap-1" Match="NavLinkMatch.All">
-            <span class="material-icons">link</span>
+            <span class="material-symbols-outlined">link</span>
             <span>Generate snippet</span>
         </NavLink>
         <NavLink href="/manage-badges" class="nav-link gap-1" Match="NavLinkMatch.All">
-            <span class="material-icons">badge</span>
+            <span class="material-symbols-outlined">badge</span>
             <span>Manage Badges</span>
         </NavLink>
         <NavLink href="/how-to" class="nav-link gap-1" Match="NavLinkMatch.All">
-            <span class="material-icons">help_outline</span>
+            <span class="material-symbols-outlined">help_outline</span>
             <span>How To</span>
         </NavLink>
         @if (user.Identity.IsAuthenticated)
         {
             <NavLink href="/profile" class="nav-link gap-1" Match="NavLinkMatch.All">
-                <span class="material-icons">account_circle</span>
+                <span class="material-symbols-outlined">account_circle</span>
                 <span>Profile</span>
             </NavLink>
         }
         else
         {
             <NavLink href="/login" class="nav-link gap-1" Match="NavLinkMatch.All">
-                <span class="material-icons">login</span>
+                <span class="material-symbols-outlined">login</span>
                 <span>Login</span>
             </NavLink>
         }

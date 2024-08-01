@@ -20,12 +20,12 @@
             <div class="relative border border-gray-300 rounded p-2 mb-4">
                 <textarea class="w-full bg-transparent outline-none resize-none" rows="4" readonly>@invitationUrl</textarea>
                 <button class="absolute top-2 right-2 text-slate-500 hover:text-slate-700" @onclick="() => CopyToClipboard(invitationUrl)">
-                    <span class="material-icons">content_copy</span>
+                    <span class="material-symbols-outlined">content_copy</span>
                 </button>
             </div>
             <div class="text-right">
                 <button class="text-slate-500 hover:text-slate-700 flex items-center" @onclick="GenerateNewInvitationUrl">
-                    <span class="material-icons mr-1">refresh</span> Generate New
+                    <span class="material-symbols-outlined mr-1">refresh</span> Generate New
                 </button>
             </div>
         </div>
@@ -47,14 +47,14 @@
 
             <div class="flex items-center mb-4">
                 <button class="text-slate-500 hover:text-slate-700 flex items-center" @onclick="SaveToLocalStorage">
-                    <span class="material-icons mr-1">save</span> Save
+                    <span class="material-symbols-outlined mr-1">save</span> Save
                 </button>
             </div>
 
             <button class="bg-slate-700 min-w-36 h-12 text-white p-2 rounded" @onclick="Connect" disabled="@isConnecting">
                 @if (isConnecting)
                 {
-                    <span class="material-icons animate-spin mr-2 text-sm">autorenew</span>
+                    <span class="material-symbols-outlined animate-spin mr-2 text-sm">autorenew</span>
                 }
                 else
                 {

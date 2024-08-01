@@ -144,7 +144,7 @@ public class TemplatesService
 
         return $@"
                 <button class='{buttonClass}'>
-                    <span class='material-icons credential-verified-icon'>{iconName}</span>
+                    <span class='material-symbols-outlined credential-verified-icon'>{iconName}</span>
                     <span class='{textClass}'>{statusText}</span>
                 </button>
             ";
