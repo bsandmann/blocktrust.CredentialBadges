@@ -1,6 +1,6 @@
-using FluentResults;
+namespace Blocktrust.CredentialBadges.Core.Services.Images;
 
-namespace Blocktrust.CredentialBadges.Web.Services.Images;
+using FluentResults;
 
 public class ImageBytesToBase64
 {
