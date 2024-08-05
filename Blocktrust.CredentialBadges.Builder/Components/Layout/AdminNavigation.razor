@@ -1,0 +1,122 @@
+ 
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
+
+
+<nav class="bg-slate-700 w-full md:w-64 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <span class="material-symbols-outlined text-white">admin_panel_settings</span>
+                    <h1 class="text-white text-xl ml-3">Admin</h1>
+                </div>
+                <button @onclick="ToggleMenu" class="md:hidden text-white">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+                            <ul class="@(isMenuOpen ? "block" : "hidden") md:block">
+                                <!-- Dashboard Link -->
+                                <li class="mb-2">
+                                    <NavLink href="/admin/dashboard" Match="NavLinkMatch.All" class="@GetNavLinkClass("/admin/dashboard")">
+                                        <span class="font-semibold">Dashboard</span>
+                                    </NavLink>
+                                </li>
+                                <!-- Requests Link -->
+                                <li class="mb-2">
+                                    <NavLink href="/admin/requests" class="@GetRequestsLinkClass()">
+                                        <span class="font-semibold">Requests</span>
+                                    </NavLink>
+                                    <ul class="ml-6 mt-2">
+                                        <!-- All Link -->
+                                        <li>
+                                            <NavLink href="/admin/requests" class="@GetAllSubNavLinkClass()">
+                                                <span class="font-semibold">All</span>
+                                            </NavLink>
+                                        </li>
+                                        <!-- Pending Link -->
+                                        <li>
+                                            <NavLink href="/admin/requests/pending" class="@GetSubNavLinkClass("/admin/requests/pending")">
+                                                <span class="font-semibold">Pending</span>
+                                            </NavLink>
+                                        </li>
+                                        <!-- Approved Link -->
+                                        <li>
+                                            <NavLink href="/admin/requests/approved" class="@GetSubNavLinkClass("/admin/requests/approved")">
+                                                <span class="font-semibold">Approved</span>
+                                            </NavLink>
+                                        </li>
+                                        <!-- Declined Link -->
+                                        <li>
+                                            <NavLink href="/admin/requests/declined" class="@GetSubNavLinkClass("/admin/requests/declined")">
+                                                <span class="font-semibold">Declined</span>
+                                            </NavLink>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+
+        </nav>
+
+   @code {
+       private string currentPath;
+       private bool isMenuOpen;
+    
+       protected override async Task OnAfterRenderAsync(bool firstRender)
+       {
+           if (firstRender)
+           {
+               await JSRuntime.InvokeVoidAsync("closeMenuOnResize", "adminMenu");
+           }
+       }
+
+
+
+       protected override void OnInitialized()
+       {
+           currentPath = NavigationManager.Uri;
+       }
+
+       private void ToggleMenu()
+       {
+           isMenuOpen = !isMenuOpen;
+       }
+
+       private string GetNavLinkClass(string path)
+       {
+           if (currentPath.Contains(path) && !currentPath.Contains("/admin/requests"))
+           {
+               return "text-white";
+           }
+           return "text-slate-400 hover:text-white";
+       }
+
+       private string GetRequestsLinkClass()
+       {
+           if (currentPath.Contains("/admin/requests"))
+           {
+               return "text-white";
+           }
+           return "text-slate-400 hover:text-white";
+       }
+
+       private string GetSubNavLinkClass(string path)
+       {
+           if (currentPath.Contains(path) && currentPath != NavigationManager.BaseUri + "admin/requests")
+           {
+               return "bg-white text-slate-700 flex items-center p-2 rounded-md";
+           }
+           return "text-slate-400 hover:text-white flex items-center p-2";
+       }
+
+       private string GetAllSubNavLinkClass()
+       {
+           if (currentPath.Equals(NavigationManager.BaseUri + "admin/requests", StringComparison.OrdinalIgnoreCase))
+           {
+               return "bg-white text-slate-700 flex items-center p-2 rounded-md";
+           }
+           return "text-slate-400 hover:text-white flex items-center p-2";
+       }
+
+
+   }

@@ -40,3 +40,25 @@ window.resizeImage = async (buffer, width, height) => {
 
     return new Uint8Array(await canvas.toBlob(blob => blob.arrayBuffer()));
 };
+
+
+
+// Add this to your existing JavaScript snippets file
+
+window.toggleMenu = (menuId) => {
+    const menu = document.getElementById(menuId);
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+};
+
+window.closeMenuOnResize = (menuId) => {
+    window.addEventListener('resize', () => {
+        const menu = document.getElementById(menuId);
+        if (window.innerWidth >= 768 && menu) {
+            menu.classList.remove('hidden');
+        }
+    });
+};
+
+    

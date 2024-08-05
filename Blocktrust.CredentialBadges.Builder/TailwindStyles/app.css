@@ -36,6 +36,19 @@
     transition: width 0.5s ease, background-color 0.5s ease;
 }
 
+/*For small devices*/
+@media (max-width: 640px) {
+    .nav-link {
+        padding-bottom: 0;
+    }
+
+    .nav-link::after {
+        display: none;
+    }
+    .nav-link.active {
+        color: #0f0f39; 
+    }
+}
 
 
 

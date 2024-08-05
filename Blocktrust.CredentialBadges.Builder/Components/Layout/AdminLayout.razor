@@ -1,111 +1,13 @@
 @inherits LayoutComponentBase
 @layout MainLayout
 
-@inject NavigationManager NavigationManager
-
 
 
 <AuthorizeView Roles="adminRole">
-
-    <div class="min-h-screen flex">
-        <nav class="bg-slate-700 w-64 min-h-screen p-6">
-            <div class="flex items-center mb-6">
-                <span class="material-symbols-outlined text-white">admin_panel_settings</span>
-                <h1 class="text-white text-xl ml-3">Admin</h1>
-            </div>
-            <ul>
-                <!-- Dashboard Link -->
-                <li class="mb-2">
-                    <NavLink href="/admin/dashboard" Match="NavLinkMatch.All" class="@GetNavLinkClass("/admin/dashboard")">
-                        <span class="font-semibold">Dashboard</span>
-                    </NavLink>
-                </li>
-                <!-- Requests Link -->
-                <li class="mb-2">
-                    <NavLink href="/admin/requests" class="@GetRequestsLinkClass()">
-                        <span class="font-semibold">Requests</span>
-                    </NavLink>
-                    <ul class="ml-6 mt-2">
-                        <!-- All Link -->
-                        <li>
-                            <NavLink href="/admin/requests" class="@GetAllSubNavLinkClass()">
-                                <span class="font-semibold">All</span>
-                            </NavLink>
-                        </li>
-                        <!-- Pending Link -->
-                        <li>
-                            <NavLink href="/admin/requests/pending" class="@GetSubNavLinkClass("/admin/requests/pending")">
-                                <span class="font-semibold">Pending</span>
-                            </NavLink>
-                        </li>
-                        <!-- Approved Link -->
-                        <li>
-                            <NavLink href="/admin/requests/approved" class="@GetSubNavLinkClass("/admin/requests/approved")">
-                                <span class="font-semibold">Approved</span>
-                            </NavLink>
-                        </li>
-                        <!-- Declined Link -->
-                        <li>
-                            <NavLink href="/admin/requests/declined" class="@GetSubNavLinkClass("/admin/requests/declined")">
-                                <span class="font-semibold">Declined</span>
-                            </NavLink>
-                        </li>
-                    </ul>
-                </li>
-          
-            </ul>
-        </nav>
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <AdminNavigation/>
         <div class="flex-1 p-6 bg-gray-100">
             @Body
         </div>
     </div>
 </AuthorizeView>
-
-@code {
-    private string currentPath;
-
-    protected override void OnInitialized()
-    {
-        currentPath = NavigationManager.Uri;
-    }
-
-    private string GetNavLinkClass(string path)
-    {
-        // Text color for active and inactive main links
-        if (currentPath.Contains(path) && !currentPath.Contains("/admin/requests"))
-        {
-            return "text-white"; // Text color for active main links
-        }
-        return "text-slate-400 hover:text-white";
-    }
-
-    private string GetRequestsLinkClass()
-    {
-        // Ensure Requests text color changes when on /admin/requests or any subpage
-        if (currentPath.Contains("/admin/requests"))
-        {
-            return "text-white"; // Text color for active Requests
-        }
-        return "text-slate-400 hover:text-white";
-    }
-
-    private string GetSubNavLinkClass(string path)
-    {
-        // Apply white background to the active sub-link
-        if (currentPath.Contains(path) && currentPath != NavigationManager.BaseUri + "admin/requests")
-        {
-            return "bg-white text-slate-700 flex items-center p-2 rounded-md";
-        }
-        return "text-slate-400 hover:text-white flex items-center p-2";
-    }
-
-    private string GetAllSubNavLinkClass()
-    {
-        // Apply white background only to the 'All' link when the URL exactly matches '/admin/requests'
-        if (currentPath.Equals(NavigationManager.BaseUri + "admin/requests", StringComparison.OrdinalIgnoreCase))
-        {
-            return "bg-white text-slate-700 flex items-center p-2 rounded-md";
-        }
-        return "text-slate-400 hover:text-white flex items-center p-2";
-    }
-}
