@@ -69,13 +69,28 @@
                await JSRuntime.InvokeVoidAsync("closeMenuOnResize", "adminMenu");
            }
        }
-
-
+       
+    
 
        protected override void OnInitialized()
        {
            currentPath = NavigationManager.Uri;
+           NavigationManager.LocationChanged += LocationChanged;
        }
+
+       private void LocationChanged(object sender, LocationChangedEventArgs e)
+       {
+           currentPath = e.Location;
+           StateHasChanged();
+       }
+
+       public void Dispose()
+       {
+           NavigationManager.LocationChanged -= LocationChanged;
+       }
+
+
+       
 
        private void ToggleMenu()
        {
