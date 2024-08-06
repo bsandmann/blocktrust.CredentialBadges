@@ -733,6 +733,14 @@ video {
   margin-top: auto;
 }
 
+.mt-12 {
+  margin-top: 3rem;
+}
+
+.mt-16 {
+  margin-top: 4rem;
+}
+
 .block {
   display: block;
 }
@@ -791,6 +799,14 @@ video {
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.min-h-\[90vh\] {
+  min-height: 90vh;
+}
+
+.min-h-\[95vh\] {
+  min-height: 95vh;
 }
 
 .w-1\/2 {
