@@ -10,6 +10,11 @@ public class CheckSignatureHandler : IRequestHandler<CheckSignatureRequest,Resul
         // inject some configutation of supported did methods
         
         // dependingon the DID method, we might need to conntact a resolver to get the DID Document for the public key
+       
+        // DID-PRISM -> the public key is in the issuer itself (must be decoded by bjoern)
+        
+        // DID-KEY -> the public key is in the issuer itself
+        // DID-WEB -> either use the universal resolver or query the website ourselves
         
         return  Result.Ok(ECheckSignatureResponse.Valid);
     }
