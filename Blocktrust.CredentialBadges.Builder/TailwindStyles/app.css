@@ -51,5 +51,33 @@
 }
 
 
+/* Default styles */
+@layer base {
+    body {
+        @apply font-sans;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-museo;
+    }
+
+    button, .btn {
+        @apply font-museo;
+    }
+}
+
+/* Custom utility classes for easy overrides */
+@layer utilities {
+    .font-museo {
+        font-family: museo, serif;
+    }
+
+    .font-museo-sans {
+        font-family: museo-sans, sans-serif;
+    }
+}
+
+
+
 
 
