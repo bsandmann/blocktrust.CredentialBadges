@@ -53,7 +53,7 @@
                 </button>
             </div>
 
-            <button class="bg-slate-700 min-w-36 h-12 text-white p-2 rounded" @onclick="Connect" disabled="@isConnecting">
+            <button class="bg-slate-700 min-w-36 h-12 text-white p-2 rounded hover:bg-slate-600" @onclick="Connect" disabled="@isConnecting">
                 @if (isConnecting)
                 {
                     <span class="material-symbols-outlined animate-spin mr-2 text-sm">autorenew</span>
