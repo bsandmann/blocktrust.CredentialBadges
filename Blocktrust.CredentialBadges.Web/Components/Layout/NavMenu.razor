@@ -20,28 +20,21 @@
             <span class="material-symbols-outlined">link</span>
             <span class="font-museo font-medium text-lg">Generate snippet</span>
         </NavLink>
-        <NavLink href="/manage-badges" class="nav-link gap-1" Match="NavLinkMatch.All">
-            <span class="material-symbols-outlined">badge</span>
-            <span class="font-museo font-medium text-lg">Manage Badges</span>
-        </NavLink>
-        <NavLink href="/how-to" class="nav-link gap-1" Match="NavLinkMatch.All">
-            <span class="material-symbols-outlined">help_outline</span>
-            <span class="font-museo font-medium text-lg">How To</span>
-        </NavLink>
-        @if (user.Identity.IsAuthenticated)
-        {
-            <NavLink href="/profile" class="nav-link gap-1" Match="NavLinkMatch.All">
-                <span class="material-symbols-outlined">account_circle</span>
-                <span class="font-museo font-medium text-lg">Profile</span>
-            </NavLink>
-        }
-        else
-        {
-            <NavLink href="/login" class="nav-link gap-1" Match="NavLinkMatch.All">
-                <span class="material-symbols-outlined">login</span>
-                <span class="font-museo font-medium text-lg">Login</span>
-            </NavLink>
-        }
+  
+        @* @if (user.Identity.IsAuthenticated) *@
+        @* { *@
+        @*     <NavLink href="/profile" class="nav-link gap-1" Match="NavLinkMatch.All"> *@
+        @*         <span class="material-symbols-outlined">account_circle</span> *@
+        @*         <span class="font-museo font-medium text-lg">Profile</span> *@
+        @*     </NavLink> *@
+        @* } *@
+        @* else *@
+        @* { *@
+        @*     <NavLink href="/account/login" class="nav-link gap-1" Match="NavLinkMatch.All"> *@
+        @*         <span class="material-symbols-outlined">login</span> *@
+        @*         <span class="font-museo font-medium text-lg">Login</span> *@
+        @*     </NavLink> *@
+        @* } *@
     </div>
 </nav>
 
