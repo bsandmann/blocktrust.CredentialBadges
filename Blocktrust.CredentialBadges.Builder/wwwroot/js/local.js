@@ -61,4 +61,6 @@ window.closeMenuOnResize = (menuId) => {
     });
 };
 
-    
+window.updatePageTitle = function(title) {
+    document.title = title;
+};

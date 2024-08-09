@@ -1,8 +1,4 @@
-@page "/admin/dashboard"
-@page "/admin/requests"
-@page "/admin/requests/pending"
-@page "/admin/requests/approved"
-@page "/admin/requests/declined"
+@page "/admin/{*pageRoute}"
 @using Blocktrust.CredentialBadges.Builder.Domain
 @using Blocktrust.CredentialBadges.Builder.Enums
 @using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetAllBuilderCredentials
@@ -14,115 +10,118 @@
 @layout AdminLayout
 @inject IMediator Mediator
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @implements IDisposable
 
-            <AuthorizeView Roles="adminRole">
+<PageTitle>@GetBrowserPageTitle()</PageTitle>
 
-                <div class="max-w-4xl mx-auto px-4 py-8">
-                    @if (IsCurrentPage("/admin/dashboard"))
+<AuthorizeView Roles="adminRole">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        @if (IsCurrentPage("dashboard"))
+        {
+            <h2 class="text-2xl font-bold">Dashboard</h2>
+            <p>Welcome to the admin dashboard!</p>
+
+            <div class="flex px-2.5 gap-4 mb-4">
+                <div class="bg-white p-4 w-full rounded shadow-md border border-gray-300">
+                    <h3 class="text-xl font-semibold text-gray-800">Total Approved</h3>
+                    <p class="text-3xl font-bold text-green-600">@totalApproved</p>
+                </div>
+                <div class="bg-white w-full p-4 rounded shadow-md border border-gray-300">
+                    <h3 class="text-xl font-semibold text-gray-800">Total Pending</h3>
+                    <p class="text-3xl font-bold text-yellow-600">@totalPending</p>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold">Recent requests</h3>
+        }
+        else
+        {
+            <h2 class="text-2xl font-bold">@GetPageTitle()</h2>
+            <p class="text-gray-600 mb-4">@GetPageDescription()</p>
+        }
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-300 rounded md:w-full">
+                <thead>
+                    <tr class="bg-slate-100">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Label</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Subject DID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var credential in FilteredCredentials())
                     {
-                        <h2 class="text-2xl font-bold">Dashboard</h2>
-                        <p>Welcome to the admin dashboard!</p>
-
-                        <div class="flex px-2.5 gap-4 mb-4">
-                            <div class="bg-white p-4 w-full rounded shadow-md border border-gray-300">
-                                <h3 class="text-xl font-semibold text-gray-800">Total Approved</h3>
-                                <p class="text-3xl font-bold text-green-600">@totalApproved</p>
-                            </div>
-                            <div class="bg-white w-full p-4 rounded shadow-md border border-gray-300">
-                                <h3 class="text-xl font-semibold text-gray-800">Total Pending</h3>
-                                <p class="text-3xl font-bold text-yellow-600">@totalPending</p>
-                            </div>
-                        </div>
-        
-                        <h3 class="text-xl font-bold">Recent requests</h3>
-
+                        <tr class="border-t border-gray-300">
+                            <td class="px-6 py-4 whitespace-nowrap">@credential.Date.ToShortDateString()</td>
+                            <td class="px-6 py-4 whitespace-nowrap" title="@credential.Label">@TruncateText(credential.Label, 20)</td>
+                            <td class="px-6 py-4 whitespace-nowrap" title="@credential.SubjectDid">@TruncateText(credential.SubjectDid, 20)</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="@GetStatusClass(credential.Status) px-2 py-1 rounded-full text-xs">@GetStatusText(credential.Status)</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
+                                @if (credential.Status == EBuilderCredentialStatus.Pending)
+                                {
+                                    <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-600" 
+                                            @onclick="() => DeclineCredential(credential)">
+                                        Decline
+                                    </button>
+                                }
+                                <button class="bg-slate-700 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-slate-800" 
+                                        @onclick="() => ViewCredential(credential)">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <h2 class="text-2xl font-bold">@GetPageTitle()</h2>
-                        <p class="text-gray-600 mb-4">@GetPageDescription()</p>
-                    }
-                    <div class="overflow-x-auto">
-                        
+                </tbody>
+            </table>
+        </div>
+    </div>
+</AuthorizeView>
 
-                        <table class="min-w-full bg-white border border-gray-300 rounded md:w-full">
-                            <thead>
-                            <tr class="bg-slate-100">
-                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Label</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Subject DID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var credential in FilteredCredentials())
-                            {
-                                <tr class="border-t border-gray-300">
-                                    <td class="px-6 py-4 whitespace-nowrap">@credential.Date.ToShortDateString()</td>
-                                    <td class="px-6 py-4 whitespace-nowrap" title="@credential.Label">@TruncateText(credential.Label, 20)</td>
-                                    <td class="px-6 py-4 whitespace-nowrap" title="@credential.SubjectDid">@TruncateText(credential.SubjectDid, 20)</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="@GetStatusClass(credential.Status) px-2 py-1 rounded-full text-xs">@GetStatusText(credential.Status)</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                                        @if (credential.Status == EBuilderCredentialStatus.Pending)
-                                        {
-                                            <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-600" 
-                                                    @onclick="() => DeclineCredential(credential)">
-                                                Decline
-                                            </button>
-                                        }
-                                  
-                        
-                        
-                                        <button class="bg-slate-700 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-slate-800" 
-                                                @onclick="() => ViewCredential(credential)">
-                                            View
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                        
-           </div>
-
-                    </div>
-                </AuthorizeView>
-
-            @code {
+@code {
     private List<BuilderCredential> credentials = new();
     private int totalApproved;
     private int totalPending;
 
     [Parameter]
-    public string CurrentRoute { get; set; }
+    public string PageRoute { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        CurrentRoute = NavigationManager.Uri;
         NavigationManager.LocationChanged += HandleLocationChanged;
         await LoadCredentials();
+        await UpdatePageTitle();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (CurrentRoute != NavigationManager.Uri)
-        {
-            CurrentRoute = NavigationManager.Uri;
-            await LoadCredentials();
-            StateHasChanged();
-        }
+        await LoadCredentials();
+        await UpdatePageTitle();
+        StateHasChanged();
     }
 
-    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
     {
-        CurrentRoute = e.Location;
-        await LoadCredentials();
-        await InvokeAsync(StateHasChanged);
+        InvokeAsync(async () =>
+        {
+            await LoadCredentials();
+            await UpdatePageTitle();
+            StateHasChanged();
+        });
+    }
+
+    private async Task UpdatePageTitle()
+    {
+        var title = GetBrowserPageTitle();
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            await JSRuntime.InvokeVoidAsync("updatePageTitle", title);
+        }
     }
 
     public void Dispose()
@@ -151,16 +150,15 @@
 
     private IEnumerable<BuilderCredential> FilteredCredentials()
     {
-        if (IsCurrentPage("/admin/requests/pending"))
+        if (IsCurrentPage("requests/pending"))
             return credentials.Where(c => c.Status == EBuilderCredentialStatus.Pending);
-        else if (IsCurrentPage("/admin/requests/approved"))
+        if (IsCurrentPage("requests/approved"))
             return credentials.Where(c => c.Status != EBuilderCredentialStatus.Pending && c.Status != EBuilderCredentialStatus.Declined);
-        else if (IsCurrentPage("/admin/requests/declined"))
+        if (IsCurrentPage("requests/declined"))
             return credentials.Where(c => c.Status == EBuilderCredentialStatus.Declined);
-        else if (IsCurrentPage("/admin/dashboard"))
+        if (IsCurrentPage("dashboard"))
             return credentials.OrderByDescending(c => c.Date).Take(5);
-        else
-            return credentials;
+        return credentials;
     }
 
     private async Task DeclineCredential(BuilderCredential credential)
@@ -220,24 +218,44 @@
 
     private bool IsCurrentPage(string route)
     {
-        return CurrentRoute.EndsWith(route);
+        return PageRoute?.Equals(route, StringComparison.OrdinalIgnoreCase) ?? false;
+    }
+
+    private string GetBrowserPageTitle()
+    {
+        var baseTitle = "Blocktrust Credentials Admin - ";
+        return (PageRoute?.ToLower() ?? "") switch
+        {
+            "dashboard" => baseTitle + "Dashboard",
+            "requests" => baseTitle + "All Requests",
+            "requests/pending" => baseTitle + "Pending Requests",
+            "requests/approved" => baseTitle + "Approved Requests",
+            "requests/declined" => baseTitle + "Declined Requests",
+            _ => baseTitle + "Requests"
+        };
     }
 
     private string GetPageTitle()
     {
-        if (IsCurrentPage("/admin/requests")) return "Requests";
-        if (IsCurrentPage("/admin/requests/pending")) return "Pending Requests";
-        if (IsCurrentPage("/admin/requests/approved")) return "Approved Requests";
-        if (IsCurrentPage("/admin/requests/declined")) return "Declined Requests";
-        return "Requests";
+        return (PageRoute?.ToLower() ?? "") switch
+        {
+            "requests" => "Requests",
+            "requests/pending" => "Pending Requests",
+            "requests/approved" => "Approved Requests",
+            "requests/declined" => "Declined Requests",
+            _ => "Requests"
+        };
     }
 
     private string GetPageDescription()
     {
-        if (IsCurrentPage("/admin/requests")) return "Manage all requests here.";
-        if (IsCurrentPage("/admin/requests/pending")) return "Manage pending requests here.";
-        if (IsCurrentPage("/admin/requests/approved")) return "Manage approved requests here.";
-        if (IsCurrentPage("/admin/requests/declined")) return "Manage declined requests here.";
-        return "Manage requests here.";
+        return (PageRoute?.ToLower() ?? "") switch
+        {
+            "requests" => "Manage all requests here.",
+            "requests/pending" => "Manage pending requests here.",
+            "requests/approved" => "Manage approved requests here.",
+            "requests/declined" => "Manage declined requests here.",
+            _ => "Manage requests here."
+        };
     }
 }

@@ -1,14 +1,16 @@
 @page "/connections"
-@using Blocktrust.CredentialBadges.Builder.Commands.Connections
 @using Blocktrust.CredentialBadges.Builder.Commands.Connections.AcceptConnection
 @using Blocktrust.CredentialBadges.Builder.Commands.Connections.InitializeConnection
 @using MediatR
 @using Microsoft.AspNetCore.Authorization
 @inject IMediator Mediator
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
+@implements IDisposable
 
+<PageTitle>@GetBrowserPageTitle()</PageTitle>
 
 <div class="max-w-4xl mx-auto px-4 py-8 min-h-screen">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-16">
@@ -81,6 +83,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        NavigationManager.LocationChanged += HandleLocationChanged;
         if (!isInitialized)
         {
             did = await JS.InvokeAsync<string>("localStorage.getItem", "did");
@@ -89,6 +92,43 @@
             StateHasChanged();
             await GenerateNewInvitationUrl();
         }
+        await UpdatePageTitle();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await UpdatePageTitle();
+        }
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            await UpdatePageTitle();
+            StateHasChanged();
+        });
+    }
+
+    private async Task UpdatePageTitle()
+    {
+        var title = GetBrowserPageTitle();
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            await JS.InvokeVoidAsync("updatePageTitle", title);
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+    private string GetBrowserPageTitle()
+    {
+        return "Blocktrust Credentials - Generate Connections";
     }
 
     private async Task GenerateNewInvitationUrl()

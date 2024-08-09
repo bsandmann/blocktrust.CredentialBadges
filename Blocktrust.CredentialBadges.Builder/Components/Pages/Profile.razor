@@ -5,11 +5,10 @@
 
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JS
+@implements IDisposable
 
-@attribute [Authorize]
-
-
-<PageTitle>Profile</PageTitle>
+<PageTitle>@GetBrowserPageTitle()</PageTitle>
 
 <div class="container mx-auto p-6 max-w-xl bg-white rounded-lg shadow-md mt-16">
     <div class="text-center mt-16">
@@ -42,12 +41,44 @@
         {
             username = user.Identity.Name;
         }
+
+        await UpdatePageTitle();
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await UpdatePageTitle();
+        }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-        StateHasChanged();
+        await InvokeAsync(async () =>
+        {
+            await UpdatePageTitle();
+            StateHasChanged();
+        });
     }
 
+    private async Task UpdatePageTitle()
+    {
+        var title = GetBrowserPageTitle();
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            await JS.InvokeVoidAsync("updatePageTitle", title);
+        }
+    }
+
+    private string GetBrowserPageTitle()
+    {
+        return "Blocktrust Credentials - User Profile";
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
 }
