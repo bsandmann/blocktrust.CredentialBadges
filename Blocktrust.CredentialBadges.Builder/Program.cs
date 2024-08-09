@@ -6,8 +6,10 @@ using Blocktrust.CredentialBadges.Builder.Components;
 using Blocktrust.CredentialBadges.Builder.Components.Account;
 using Blocktrust.CredentialBadges.Builder.Data;
 using Blocktrust.CredentialBadges.Builder.Data.Entities;
+using Blocktrust.CredentialBadges.Builder.Services;
 using Blocktrust.CredentialBadges.Core.Services.Clipboard;
 using Blocktrust.CredentialBadges.Core.Services.Images;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,7 +64,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddTransient<IEmailSender, SendGridEmailSender>();
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, ApplicationUserEmailSender>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
