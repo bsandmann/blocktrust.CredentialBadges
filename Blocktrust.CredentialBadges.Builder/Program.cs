@@ -37,7 +37,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<ApplicationUser>(
+        options =>
+        {
+            options.SignIn.RequireConfirmedAccount = true;
+
+            // loosened password requirements
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequiredLength = 4; 
+            options.Password.RequireDigit = false;
+
+            // default password requirements :
+            // options.Password.RequireNonAlphanumeric = true;
+            // options.Password.RequireLowercase = true;
+            // options.Password.RequireUppercase = true;
+            // options.Password.RequiredLength = 6;
+            // options.Password.RequireDigit = true;
+
+        })
     .AddRoles<ApplicationRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
