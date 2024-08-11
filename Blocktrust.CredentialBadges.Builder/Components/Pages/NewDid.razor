@@ -11,7 +11,7 @@
 
 <PageTitle>@GetBrowserPageTitle()</PageTitle>
 
-<div class="max-w-4xl mx-auto px-4 py-8 min-h-screen">
+<div class="max-w-4xl mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-16">
         <!-- Left Side: Title and Description -->
         <div class="mt-10">
@@ -30,11 +30,9 @@
                     }
                     else
                     {
-                        <input type="text" class="w-full bg-transparent outline-none" value="@didResult" readonly/>
+                        <input type="text" class="w-full bg-transparent outline-none" @bind="didResult"/>
                         <button class="ml-2 text-slate-500 hover:text-slate-700" @onclick="() => CopyToClipboard(didResult)">
-                            <span class="material-symbols-outlined">
-                                content_copy
-                            </span>
+                            <span class="material-symbols-outlined">content_copy</span>
                         </button>
                     }
                 </div>
@@ -49,32 +47,56 @@
                     }
                     else
                     {
-                        <input type="text" class="w-full bg-transparent outline-none" value="@apiKeyResult" readonly/>
+                        <input type="text" class="w-full bg-transparent outline-none" @bind="apiKeyResult"/>
                         <button class="ml-2 text-slate-500 hover:text-slate-700" @onclick="() => CopyToClipboard(apiKeyResult)">
-                            <span class="material-symbols-outlined">
-                                content_copy
-                            </span>
+                            <span class="material-symbols-outlined">content_copy</span>
                         </button>
                     }
                 </div>
             </div>
+            
+                <div class="flex justify-end mb-4">
+                    <button class="text-slate-700 hover:text-slate-900 focus:outline-none flex items-center" @onclick="SaveCredentials" disabled="@isLoading">
+                        <span class="material-symbols-outlined mr-1 text-lg">save</span>
+                        <span class="text-sm">Save</span>
+                    </button>
+                </div>
 
-            <button class="bg-slate-700 min-w-36 h-12 text-white p-2 rounded hover:bg-slate-600" @onclick="GenerateNew" disabled="@isLoading">Generate New </button>
+
+            @if (showNoCredentialsWarning)
+            {
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+                    <p class="font-bold">Warning</p>
+                    <p>No DID and API Key were found. Please generate new credentials or input existing ones.</p>
+                </div>
+            }
+
+           <div class="flex justify-start">
+                 <button class="bg-slate-700 min-w-36 h-12 text-white p-2 rounded hover:bg-slate-600" @onclick="ShowWarningModal" disabled="@isLoading">Generate New</button>
+             </div>
         </div>
     </div>
+    
+    <WarningModal 
+        IsVisible="@isWarningModalVisible" 
+        OnClose="@CloseWarningModal" 
+        OnContinue="@ContinueWithGeneration" />
 </div>
 
 @code {
-    private string didResult;
-    private string apiKeyResult;
+    private string didResult = "";
+    private string apiKeyResult = "";
     private bool isLoading;
+    private bool isWarningModalVisible;
+    private bool showNoCredentialsWarning;
 
     protected override async Task OnInitializedAsync()
     {
         NavigationManager.LocationChanged += HandleLocationChanged;
-        await FetchOrGenerateDidAndApiKey();
+        await FetchDidAndApiKey();
         await UpdatePageTitle();
     }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -112,25 +134,19 @@
         return "Blocktrust Credentials - New DID";
     }
 
-    private async Task FetchOrGenerateDidAndApiKey()
+    private async Task FetchDidAndApiKey()
     {
         isLoading = true;
         StateHasChanged();
 
-        didResult = await JS.InvokeAsync<string>("localStorage.getItem", "did");
-        apiKeyResult = await JS.InvokeAsync<string>("localStorage.getItem", "apiKey");
+        didResult = await JS.InvokeAsync<string>("localStorage.getItem", "did") ?? "";
+        apiKeyResult = await JS.InvokeAsync<string>("localStorage.getItem", "apiKey") ?? "";
 
-        if (string.IsNullOrEmpty(didResult) || string.IsNullOrEmpty(apiKeyResult))
-        {
-            await GenerateNew();
-        }
-        else
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
+        showNoCredentialsWarning = string.IsNullOrEmpty(didResult) || string.IsNullOrEmpty(apiKeyResult);
+
+        isLoading = false;
+        StateHasChanged();
     }
-
     private async Task GenerateNew()
     {
         isLoading = true;
@@ -149,8 +165,7 @@
             didResult = result.Value.Did;
             apiKeyResult = result.Value.ApiKey;
 
-            await JS.InvokeVoidAsync("localStorage.setItem", "did", didResult);
-            await JS.InvokeVoidAsync("localStorage.setItem", "apiKey", apiKeyResult);
+            await SaveCredentials();
         }
         else
         {
@@ -161,6 +176,35 @@
         StateHasChanged();
     }
 
+    private async Task SaveCredentials()
+    {
+        if (ValidateDid(didResult) && ValidateApiKey(apiKeyResult))
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", "did", didResult);
+            await JS.InvokeVoidAsync("localStorage.setItem", "apiKey", apiKeyResult);
+            showNoCredentialsWarning = false;
+            StateHasChanged();
+        }
+        else
+        {
+            // Handle invalid input
+            Console.WriteLine("Invalid DID or API Key");
+        }
+    }
+
+    private bool ValidateDid(string did)
+    {
+        // TODO: Implement actual DID validation
+        return !string.IsNullOrWhiteSpace(did);
+    }
+
+    private bool ValidateApiKey(string apiKey)
+    {
+        // TODO: Implement actual API Key validation
+        return !string.IsNullOrWhiteSpace(apiKey);
+    }
+    
+    
     private void CopyToClipboard(string text)
     {
         JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
@@ -182,4 +226,34 @@
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
+    
+    
+    //MODAL
+    
+    
+    private void ShowWarningModal()
+    {
+        if (string.IsNullOrEmpty(didResult) && string.IsNullOrEmpty(apiKeyResult))
+        {
+            // If no credentials exist, generate new ones without showing the warning
+            ContinueWithGeneration();
+        }
+        else
+        {
+            // If credentials exist, show the warning modal
+            isWarningModalVisible = true;
+        }
+    }
+
+    private void CloseWarningModal()
+    {
+        isWarningModalVisible = false;
+    }
+
+    private async Task ContinueWithGeneration()
+    {
+        isWarningModalVisible = false;
+        await GenerateNew();
+    }
+    
 }

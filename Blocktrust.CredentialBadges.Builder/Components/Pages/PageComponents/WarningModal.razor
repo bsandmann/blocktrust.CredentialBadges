@@ -1,0 +1,29 @@
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnContinue { get; set; }
+}
+
+@if (IsVisible)
+{
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" id="modal-overlay">
+        <div class="relative top-48 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Warning</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Your current DID and API Key will be lost if you continue. Are you sure you want to generate new ones?
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button @onclick="OnClose" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                        Go Back
+                    </button>
+                    <button @onclick="OnContinue" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-24 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
