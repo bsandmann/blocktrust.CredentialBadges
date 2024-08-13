@@ -2,6 +2,7 @@ using Blocktrust.CredentialBadges.Builder.Common;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 using Blocktrust.CredentialBadges.Builder.Components;
 using Blocktrust.CredentialBadges.Builder.Components.Account;
 using Blocktrust.CredentialBadges.Builder.Data;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//  Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
