@@ -8,21 +8,28 @@ namespace Blocktrust.CredentialBadges.Core.Tests.Services.DIDKeyTests;
 public class DIDKeyResolverTests
 {
     private readonly ITestOutputHelper _output;
+    private readonly DIDKeyResolver _resolver;
 
     public DIDKeyResolverTests(ITestOutputHelper output)
     {
         _output = output;
+        _resolver = new DIDKeyResolver(
+            new KeyValidator(),
+            new KeyDecoder(),
+            new VerificationMethodCreator(),
+            new KeyAgreementCreator(),
+            new DidDocumentCreator());
     }
 
-    [Fact]
-    public void ResolveDidKey_ShouldReturnValidDidDocument_ForEd25519Key()
+    [Theory]
+    [InlineData("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK")]
+    [InlineData("did:key:z6Mkfriq1MqLBoPWecGoDLjguo1sB9brj6wT3qZ5BxkKpuP6")]
+    [InlineData("did:key:z6MksQ35B5bwZDQq4QKuhQW2Sv6dcqwg4PqcSFf67pdgrtjB")]
+    [InlineData("did:key:z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH")]
+    public void ResolveDidKey_ShouldReturnValidDidDocument_ForEd25519Key(string didKey)
     {
-        // Arrange
-        var resolver = new DIDKeyResolver();
-        var didKey = "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK";
-
         // Act
-        var result = resolver.ResolveDidKey(didKey);
+        var result = _resolver.ResolveDidKey(didKey);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -39,6 +46,48 @@ public class DIDKeyResolverTests
         CheckVerificationMethod(root, didKey);
         CheckVerificationRelationships(root, didKey);
         CheckKeyAgreement(root, didKey);
+    }
+
+    [Fact]
+    public void ResolveDidKey_ShouldFail_ForInvalidDidKeyFormat()
+    {
+        // Arrange
+        var invalidDidKey = "invalid:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK";
+
+        // Act
+        var result = _resolver.ResolveDidKey(invalidDidKey);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Invalid DID key format.");
+    }
+
+    [Fact]
+    public void ResolveDidKey_ShouldFail_ForUnsupportedKeyType()
+    {
+        // Arrange
+        var unsupportedDidKey = "did:key:z8iaMxQaDHjPHZtT4XWZemGXpMGv6PV3Xq2nXx57xBmWR"; // This is not an Ed25519 key
+
+        // Act
+        var result = _resolver.ResolveDidKey(unsupportedDidKey);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "DID key is not a supported ED25519 key.");
+    }
+
+    [Fact]
+    public void ResolveDidKey_ShouldFail_ForInvalidBase58Encoding()
+    {
+        // Arrange
+        var invalidEncodedDidKey = "did:key:z6MkInvalidBase58EncodingHere!!!";
+
+        // Act
+        var result = _resolver.ResolveDidKey(invalidEncodedDidKey);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message.StartsWith("Failed to decode base58 key:"));
     }
 
     private void CheckContext(JsonElement root)
@@ -106,50 +155,5 @@ public class DIDKeyResolverTests
 
         keyAgreement.TryGetProperty("publicKeyMultibase", out var kaPublicKeyMultibaseElement).Should().BeTrue("keyAgreement.publicKeyMultibase should be present");
         kaPublicKeyMultibaseElement.GetString().Should().StartWith("z");
-    }
-
-    [Fact]
-    public void ResolveDidKey_ShouldFail_ForInvalidDidKeyFormat()
-    {
-        // Arrange
-        var resolver = new DIDKeyResolver();
-        var invalidDidKey = "invalid:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK";
-
-        // Act
-        var result = resolver.ResolveDidKey(invalidDidKey);
-
-        // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message == "Invalid DID key format.");
-    }
-
-    [Fact]
-    public void ResolveDidKey_ShouldFail_ForUnsupportedKeyType()
-    {
-        // Arrange
-        var resolver = new DIDKeyResolver();
-        var unsupportedDidKey = "did:key:z8iaMxQaDHjPHZtT4XWZemGXpMGv6PV3Xq2nXx57xBmWR"; // This is not an Ed25519 key
-
-        // Act
-        var result = resolver.ResolveDidKey(unsupportedDidKey);
-
-        // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message == "DID key is not a supported ED25519 key.");
-    }
-
-    [Fact]
-    public void ResolveDidKey_ShouldFail_ForInvalidBase58Encoding()
-    {
-        // Arrange
-        var resolver = new DIDKeyResolver();
-        var invalidEncodedDidKey = "did:key:z6MkInvalidBase58EncodingHere!!!";
-
-        // Act
-        var result = resolver.ResolveDidKey(invalidEncodedDidKey);
-
-        // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message.StartsWith("Failed to decode base58 key:"));
     }
 }
