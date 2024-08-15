@@ -18,7 +18,16 @@ public class KeyAgreementCreator : IKeyAgreementCreator
             publicKeyMultibase = $"z{x25519KeyId}"
         };
     }
+/// <summary>
+/// Should convert an Ed25519 public key to an X25519 public key.
+/// THE BELOW IMPLEMENTATION IS NOT ACCURATE AND NEEDS TO BE FIXED
+/// </summary>
+/// <param name="ed25519PublicKey"></param>
+/// <returns></returns>
+/// <exception cref="ArgumentException"></exception>
 
+
+/// TO DO: Fix the below implementation
     private byte[] ConvertEd25519ToX25519(byte[] ed25519PublicKey)
     {
         if (ed25519PublicKey.Length != 32)
