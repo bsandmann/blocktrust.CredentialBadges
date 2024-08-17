@@ -67,6 +67,9 @@ public class CheckSignatureHandler : IRequestHandler<CheckSignatureRequest, Resu
 
         var publicKey = prismPublicKey.LongByteArray;
 
+        var base64kEy= PrismEncoding.ByteArrayToBase64(publicKey);
+        
+
         string signature = request?.OpenBadgeCredential.Jwt.Signature;
         byte[] signatureBytes = PrismEncoding.Base64ToByteArray(signature);
 
