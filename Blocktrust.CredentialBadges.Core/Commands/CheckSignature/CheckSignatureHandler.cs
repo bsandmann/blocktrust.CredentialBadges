@@ -88,10 +88,11 @@ public class CheckSignatureHandler : IRequestHandler<CheckSignatureRequest, Resu
         var publicKey = ExtractPublicKeyFromDid(did);
 
         var jwt = request.OpenBadgeCredential.Jwt;
-        string signingInput = $"{jwt.Headers}.{jwt.Payload}";
+        string signingInput = $"{jwt.HeadersAsJson}.{jwt.PayloadAsJson}";
         byte[] dataToVerify = PrismEncoding.Utf8StringToByteArray(signingInput);
+        
 
-        byte[] signatureBytes = PrismEncoding.Base64ToByteArray(jwt.Signature);
+        byte[] signatureBytes = PrismEncoding.Base64ToByteArray(jwt.Signature.Replace('-', '+').Replace('_', '/'));
 
         var ecService = new EcServiceBouncyCastle();
 
