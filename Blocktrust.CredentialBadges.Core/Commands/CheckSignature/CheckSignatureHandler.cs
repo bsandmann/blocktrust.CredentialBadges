@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Blocktrust.CredentialBadges.Core.Prism;
 using OpenPrismNode;
 using FluentResults;
@@ -88,48 +89,20 @@ public class CheckSignatureHandler : IRequestHandler<CheckSignatureRequest, Resu
         var publicKey = ExtractPublicKeyFromDid(did);
 
         var jwt = request.OpenBadgeCredential.Jwt;
-        string signingInput = $"{jwt.HeadersAsJson}.{jwt.PayloadAsJson}";
-        byte[] dataToVerify = PrismEncoding.Utf8StringToByteArray(signingInput);
-        
 
         byte[] signatureBytes = PrismEncoding.Base64ToByteArray(jwt.Signature.Replace('-', '+').Replace('_', '/'));
 
+        
+        string signInInput = $"{PrismEncoding.ByteArrayToBase64( PrismEncoding.Utf8StringToByteArray($"{jwt.HeadersAsJson}"))}.{PrismEncoding.ByteArrayToBase64( PrismEncoding.Utf8StringToByteArray($"{jwt.PayloadAsJson}"))}";
+        
+        
+
+        byte[] dataToVerify = PrismEncoding.Utf8StringToByteArray(signInInput);
+        
         var ecService = new EcServiceBouncyCastle();
 
-        byte[] signatureToVerify;
-        if (signatureBytes.Length == 64)
-        {
-            // This is likely an R||S format signature, which is common in JWTs
-            // We need to convert it to DER format
-            byte[] rBytes = new byte[32];
-            byte[] sBytes = new byte[32];
-            Array.Copy(signatureBytes, 0, rBytes, 0, 32);
-            Array.Copy(signatureBytes, 32, sBytes, 0, 32);
-
-            // Create a 65-byte signature by prepending 0x04 (uncompressed point format)
-            byte[] uncompressedSignature = new byte[65];
-            uncompressedSignature[0] = 0x04;
-            Array.Copy(rBytes, 0, uncompressedSignature, 1, 32);
-            Array.Copy(sBytes, 0, uncompressedSignature, 33, 32);
-
-            signatureToVerify = ecService.ConvertToDerSignature(uncompressedSignature);
-        }
-        else if (signatureBytes.Length == 65)
-        {
-            // This is already in the format expected by ConvertToDerSignature
-            signatureToVerify = ecService.ConvertToDerSignature(signatureBytes);
-        }
-        else if (ecService.IsValidDerSignature(signatureBytes))
-        {
-            // The signature is already in DER format
-            signatureToVerify = signatureBytes;
-        }
-        else
-        {
-            throw new ArgumentException("Invalid signature format");
-        }
-
-        bool isValid = ecService.VerifyData(dataToVerify, signatureToVerify, publicKey);
+    
+        bool isValid = ecService.VerifyDataWithoutDER(dataToVerify, signatureBytes, publicKey);
 
         return isValid 
             ? Result.Ok(ECheckSignatureResponse.Valid) 
