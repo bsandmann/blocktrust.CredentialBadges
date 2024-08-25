@@ -317,6 +317,7 @@ public static class CredentialParser
                 try
                 {
                     var ff = vcJsonElement.GetRawText();
+                    //FAILING HERE
                     var vc = CredentialParser.DeserializeAsOpenBadgeCredential(vcJsonElement.GetRawText());
                     if (vc.IsFailed)
                     {
