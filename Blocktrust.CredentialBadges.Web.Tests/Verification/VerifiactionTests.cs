@@ -35,7 +35,7 @@ public partial class TestSetup
     [Fact]
     public async Task Simple_VerifiactionTest_1()
     {
-        var parserResult = CredentialParser.Parse(PrismCredentials.PrismCredentialJohnWorking);
+        var parserResult = CredentialParser.Parse(PrismCredentials.LatestCredential);
         parserResult.Should().BeSuccess();
 
         var verifiyOpenBadgeRequest = new VerifyOpenBadgeRequest(parserResult.Value);

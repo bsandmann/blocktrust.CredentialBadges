@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using Blocktrust.CredentialBadges.Core.Prism;
 using OpenPrismNode;
 using FluentResults;
