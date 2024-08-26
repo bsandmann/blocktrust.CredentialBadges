@@ -33,6 +33,8 @@ public class CheckSignatureHandler : IRequestHandler<CheckSignatureRequest, Resu
                     var prismRequest = new CheckPrismDIDSignatureRequest(did, request.OpenBadgeCredential);
                     return await _mediator.Send(prismRequest, cancellationToken);
                 case "key":
+                    // var didKeyRequest = new CheckDIDKeySignatureRequest(did, request.OpenBadgeCredential.Proof.ProofValue, signedData);
+                    // return await _mediator.Send(didKeyRequest, cancellationToken);
                 case "web":
                     return Result.Ok(ECheckSignatureResponse.UnsupportedDidMethod);
                 default:
