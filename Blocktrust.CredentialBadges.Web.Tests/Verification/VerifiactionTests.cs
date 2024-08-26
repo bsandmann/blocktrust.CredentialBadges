@@ -1,53 +1,64 @@
-namespace Blocktrust.CredentialBadges.Web.Tests.Verification;
-
-using Core.Commands.CheckRevocationStatus;
-using Core.Commands.CheckSignature;
-using Core.Commands.CheckTrustRegistry;
-using Core.Commands.VerifyOpenBadge;
-using Core.Common;
-using Core.Crypto;
-using Core.Prism;
-using Xunit;
-using FluentResults.Extensions.FluentAssertions;
+using Blocktrust.CredentialBadges.Core.Commands.CheckPrismDIDSignature;
+using Blocktrust.CredentialBadges.Core.Commands.CheckRevocationStatus;
+using Blocktrust.CredentialBadges.Core.Commands.CheckSignature;
+using Blocktrust.CredentialBadges.Core.Commands.CheckTrustRegistry;
+using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
+using Blocktrust.CredentialBadges.Core.Common;
+using Blocktrust.CredentialBadges.Core.Crypto;
+using Blocktrust.CredentialBadges.Core.Prism;
+using FluentAssertions;
+using FluentResults;
 using MediatR;
 using Moq;
-using TestCredentials;
+using Blocktrust.CredentialBadges.Web.Tests.TestCredentials;
 
-public partial class TestSetup
+namespace Blocktrust.CredentialBadges.Web.Tests.Verification;
+
+public class VerificationTests
 {
-    private Mock<IMediator> _mediatorMock = new();
-    private CheckSignatureHandler checkSignatureHandler = new();
-    private CheckRevocationStatusHandler checkRevocationStatusHandler = new();
-    private CheckTrustRegistryHandler checkchTrustRegistryHandler = new();
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly CheckSignatureHandler _checkSignatureHandler;
+    private readonly CheckRevocationStatusHandler _checkRevocationStatusHandler;
+    private readonly CheckTrustRegistryHandler _checkTrustRegistryHandler;
 
-    public TestSetup()
+    public VerificationTests()
     {
+        _mediatorMock = new Mock<IMediator>();
+        _checkSignatureHandler = new CheckSignatureHandler(_mediatorMock.Object);
+        _checkRevocationStatusHandler = new CheckRevocationStatusHandler();
+        _checkTrustRegistryHandler = new CheckTrustRegistryHandler();
+
         _mediatorMock.Setup(p => p.Send(It.IsAny<CheckSignatureRequest>(), It.IsAny<CancellationToken>()))
-            .Returns(async (CheckSignatureRequest Request, CancellationToken token) => await checkSignatureHandler.Handle(Request, token));
+            .Returns((CheckSignatureRequest request, CancellationToken token) => _checkSignatureHandler.Handle(request, token));
 
         _mediatorMock.Setup(p => p.Send(It.IsAny<CheckRevocationStatusRequest>(), It.IsAny<CancellationToken>()))
-            .Returns(async (CheckRevocationStatusRequest Request, CancellationToken token) => await checkRevocationStatusHandler.Handle(Request, token));
+            .Returns((CheckRevocationStatusRequest request, CancellationToken token) => _checkRevocationStatusHandler.Handle(request, token));
 
         _mediatorMock.Setup(p => p.Send(It.IsAny<CheckTrustRegistryRequest>(), It.IsAny<CancellationToken>()))
-            .Returns(async (CheckTrustRegistryRequest Request, CancellationToken token) => await checkchTrustRegistryHandler.Handle(Request, token));
+            .Returns((CheckTrustRegistryRequest request, CancellationToken token) => _checkTrustRegistryHandler.Handle(request, token));
     }
 
     [Fact]
-    public async Task Simple_VerifiactionTest_1()
+    public async Task Simple_VerificationTest_1()
     {
+        // Arrange
         var parserResult = CredentialParser.Parse(PrismCredentials.LatestCredential);
-        parserResult.Should().BeSuccess();
+        parserResult.IsSuccess.Should().BeTrue();
 
-        var verifiyOpenBadgeRequest = new VerifyOpenBadgeRequest(parserResult.Value);
+        var verifyOpenBadgeRequest = new VerifyOpenBadgeRequest(parserResult.Value);
+
+        // Mock the CheckPrismDIDSignatureHandler to return Valid
+        _mediatorMock.Setup(p => p.Send(It.IsAny<CheckPrismDIDSignatureRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(ECheckSignatureResponse.Valid));
 
         // Act
         var handler = new VerifyOpenBadgeHandler(_mediatorMock.Object);
-        var verifivationResult = await handler.Handle(verifiyOpenBadgeRequest, CancellationToken.None);
+        var verificationResult = await handler.Handle(verifyOpenBadgeRequest, CancellationToken.None);
 
         // Assert
-        verifivationResult.Should().BeSuccess();
+        verificationResult.IsSuccess.Should().BeTrue();
     }
-    
+
     [Fact]
     public void BouncyCastle_is_able_to_sign_and_verify_message_as_expected()
     {
@@ -63,6 +74,68 @@ public partial class TestSetup
         var validation = ecService.VerifyData(testMessageBytes, signature, PrismEncoding.HexToByteArray(publicKeyHex));
 
         // Assert
-        Assert.True(validation);
+        validation.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CheckSignatureHandler_Should_Return_Valid_For_Valid_Signature()
+    {
+        // Arrange
+        var parserResult = CredentialParser.Parse(PrismCredentials.LatestCredential);
+        parserResult.IsSuccess.Should().BeTrue();
+
+        var request = new CheckSignatureRequest(parserResult.Value);
+
+        // Mock the CheckPrismDIDSignatureHandler to return Valid
+        _mediatorMock.Setup(p => p.Send(It.IsAny<CheckPrismDIDSignatureRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(ECheckSignatureResponse.Valid));
+
+        // Act
+        var result = await _checkSignatureHandler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(ECheckSignatureResponse.Valid);
+    }
+
+    [Fact]
+    public async Task CheckSignatureHandler_Should_Return_Invalid_For_Invalid_Signature()
+    {
+        // Arrange
+        var parserResult = CredentialParser.Parse(PrismCredentials.LatestCredential);
+        parserResult.IsSuccess.Should().BeTrue();
+
+        var request = new CheckSignatureRequest(parserResult.Value);
+
+        // Mock the CheckPrismDIDSignatureHandler to return Invalid
+        _mediatorMock.Setup(p => p.Send(It.IsAny<CheckPrismDIDSignatureRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(ECheckSignatureResponse.Invalid));
+
+        // Act
+        var result = await _checkSignatureHandler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(ECheckSignatureResponse.Invalid);
+    }
+
+    [Fact]
+    public async Task CheckSignatureHandler_Should_Return_UnsupportedDidMethod_For_Unsupported_DID()
+    {
+        // Arrange
+        var parserResult = CredentialParser.Parse(PrismCredentials.LatestCredential);
+        parserResult.IsSuccess.Should().BeTrue();
+
+        // Modify the DID to an unsupported method
+        parserResult.Value.Issuer.Id = new Uri("did:unsupported:example");
+
+        var request = new CheckSignatureRequest(parserResult.Value);
+
+        // Act
+        var result = await _checkSignatureHandler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(ECheckSignatureResponse.UnsupportedDidMethod);
     }
 }
