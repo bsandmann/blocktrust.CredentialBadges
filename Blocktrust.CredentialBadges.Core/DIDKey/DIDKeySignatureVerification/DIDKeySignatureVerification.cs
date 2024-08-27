@@ -24,29 +24,35 @@ public class DIDKeySignatureVerification
         try
         {
             var credentialObject = JsonNode.Parse(credentialJson).AsObject();
-            var verifiableCredential = credentialObject["verifiableCredential"][0].AsObject();
-            var issuerDid = verifiableCredential["issuer"]["id"].GetValue<string>();
-            var proofValue = verifiableCredential["proof"]["proofValue"].GetValue<string>();
+            var issuerDid = credentialObject["issuer"]["id"].GetValue<string>();
+            var proofValue = credentialObject["proof"]["proofValue"].GetValue<string>();
 
-            // Create a new object without the proof
+            // Create a deep copy of the credential without the proof
             var credentialWithoutProof = new JsonObject();
-            foreach (var property in verifiableCredential.AsObject())
+            foreach (var property in credentialObject)
             {
                 if (property.Key != "proof")
                 {
-                    credentialWithoutProof.Add(property.Key, property.Value);
+                    credentialWithoutProof.Add(property.Key, JsonNode.Parse(property.Value.ToJsonString()));
                 }
             }
 
-            var message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(credentialWithoutProof));
+            // Serialize the credential without proof to a string
+            var credentialWithoutProofString = credentialWithoutProof.ToJsonString(new JsonSerializerOptions
+            {
+                WriteIndented = false
+            });
+
+            // Convert the string to bytes
+            var message = Encoding.UTF8.GetBytes(credentialWithoutProofString);
 
             var publicKeyMultibase = ExtractPublicKeyMultibase(issuerDid);
             var publicKey = ConvertMultibaseToPublicKey(publicKeyMultibase);
-                
+
             bool isValid = VerifySignatureInternal(message, proofValue, publicKey);
 
-            return isValid 
-                ? Result.Ok(ECheckSignatureResponse.Valid) 
+            return isValid
+                ? Result.Ok(ECheckSignatureResponse.Valid)
                 : Result.Ok(ECheckSignatureResponse.Invalid);
         }
         catch (Exception ex)
