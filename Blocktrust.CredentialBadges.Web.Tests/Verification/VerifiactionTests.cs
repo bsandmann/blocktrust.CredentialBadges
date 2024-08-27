@@ -60,7 +60,7 @@ public class VerificationTests
         parserResult.IsSuccess.Should().BeTrue();
 
         // Tamper with the credential to make the signature invalid
-        // parserResult.Value.Jwt.PayloadAsJson = "InvalidPayload";
+        parserResult.Value.Jwt.Signature = "Invalid Signature";
 
         var request = new CheckSignatureRequest(parserResult.Value);
 
@@ -68,7 +68,7 @@ public class VerificationTests
         var result = await _checkSignatureHandler.Handle(request, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.Should().BeFalse();
         // result.Value.Should().Be(ECheckSignatureResponse.Invalid);
     }
 
