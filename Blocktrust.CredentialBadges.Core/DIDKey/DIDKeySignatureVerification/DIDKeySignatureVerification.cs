@@ -10,7 +10,6 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Blocktrust.CredentialBadges.Core.DIDKey.DIDKeySignatureVerification;
 
-using Common;
 using VDS.RDF;
 using VDS.RDF.Parsing;
 using VDS.RDF.Parsing.Handlers;
@@ -37,36 +36,8 @@ public class DIDKeySignatureVerification
             var issuerDid = credentialObject["issuer"]["id"].GetValue<string>();
             var proofValue = proof["proofValue"].GetValue<string>();
 
-            // Serialize the credential without proof to a string
-            var credentialWithoutProofString = credentialObject.ToJsonString(new JsonSerializerOptions
-            {
-                WriteIndented = false
-            });
-
-            // Parse JSON-LD to RDF Graph
-            IGraph graph = new Graph();
-            using (var reader = new StringReader(credentialWithoutProofString))
-            {
-                // Create a JSON-LD Parser instance
-                var jsonLdParser = new JsonLdParser();
-
-                // Create a handler for the graph
-                var handler = new GraphHandler(graph);
-
-                // Parse the JSON-LD string into the graph using the handler
-                jsonLdParser.Load(handler, reader);
-            }
-
-            // Create a triple store and add the graph
-            ITripleStore store = new TripleStore();
-            store.Add(graph);
-
-            // Canonicalize the RDF dataset
-            var canonicalizer = new RdfCanonicalizer();
-            var canonicalized = canonicalizer.Canonicalize(store);
-
-            // Get the canonicalized N-Quads
-            string canonicalizedNQuads = canonicalized.SerializedNQuads;
+            // Canonicalize the credential
+            var canonicalizedNQuads = CanonicalizeCredential(credentialObject);
 
             var hashedMessage = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedNQuads));
 
@@ -83,6 +54,41 @@ public class DIDKeySignatureVerification
         {
             return Result.Fail<ECheckSignatureResponse>($"Error during DID Key signature verification: {ex.Message}");
         }
+    }
+    
+    
+    public string CanonicalizeCredential(JsonObject credentialObject)
+    {
+        // Serialize the credential to a string
+        var credentialString = credentialObject.ToJsonString(new JsonSerializerOptions
+        {
+            WriteIndented = false
+        });
+
+        // Parse JSON-LD to RDF Graph
+        IGraph graph = new Graph();
+        using (var reader = new StringReader(credentialString))
+        {
+            // Create a JSON-LD Parser instance
+            var jsonLdParser = new JsonLdParser();
+
+            // Create a handler for the graph
+            var handler = new GraphHandler(graph);
+
+            // Parse the JSON-LD string into the graph using the handler
+            jsonLdParser.Load(handler, reader);
+        }
+
+        // Create a triple store and add the graph
+        ITripleStore store = new TripleStore();
+        store.Add(graph);
+
+        // Canonicalize the RDF dataset
+        var canonicalizer = new RdfCanonicalizer();
+        var canonicalized = canonicalizer.Canonicalize(store);
+
+        // Get the canonicalized N-Quads
+        return canonicalized.SerializedNQuads;
     }
 
     public string ExtractPublicKeyMultibase(string didKey)

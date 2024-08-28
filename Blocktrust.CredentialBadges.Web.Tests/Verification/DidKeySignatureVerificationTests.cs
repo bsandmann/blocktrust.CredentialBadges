@@ -10,6 +10,7 @@ using System.Text;
 using SimpleBase;
 using Org.BouncyCastle.Crypto.Signers;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Blocktrust.CredentialBadges.Web.Tests.Verification;
 
@@ -25,6 +26,24 @@ public class DidKeySignatureVerificationTests
         _sha256Service = new Sha256ServiceBouncyCastle();
         _verifier = new DIDKeySignatureVerification(_sha256Service);
     }
+    
+       [Fact]
+        public void CanonicalizeAndHashCredential_ValidCredential_ReturnsExpectedHash()
+        {
+            // Arrange
+            var credentialWithoutProof = TestDidKeyCredentials.ValidCredentialWithoutProof;
+            var credentialObject = JsonNode.Parse(credentialWithoutProof).AsObject();
+    
+            // Expected hash (placeholder)
+            var expectedHash = "PLACE_EXPECTED_HASH_HERE";
+    
+            // Act
+            var canonicalized = _verifier.CanonicalizeCredential(credentialObject);
+            var hashedMessage = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalized));
+    
+            // Assert
+            hashedMessage.Should().BeEquivalentTo(Convert.FromHexString(expectedHash));
+        }
 
     [Fact]
     public void VerifySignatureInternal_FullCycle_ReturnsTrue()
@@ -71,7 +90,7 @@ public class DidKeySignatureVerificationTests
     public void VerifySignature_ValidCredential_ReturnsValid()
     {
         // Arrange
-        string credentialJson = TestDidKeyCredentials.ValidCredential2;
+        string credentialJson = TestDidKeyCredentials.ValidCredential;
 
         // Act
         var result = _verifier.VerifySignature(credentialJson);
