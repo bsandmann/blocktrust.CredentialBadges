@@ -17,11 +17,13 @@ public class DidKeySignatureVerificationTests
 {
     private readonly EcServiceBouncyCastle _ecService;
     private readonly DIDKeySignatureVerification _verifier;
+    private readonly ISha256Service _sha256Service;
 
     public DidKeySignatureVerificationTests()
     {
         _ecService = new EcServiceBouncyCastle();
-        _verifier = new DIDKeySignatureVerification(_ecService);
+        _sha256Service = new Sha256ServiceBouncyCastle();
+        _verifier = new DIDKeySignatureVerification(_sha256Service);
     }
 
     [Fact]
@@ -69,7 +71,7 @@ public class DidKeySignatureVerificationTests
     public void VerifySignature_ValidCredential_ReturnsValid()
     {
         // Arrange
-        string credentialJson = TestDidKeyCredentials.ValidCredential;
+        string credentialJson = TestDidKeyCredentials.ValidCredential2;
 
         // Act
         var result = _verifier.VerifySignature(credentialJson);

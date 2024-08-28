@@ -10,13 +10,18 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Blocktrust.CredentialBadges.Core.DIDKey.DIDKeySignatureVerification;
 
+using Common;
+using VDS.RDF;
+using VDS.RDF.Parsing;
+using VDS.RDF.Parsing.Handlers;
+
 public class DIDKeySignatureVerification
 {
-    private readonly EcServiceBouncyCastle _ecService;
+    private readonly ISha256Service _sha256Service;
 
-    public DIDKeySignatureVerification(EcServiceBouncyCastle ecService)
+    public DIDKeySignatureVerification(ISha256Service sha256Service)
     {
-        _ecService = ecService;
+        _sha256Service = sha256Service;
     }
 
     public Result<ECheckSignatureResponse> VerifySignature(string credentialJson)
@@ -24,7 +29,7 @@ public class DIDKeySignatureVerification
         try
         {
             var credentialObject = JsonNode.Parse(credentialJson).AsObject();
-        
+
             // Extract and remove the proof
             var proof = credentialObject["proof"];
             credentialObject.Remove("proof");
@@ -38,13 +43,37 @@ public class DIDKeySignatureVerification
                 WriteIndented = false
             });
 
-            // Convert the string to bytes
-            var message = Encoding.UTF8.GetBytes(credentialWithoutProofString);
+            // Parse JSON-LD to RDF Graph
+            IGraph graph = new Graph();
+            using (var reader = new StringReader(credentialWithoutProofString))
+            {
+                // Create a JSON-LD Parser instance
+                var jsonLdParser = new JsonLdParser();
+
+                // Create a handler for the graph
+                var handler = new GraphHandler(graph);
+
+                // Parse the JSON-LD string into the graph using the handler
+                jsonLdParser.Load(handler, reader);
+            }
+
+            // Create a triple store and add the graph
+            ITripleStore store = new TripleStore();
+            store.Add(graph);
+
+            // Canonicalize the RDF dataset
+            var canonicalizer = new RdfCanonicalizer();
+            var canonicalized = canonicalizer.Canonicalize(store);
+
+            // Get the canonicalized N-Quads
+            string canonicalizedNQuads = canonicalized.SerializedNQuads;
+
+            var hashedMessage = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedNQuads));
 
             var publicKeyMultibase = ExtractPublicKeyMultibase(issuerDid);
             var publicKey = ConvertMultibaseToPublicKey(publicKeyMultibase);
 
-            bool isValid = VerifySignatureInternal(message, proofValue, publicKey);
+            bool isValid = VerifySignatureInternal(hashedMessage, proofValue, publicKey);
 
             return isValid
                 ? Result.Ok(ECheckSignatureResponse.Valid)
@@ -93,7 +122,7 @@ public class DIDKeySignatureVerification
         try
         {
             var verifier = new Ed25519Signer();
-            verifier.Init(false, new Ed25519PublicKeyParameters(publicKey));
+            verifier.Init(false, new Ed25519PublicKeyParameters(publicKey, 0));
             verifier.BlockUpdate(message, 0, message.Length);
             return verifier.VerifySignature(signature);
         }
