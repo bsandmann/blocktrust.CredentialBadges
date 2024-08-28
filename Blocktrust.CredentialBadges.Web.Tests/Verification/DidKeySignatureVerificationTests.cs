@@ -89,8 +89,8 @@ public class DidKeySignatureVerificationTests
         var result = _verifier.VerifySignature(credentialJson);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        // result.Value.Should().Be(ECheckSignatureResponse.Invalid);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(ECheckSignatureResponse.Invalid);
     }
 
     [Fact]

@@ -159,7 +159,7 @@ namespace Blocktrust.CredentialBadges.Web.Tests.Verification
                                                 "created": "2023-08-02T21:19:28Z",
                                                 "verificationMethod": "did:key:z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC#z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC",
                                                 "proofPurpose": "assertionMethod",
-                                                "proofValue": "z6sVGrHrDE1K8TLSV8qK87GZEpNHH1S3TTi9KhKyKiXCDPtxT2Y2Hs5xX5ZK3McwhHGoGUdoG9tu9vJInvalid"
+                                                "proofValue": "VGrHrDE1K8TLSV8qK87GZEpNHH1S3TTi9KhKyKiXCDPtxT2Y2Hs5xX5nvalid"
                                               }
                                             }
                                             """;

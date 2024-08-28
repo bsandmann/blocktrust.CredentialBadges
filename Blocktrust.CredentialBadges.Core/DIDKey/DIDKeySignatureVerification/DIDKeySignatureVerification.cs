@@ -24,21 +24,16 @@ public class DIDKeySignatureVerification
         try
         {
             var credentialObject = JsonNode.Parse(credentialJson).AsObject();
-            var issuerDid = credentialObject["issuer"]["id"].GetValue<string>();
-            var proofValue = credentialObject["proof"]["proofValue"].GetValue<string>();
+        
+            // Extract and remove the proof
+            var proof = credentialObject["proof"];
+            credentialObject.Remove("proof");
 
-            // Create a deep copy of the credential without the proof
-            var credentialWithoutProof = new JsonObject();
-            foreach (var property in credentialObject)
-            {
-                if (property.Key != "proof")
-                {
-                    credentialWithoutProof.Add(property.Key, JsonNode.Parse(property.Value.ToJsonString()));
-                }
-            }
+            var issuerDid = credentialObject["issuer"]["id"].GetValue<string>();
+            var proofValue = proof["proofValue"].GetValue<string>();
 
             // Serialize the credential without proof to a string
-            var credentialWithoutProofString = credentialWithoutProof.ToJsonString(new JsonSerializerOptions
+            var credentialWithoutProofString = credentialObject.ToJsonString(new JsonSerializerOptions
             {
                 WriteIndented = false
             });
@@ -68,9 +63,16 @@ public class DIDKeySignatureVerification
 
     public byte[] ConvertMultibaseToPublicKey(string multibaseKey)
     {
+        if (string.IsNullOrEmpty(multibaseKey) || multibaseKey[0] != 'z')
+        {
+            throw new ArgumentException("Invalid multibase key. Must start with 'z'.", nameof(multibaseKey));
+        }
+
         string encodedKey = multibaseKey.Substring(1);
-        byte[] decodedKey = Base58.Bitcoin.Decode(encodedKey).ToArray();
-        return decodedKey.Skip(2).ToArray();
+
+        byte[] decodedBytes = Base58.Bitcoin.Decode(encodedKey).ToArray();
+
+        return decodedBytes.Skip(2).ToArray();
     }
 
     public bool VerifySignatureInternal(byte[] message, string proofValue, byte[] publicKey)
