@@ -29,22 +29,31 @@ public class DIDKeySignatureVerification
         {
             var credentialObject = JsonNode.Parse(credentialJson).AsObject();
 
-            // Extract and remove the proof
-            var proof = credentialObject["proof"];
-            credentialObject.Remove("proof");
+            // Extract the proof
+            var proof = credentialObject["proof"].AsObject();
+            
+            // Create a copy of the credential without the proof
+            var credentialWithoutProof = JsonNode.Parse(credentialJson).AsObject();
+            credentialWithoutProof.Remove("proof");
 
             var issuerDid = credentialObject["issuer"]["id"].GetValue<string>();
             var proofValue = proof["proofValue"].GetValue<string>();
 
-            // Canonicalize the credential
-            var canonicalizedNQuads = CanonicalizeCredential(credentialObject);
+            // Canonicalize and hash the credential without proof
+            var canonicalizedCredential = CanonicalizeCredential(credentialWithoutProof);
+            var documentHash = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedCredential));
 
-            var hashedMessage = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedNQuads));
+            // Canonicalize and hash the proof
+            var canonicalizedProof = CanonicalizeProof(proof);
+            var proofHash = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedProof));
+
+            // Combine the hashes
+            var verifyData = CombineHashes(proofHash, documentHash);
 
             var publicKeyMultibase = ExtractPublicKeyMultibase(issuerDid);
             var publicKey = ConvertMultibaseToPublicKey(publicKeyMultibase);
 
-            bool isValid = VerifySignatureInternal(hashedMessage, proofValue, publicKey);
+            bool isValid = VerifySignatureInternal(verifyData, proofValue, publicKey);
 
             return isValid
                 ? Result.Ok(ECheckSignatureResponse.Valid)
@@ -55,7 +64,7 @@ public class DIDKeySignatureVerification
             return Result.Fail<ECheckSignatureResponse>($"Error during DID Key signature verification: {ex.Message}");
         }
     }
-    
+
     
     public string CanonicalizeCredential(JsonObject credentialObject)
     {
@@ -90,6 +99,26 @@ public class DIDKeySignatureVerification
         // Get the canonicalized N-Quads
         return canonicalized.SerializedNQuads;
     }
+    
+    
+    public string CanonicalizeProof(JsonObject proof)
+    {
+        // Create a copy of the proof
+        var proofForCanonicalization = new JsonObject(proof);
+
+        // Remove specific fields that should not be included in canonicalization
+        proofForCanonicalization.Remove("jws");
+        proofForCanonicalization.Remove("signatureValue");
+        proofForCanonicalization.Remove("proofValue");
+
+        // Canonicalize the modified proof
+        return CanonicalizeCredential(proofForCanonicalization);
+    }
+
+    private byte[] CombineHashes(byte[] hash1, byte[] hash2)
+    {
+        return hash1.Concat(hash2).ToArray();
+    }
 
     public string ExtractPublicKeyMultibase(string didKey)
     {
@@ -115,6 +144,7 @@ public class DIDKeySignatureVerification
         try
         {
             byte[] signature = Base58.Bitcoin.Decode(proofValue.StartsWith("z") ? proofValue.Substring(1) : proofValue).ToArray();
+
             return VerifyEd25519Signature(message, signature, publicKey);
         }
         catch (Exception)

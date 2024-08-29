@@ -39,7 +39,10 @@ public class DidKeySignatureVerificationTests
     
             // Act
             var canonicalized = _verifier.CanonicalizeCredential(credentialObject);
+            
             var hashedMessage = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalized));
+            
+            var hashHex = Convert.ToHexString(hashedMessage);
     
             // Assert
             hashedMessage.Should().BeEquivalentTo(Convert.FromHexString(expectedHash));
