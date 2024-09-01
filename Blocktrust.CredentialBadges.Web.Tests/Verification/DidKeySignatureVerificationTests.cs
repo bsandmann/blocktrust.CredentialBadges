@@ -10,7 +10,6 @@ using System.Text;
 using SimpleBase;
 using Org.BouncyCastle.Crypto.Signers;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Blocktrust.CredentialBadges.Web.Tests.Verification;
 
@@ -26,27 +25,21 @@ public class DidKeySignatureVerificationTests
         _sha256Service = new Sha256ServiceBouncyCastle();
         _verifier = new DIDKeySignatureVerification(_sha256Service);
     }
+    [Fact]
+    public void CombineHashes_TwoHashes_ReturnsCombinedHash()
+    {
+        // Arrange
+        byte[] hash1 = new byte[] { 1, 2, 3, 4 };
+        byte[] hash2 = new byte[] { 5, 6, 7, 8 };
+        byte[] expectedCombined = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        // Act
+        var result = _verifier.CombineHashes(hash1, hash2);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedCombined);
+    }
     
-       [Fact]
-        public void CanonicalizeAndHashCredential_ValidCredential_ReturnsExpectedHash()
-        {
-            // Arrange
-            var credentialWithoutProof = TestDidKeyCredentials.ValidCredentialWithoutProof;
-            var credentialObject = JsonNode.Parse(credentialWithoutProof).AsObject();
-    
-            // Expected hash (placeholder)
-            var expectedHash = "PLACE_EXPECTED_HASH_HERE";
-    
-            // Act
-            var canonicalized = _verifier.CanonicalizeCredential(credentialObject);
-            
-            var hashedMessage = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalized));
-            
-            var hashHex = Convert.ToHexString(hashedMessage);
-    
-            // Assert
-            hashedMessage.Should().BeEquivalentTo(Convert.FromHexString(expectedHash));
-        }
 
     [Fact]
     public void VerifySignatureInternal_FullCycle_ReturnsTrue()

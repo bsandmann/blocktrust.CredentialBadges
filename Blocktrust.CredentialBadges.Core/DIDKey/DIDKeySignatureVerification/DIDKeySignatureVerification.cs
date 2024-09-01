@@ -31,21 +31,21 @@ public class DIDKeySignatureVerification
 
             // Extract the proof
             var proof = credentialObject["proof"].AsObject();
-            
+        
             // Create a copy of the credential without the proof
-            var credentialWithoutProof = JsonNode.Parse(credentialJson).AsObject();
+            var credentialWithoutProof = JsonSerializer.Deserialize<JsonObject>(credentialObject.ToJsonString());
             credentialWithoutProof.Remove("proof");
 
             var issuerDid = credentialObject["issuer"]["id"].GetValue<string>();
             var proofValue = proof["proofValue"].GetValue<string>();
 
-            // Canonicalize and hash the credential without proof
-            var canonicalizedCredential = CanonicalizeCredential(credentialWithoutProof);
-            var documentHash = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedCredential));
-
             // Canonicalize and hash the proof
             var canonicalizedProof = CanonicalizeProof(proof);
             var proofHash = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedProof));
+
+            // Canonicalize and hash the credential without proof
+            var canonicalizedCredential = CanonicalizeCredential(credentialWithoutProof);
+            var documentHash = _sha256Service.HashData(Encoding.UTF8.GetBytes(canonicalizedCredential));
 
             // Combine the hashes
             var verifyData = CombineHashes(proofHash, documentHash);
@@ -65,7 +65,6 @@ public class DIDKeySignatureVerification
         }
     }
 
-    
     public string CanonicalizeCredential(JsonObject credentialObject)
     {
         // Serialize the credential to a string
@@ -103,23 +102,23 @@ public class DIDKeySignatureVerification
     
     public string CanonicalizeProof(JsonObject proof)
     {
-        // Create a copy of the proof
-        var proofForCanonicalization = new JsonObject(proof);
-
-        // Remove specific fields that should not be included in canonicalization
-        proofForCanonicalization.Remove("jws");
-        proofForCanonicalization.Remove("signatureValue");
-        proofForCanonicalization.Remove("proofValue");
-
-        // Canonicalize the modified proof
-        return CanonicalizeCredential(proofForCanonicalization);
+        var proofCopy = JsonSerializer.Deserialize<JsonObject>(JsonSerializer.Serialize(proof));
+        proofCopy.Remove("proofValue");
+    
+        if (!proofCopy.ContainsKey("@context"))
+        {
+            proofCopy.Add("@context", "https://w3id.org/security/suites/ed25519-2020/v1");
+        }
+    
+        return CanonicalizeCredential(proofCopy);
     }
-
-    private byte[] CombineHashes(byte[] hash1, byte[] hash2)
+    public byte[] CombineHashes(byte[] proofHash, byte[] documentHash)
     {
-        return hash1.Concat(hash2).ToArray();
+        byte[] combined = new byte[proofHash.Length + documentHash.Length];
+        Buffer.BlockCopy(proofHash, 0, combined, 0, proofHash.Length);
+        Buffer.BlockCopy(documentHash, 0, combined, proofHash.Length, documentHash.Length);
+        return combined;
     }
-
     public string ExtractPublicKeyMultibase(string didKey)
     {
         return didKey.Substring(8);
