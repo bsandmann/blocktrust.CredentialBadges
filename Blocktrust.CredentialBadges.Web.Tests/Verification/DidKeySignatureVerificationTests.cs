@@ -17,12 +17,29 @@ public class DidKeySignatureVerificationTests
 {
     private readonly EcServiceBouncyCastle _ecService;
     private readonly DIDKeySignatureVerification _verifier;
+    private readonly ISha256Service _sha256Service;
 
     public DidKeySignatureVerificationTests()
     {
         _ecService = new EcServiceBouncyCastle();
-        _verifier = new DIDKeySignatureVerification(_ecService);
+        _sha256Service = new Sha256ServiceBouncyCastle();
+        _verifier = new DIDKeySignatureVerification(_sha256Service);
     }
+    [Fact]
+    public void CombineHashes_TwoHashes_ReturnsCombinedHash()
+    {
+        // Arrange
+        byte[] hash1 = new byte[] { 1, 2, 3, 4 };
+        byte[] hash2 = new byte[] { 5, 6, 7, 8 };
+        byte[] expectedCombined = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        // Act
+        var result = _verifier.CombineHashes(hash1, hash2);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedCombined);
+    }
+    
 
     [Fact]
     public void VerifySignatureInternal_FullCycle_ReturnsTrue()
@@ -89,8 +106,8 @@ public class DidKeySignatureVerificationTests
         var result = _verifier.VerifySignature(credentialJson);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        // result.Value.Should().Be(ECheckSignatureResponse.Invalid);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(ECheckSignatureResponse.Invalid);
     }
 
     [Fact]
