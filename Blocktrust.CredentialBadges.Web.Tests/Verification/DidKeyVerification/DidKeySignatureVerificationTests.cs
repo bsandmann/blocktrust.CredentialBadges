@@ -1,17 +1,17 @@
+using System.Text;
+using System.Text.Json;
 using Blocktrust.CredentialBadges.Core.Commands.CheckSignature;
 using Blocktrust.CredentialBadges.Core.Crypto;
 using Blocktrust.CredentialBadges.Core.DIDKey.DIDKeySignatureVerification;
 using FluentAssertions;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Security;
-using System.Text;
-using SimpleBase;
 using Org.BouncyCastle.Crypto.Signers;
-using System.Text.Json;
+using Org.BouncyCastle.Security;
+using SimpleBase;
 
-namespace Blocktrust.CredentialBadges.Web.Tests.Verification;
+namespace Blocktrust.CredentialBadges.Web.Tests.Verification.DidKeyVerification;
 
 public class DidKeySignatureVerificationTests
 {
