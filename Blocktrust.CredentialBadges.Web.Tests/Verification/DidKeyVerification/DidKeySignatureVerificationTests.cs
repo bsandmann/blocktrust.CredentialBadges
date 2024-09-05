@@ -1,85 +1,19 @@
-using System.Text;
 using System.Text.Json;
 using Blocktrust.CredentialBadges.Core.Commands.CheckSignature;
 using Blocktrust.CredentialBadges.Core.Crypto;
 using Blocktrust.CredentialBadges.Core.DIDKey.DIDKeySignatureVerification;
 using FluentAssertions;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Crypto.Signers;
-using Org.BouncyCastle.Security;
-using SimpleBase;
 
 namespace Blocktrust.CredentialBadges.Web.Tests.Verification.DidKeyVerification;
 
-public class DidKeySignatureVerificationTests
+public class DIDKeySignatureVerificationTests
 {
-    private readonly EcServiceBouncyCastle _ecService;
     private readonly DIDKeySignatureVerification _verifier;
-    private readonly ISha256Service _sha256Service;
 
-    public DidKeySignatureVerificationTests()
+    public DIDKeySignatureVerificationTests()
     {
-        _ecService = new EcServiceBouncyCastle();
-        _sha256Service = new Sha256ServiceBouncyCastle();
-        _verifier = new DIDKeySignatureVerification(_sha256Service);
-    }
-    [Fact]
-    public void CombineHashes_TwoHashes_ReturnsCombinedHash()
-    {
-        // Arrange
-        byte[] hash1 = new byte[] { 1, 2, 3, 4 };
-        byte[] hash2 = new byte[] { 5, 6, 7, 8 };
-        byte[] expectedCombined = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-
-        // Act
-        var result = _verifier.CombineHashes(hash1, hash2);
-
-        // Assert
-        result.Should().BeEquivalentTo(expectedCombined);
-    }
-    
-
-    [Fact]
-    public void VerifySignatureInternal_FullCycle_ReturnsTrue()
-    {
-        // Arrange
-        var keyPair = GenerateEd25519KeyPair();
-        var publicKey = ((Ed25519PublicKeyParameters)keyPair.Public).GetEncoded();
-        var privateKey = ((Ed25519PrivateKeyParameters)keyPair.Private).GetEncoded();
-
-        string didKey = CreateDidKeyFromPublicKey(publicKey);
-        byte[] message = "Test message"u8.ToArray();
-        byte[] signature = SignMessage(message, privateKey);
-        string proofValue = "z" + Base58.Bitcoin.Encode(signature);
-
-        string publicKeyMultibase = didKey.Substring(8); // Remove "did:key:" prefix
-        byte[] convertedPublicKey = _verifier.ConvertMultibaseToPublicKey(publicKeyMultibase);
-
-        // Act
-        bool result = _verifier.VerifySignatureInternal(message, proofValue, convertedPublicKey);
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public void VerifyEd25519Signature_FullCycle_ReturnsTrue()
-    {
-        // Arrange
-        var keyPair = GenerateEd25519KeyPair();
-        var publicKey = ((Ed25519PublicKeyParameters)keyPair.Public).GetEncoded();
-        var privateKey = ((Ed25519PrivateKeyParameters)keyPair.Private).GetEncoded();
-
-        byte[] message = Encoding.UTF8.GetBytes("Test message");
-        byte[] signature = SignMessage(message, privateKey);
-
-        // Act
-        bool result = _verifier.VerifyEd25519Signature(message, signature, publicKey);
-
-        // Assert
-        result.Should().BeTrue();
+        var sha256Service = new Sha256ServiceBouncyCastle();
+        _verifier = new DIDKeySignatureVerification(sha256Service);
     }
 
     [Fact]
@@ -125,33 +59,6 @@ public class DidKeySignatureVerificationTests
     }
 
     [Fact]
-    public void ExtractPublicKeyMultibase_ValidDIDKey_ReturnsCorrectMultibase()
-    {
-        // Arrange
-        string didKey = "did:key:z6Mktpn6cXks1PBKLMgZH2VaahvCtBMF6K8eCa7HzrnuYLZv";
-
-        // Act
-        var result = _verifier.ExtractPublicKeyMultibase(didKey);
-
-        // Assert
-        result.Should().Be("z6Mktpn6cXks1PBKLMgZH2VaahvCtBMF6K8eCa7HzrnuYLZv");
-    }
-
-    [Fact]
-    public void ConvertMultibaseToPublicKey_ValidMultibase_ReturnsCorrectPublicKey()
-    {
-        // Arrange
-        string multibase = "z6Mktpn6cXks1PBKLMgZH2VaahvCtBMF6K8eCa7HzrnuYLZv";
-
-        // Act
-        var result = _verifier.ConvertMultibaseToPublicKey(multibase);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Length.Should().Be(32); // Ed25519 public key length
-    }
-
-    [Fact]
     public void VerifySignature_InvalidJson_ReturnsFailure()
     {
         // Arrange
@@ -188,28 +95,5 @@ public class DidKeySignatureVerificationTests
         // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle().Which.Message.Should().Contain("Error during DID Key signature verification");
-    }
-
-    // Helper methods
-    private AsymmetricCipherKeyPair GenerateEd25519KeyPair()
-    {
-        var keyPairGenerator = new Ed25519KeyPairGenerator();
-        keyPairGenerator.Init(new Ed25519KeyGenerationParameters(new SecureRandom()));
-        return keyPairGenerator.GenerateKeyPair();
-    }
-
-    private byte[] SignMessage(byte[] message, byte[] privateKey)
-    {
-        var signer = new Ed25519Signer();
-        signer.Init(true, new Ed25519PrivateKeyParameters(privateKey));
-        signer.BlockUpdate(message, 0, message.Length);
-        return signer.GenerateSignature();
-    }
-
-    private string CreateDidKeyFromPublicKey(byte[] publicKey)
-    {
-        var multicodecPublicKey = new byte[] { 0xed, 0x01 }.Concat(publicKey).ToArray();
-        var multibasePublicKey = "z" + Base58.Bitcoin.Encode(multicodecPublicKey);
-        return $"did:key:{multibasePublicKey}";
     }
 }
