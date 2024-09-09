@@ -13,7 +13,8 @@ public class DIDKeySignatureVerificationTests
     public DIDKeySignatureVerificationTests()
     {
         var sha256Service = new Sha256ServiceBouncyCastle();
-        _verifier = new DIDKeySignatureVerification(sha256Service);
+        var ecService = new EcServiceBouncyCastle();
+        _verifier = new DIDKeySignatureVerification(sha256Service, ecService);
     }
 
     [Fact]
