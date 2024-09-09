@@ -6,6 +6,7 @@ using Blocktrust.CredentialBadges.Web.Components;
 using Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 using Microsoft.EntityFrameworkCore;
 using Blocktrust.CredentialBadges.Core.Services.DIDPrism;
+using Blocktrust.CredentialBadges.Core.Commands.CheckDIDKeySignature;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,8 @@ builder.Services.AddTransient<SelectTemplateService>();
 
 // Register MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VerifyOpenBadgeHandler).Assembly));
+// Register all MediatR handlers from the current domain's assemblies
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
 // Register HttpClient
 builder.Services.AddHttpClient();
@@ -37,6 +40,9 @@ builder.Services.AddScoped<IEcService, EcServiceBouncyCastle>();
 
 // Register EcServiceBouncyCastle explicitly
 builder.Services.AddScoped<EcServiceBouncyCastle>();
+
+// Register SHA256 service
+builder.Services.AddScoped<ISha256Service, Sha256ServiceBouncyCastle>();
 
 builder.Services.AddScoped<ImageBytesToBase64>();
 
