@@ -5,6 +5,7 @@ using Blocktrust.CredentialBadges.Web;
 using Blocktrust.CredentialBadges.Web.Components;
 using Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 using Microsoft.EntityFrameworkCore;
+using Blocktrust.CredentialBadges.Core.Services.DIDPrism;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +23,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<TemplatesService>();
 builder.Services.AddTransient<SelectTemplateService>();
 
-
 // Register MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VerifyOpenBadgeHandler).Assembly));
-// Register all MediatR handlers from the current domain's assemblies
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
 // Register HttpClient
 builder.Services.AddHttpClient();
@@ -34,17 +32,22 @@ builder.Services.AddHttpClient();
 // Add controllers to the services
 builder.Services.AddControllers();
 
-// Register CrpytoService
-builder.Services.AddScoped<IEcService,EcServiceBouncyCastle>();
+// Register CryptoService
+builder.Services.AddScoped<IEcService, EcServiceBouncyCastle>();
+
+// Register EcServiceBouncyCastle explicitly
+builder.Services.AddScoped<EcServiceBouncyCastle>();
 
 builder.Services.AddScoped<ImageBytesToBase64>();
+
+// Register the ExtractPrismPubKeyFromLongFormDid service
+builder.Services.AddScoped<ExtractPrismPubKeyFromLongFormDid>();
 
 builder.Services.AddServerSideBlazor()
     .AddHubOptions(options =>
     {
         options.MaximumReceiveMessageSize = 12 * 1024 * 1024; // 12MB
     });
-
 
 // Add CORS services
 builder.Services.AddCors(options =>
