@@ -2,20 +2,21 @@ using System.Text.Json.Nodes;
 using Blocktrust.CredentialBadges.Core.Commands.CheckSignature;
 using Blocktrust.CredentialBadges.Core.Crypto;
 using FluentResults;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Signers;
+using SimpleBase;
 
 namespace Blocktrust.CredentialBadges.Core.DIDKey.DIDKeySignatureVerification;
 
 public class DIDKeySignatureVerification
 {
     private readonly ISha256Service _sha256Service;
-    private readonly Ed25519SignatureVerification _ed25519Verifier;
-    private readonly Secp256k1SignatureVerification _secp256k1Verifier;
+    private readonly IEcService _ecService;
 
-    public DIDKeySignatureVerification(ISha256Service sha256Service)
+    public DIDKeySignatureVerification(ISha256Service sha256Service, IEcService ecService)
     {
         _sha256Service = sha256Service;
-        _ed25519Verifier = new Ed25519SignatureVerification();
-        _secp256k1Verifier = new Secp256k1SignatureVerification();
+        _ecService = ecService;
     }
 
     public Result<ECheckSignatureResponse> VerifySignature(string credentialJson)
@@ -43,11 +44,12 @@ public class DIDKeySignatureVerification
             bool isValid;
             if (issuerDid.StartsWith("did:key:z6Mk")) // Ed25519
             {
-                isValid = _ed25519Verifier.VerifySignature(verifyData, proofValue, publicKey);
+                isValid = VerifyEd25519Signature(verifyData, proofValue, publicKey);
             }
             else if (issuerDid.StartsWith("did:key:zQ3s")) // Secp256k1
             {
-                isValid = _secp256k1Verifier.VerifySignature(verifyData, proofValue, publicKey);
+                byte[] signature = Base58.Bitcoin.Decode(proofValue.StartsWith("z") ? proofValue.Substring(1) : proofValue).ToArray();
+                isValid = _ecService.VerifyData(verifyData, signature, publicKey);
             }
             else
             {
@@ -61,6 +63,22 @@ public class DIDKeySignatureVerification
         catch (Exception ex)
         {
             return Result.Fail<ECheckSignatureResponse>($"Error during DID Key signature verification: {ex.Message}");
+        }
+    }
+
+    private bool VerifyEd25519Signature(byte[] message, string proofValue, byte[] publicKey)
+    {
+        try
+        {
+            byte[] signature = Base58.Bitcoin.Decode(proofValue.StartsWith("z") ? proofValue.Substring(1) : proofValue).ToArray();
+            var verifier = new Ed25519Signer();
+            verifier.Init(false, new Ed25519PublicKeyParameters(publicKey, 0));
+            verifier.BlockUpdate(message, 0, message.Length);
+            return verifier.VerifySignature(signature);
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 }
