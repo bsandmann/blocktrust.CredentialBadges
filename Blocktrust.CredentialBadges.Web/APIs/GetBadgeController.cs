@@ -81,7 +81,7 @@ namespace Blocktrust.CredentialBadges.Web.APIs
                 Description = achievementCredential.CredentialSubject.Achievement.Description,
                 Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id?.ToString(),
                 Status = status,
-                ValidFrom = achievementCredential.ValidFrom
+                ValidFrom = achievementCredential.ValidFrom is not null? achievementCredential.ValidFrom.Value : achievementCredential.IssuanceDate.Value,
             };
 
             // Get the populated template

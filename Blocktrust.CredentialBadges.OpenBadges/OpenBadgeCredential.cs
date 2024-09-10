@@ -14,20 +14,20 @@ public class OpenBadgeCredential
     /// </summary>
     [JsonPropertyName("@context")]
     public required List<Uri> Context { get; set; }
-    
+
     /// <summary>
     /// Unambiguous reference to the credential. [1]
     /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
     /// </summary>
     [JsonPropertyName("id")]
     public Uri Id { get; set; }
-    
+
     /// <summary>
     /// The short description of the credential for display purposes in wallets. [0..1]
     /// </summary> 
     [JsonPropertyName("description")]
     public string? Description { get; set; }
-    
+
     /// <summary>
     /// Timestamp of when the credential was awarded. validFrom is used to determine the most recent version of a Credential 
     /// in conjunction with issuer and id. Consequently, the only way to update a Credential is to update the validFrom, 
@@ -35,7 +35,7 @@ public class OpenBadgeCredential
     /// </summary>
     [JsonPropertyName("awardedDate")]
     public DateTime? AwardedDate { get; set; }
-    
+
     /// <summary>
     /// A description of the individual, entity, or organization that issued the credential. [1]
     /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
@@ -45,23 +45,42 @@ public class OpenBadgeCredential
 
     /// <summary>
     /// Timestamp of when the credential becomes valid. [1]
-    /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
+    /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional
+    /// Note, that this property is used in v2 data model, but not in v1
     /// </summary>
     [JsonPropertyName("validFrom")]
-    public DateTime ValidFrom { get; set; }
+    public DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// Timestamp of when the credential becomes valid. [1]
+    /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
+    /// Note, that this property is used in v1 data model, but not in v2 
+    /// </summary>
+    [JsonPropertyName("issuanceDate")]
+    public DateTime? IssuanceDate { get; set; }
 
     /// <summary>
     /// If the credential has some notion of validity period, this indicates a timestamp when a credential should no longer 
     /// be considered valid. After this time, the credential should be considered invalid. [0..1]
+    /// Note, that this property is used in v2 data model, but not in v1 
     /// </summary>
     [JsonPropertyName("validUntil")]
     public DateTime? ValidUntil { get; set; }
+
+    /// <summary>
+    /// If the credential has some notion of validity period, this indicates a timestamp when a credential should no longer 
+    /// be considered valid. After this time, the credential should be considered invalid. [0..1]
+    /// Note, that this property is used in v1 data model, but not in v2 
+    /// </summary>
+    [JsonPropertyName("expirationDate")]
+    public DateTime? ExpirationDate { get; set; }
 
     /// <summary>
     /// If present, one or more embedded cryptographic proofs that can be used to detect tampering and verify the authorship 
     /// of the credential. [0..*]
     /// </summary>
     [JsonPropertyName("proof")]
+    [JsonConverter(typeof(ProofListJsonConverter))]
     public List<Proof>? Proof { get; set; }
 
     /// <summary>
@@ -89,20 +108,23 @@ public class OpenBadgeCredential
     /// to perform (a prohibition), or allowed to perform (a permission) if it is to accept the verifiable credential. [0..*]
     /// </summary>
     [JsonPropertyName("termsOfUse")]
-    public List<TermsOfUse>? TermsOfUse { get; set; } 
-    
+    public List<TermsOfUse>? TermsOfUse { get; set; }
+
     /// <summary>
     /// Optional property to capture the complete JWT as it was created 
     /// </summary>
     [JsonIgnore]
     public JwtModel? Jwt { get; set; }
-    
+
     /// <summary>
     /// Flag to determine the type of data model used for the credential (1.0 or 2.0)
     /// </summary>
     [JsonIgnore]
     public EDataModelType DataModelType { get; set; }
     
-    
-    
+    /// <summary>
+    /// The raw untouched data of the json-form of the credential
+    /// </summary>
+    [JsonIgnore] 
+    public string RawData { get; set; }
 }

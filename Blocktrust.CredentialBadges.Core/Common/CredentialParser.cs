@@ -32,6 +32,7 @@ public static class CredentialParser
             {
                 return openBadgeCredentialResult.ToResult();
             }
+
             return Result.Ok(openBadgeCredentialResult.Value);
         }
         else
@@ -63,6 +64,7 @@ public static class CredentialParser
             {
                 return openBadgeCredentialResult.ToResult();
             }
+
             return Result.Ok(openBadgeCredentialResult.Value);
         }
     }
@@ -79,7 +81,7 @@ public static class CredentialParser
         {
             return jwt.ToResult();
         }
-        
+
         var parsedJwt = Parse(jwt.Value);
         if (parsedJwt.IsFailed)
         {
@@ -95,7 +97,7 @@ public static class CredentialParser
             return Result.Fail("Could not extract payload from JWT: Multiple OpenBadgeCredentials found. Only one is supported.");
         }
 
-        return parsedJwt.Value.OpenBadgeCredentials.Single(); 
+        return parsedJwt.Value.OpenBadgeCredentials.Single();
     }
 
     /// <summary>
@@ -108,6 +110,7 @@ public static class CredentialParser
         var options = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Converters = { new ImageJsonConverter(), new ProofListJsonConverter() }
         };
 
         var isEndorsementCredentialResult = IsEndorsementCredential(rawInput);
@@ -126,6 +129,7 @@ public static class CredentialParser
                     return Result.Fail<OpenBadgeCredential>("Deserialization returned null.");
                 }
 
+                deserializedObject.RawData = rawInput;
                 return Result.Ok<OpenBadgeCredential>(deserializedObject);
             }
             catch (JsonException ex)
@@ -143,6 +147,7 @@ public static class CredentialParser
                     return Result.Fail<OpenBadgeCredential>("Deserialization returned null.");
                 }
 
+                deserializedObject.RawData = rawInput;
                 return Result.Ok<OpenBadgeCredential>(deserializedObject);
             }
             catch (JsonException ex)
@@ -182,8 +187,8 @@ public static class CredentialParser
             return Result.Ok(false);
         }
     }
-    
-    
+
+
     private static readonly List<string> AllowedJwtAlgorithms = new List<string>()
     {
         "HS256",

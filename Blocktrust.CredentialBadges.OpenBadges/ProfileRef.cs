@@ -66,6 +66,7 @@ public class ProfileRef
     /// An image representing the issuer. This must be a PNG or SVG image. [0..1]
     /// </summary>
     [JsonPropertyName("image")]
+    [JsonConverter(typeof(ImageJsonConverter))]
     public Image? Image { get; set; }
 
     /// <summary>
