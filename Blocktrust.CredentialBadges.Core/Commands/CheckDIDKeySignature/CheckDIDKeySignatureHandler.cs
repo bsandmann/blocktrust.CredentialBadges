@@ -19,6 +19,7 @@ public class CheckDIDKeySignatureHandler : IRequestHandler<CheckDIDKeySignatureR
 
     public Task<Result<ECheckSignatureResponse>> Handle(CheckDIDKeySignatureRequest request, CancellationToken cancellationToken)
     {
+        
         var verifier = new DIDKeySignatureVerification(_sha256Service, _ecService);
         var result = verifier.VerifySignature(request.CredentialJson);
         return Task.FromResult(result);

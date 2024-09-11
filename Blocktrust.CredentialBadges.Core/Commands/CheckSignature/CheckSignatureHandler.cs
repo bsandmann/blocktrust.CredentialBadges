@@ -35,7 +35,7 @@ public class CheckSignatureHandler : IRequestHandler<CheckSignatureRequest, Resu
                     var prismRequest = new CheckPrismDIDSignatureRequest(did, request.OpenBadgeCredential);
                     return await _mediator.Send(prismRequest, cancellationToken);
                 case "key":
-                    var credentialJson = JsonSerializer.Serialize(request.OpenBadgeCredential);
+                    var credentialJson =  request.OpenBadgeCredential.RawData;
                     var didKeyRequest = new CheckDIDKeySignatureRequest(credentialJson);
                     return await _mediator.Send(didKeyRequest, cancellationToken);
                 case "web":
