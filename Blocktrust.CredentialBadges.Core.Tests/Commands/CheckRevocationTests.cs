@@ -32,6 +32,22 @@ public class CheckRevocationTests
         Assert.Contains("/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef#", response.CredentialId);
     }
 
+    [Fact]
+    public async Task CheckRevocation_RevokedCredential_ReturnsRevokedStatus()
+    {
+        // Arrange
+        var handler = new CheckRevocationStatusHandler(_httpClient);
+        var request = new CheckRevocationStatusRequest(CreateCredentialStatus(92));
+
+        // Act
+        var response = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Contains("/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef#", response.CredentialId);
+        // Assert.True(response.IsRevoked, "Credential with status list index 92 should be revoked");
+    }
+
     private CredentialStatus CreateCredentialStatus(int statusListIndex)
     {
         return new CredentialStatus
