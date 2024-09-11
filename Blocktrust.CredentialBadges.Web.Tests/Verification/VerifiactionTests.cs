@@ -31,7 +31,7 @@ public class VerificationTests
 
         _mediator = serviceProvider.GetRequiredService<IMediator>();
         _checkSignatureHandler = new CheckSignatureHandler(_mediator);
-        _checkRevocationStatusHandler = new CheckRevocationStatusHandler();
+        // _checkRevocationStatusHandler = new CheckRevocationStatusHandler();
         _checkTrustRegistryHandler = new CheckTrustRegistryHandler();
     }
 

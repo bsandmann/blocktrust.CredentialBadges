@@ -1,6 +1,6 @@
 namespace Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
-
 using CheckRevocationStatus;
+
 using CheckSignature;
 using CheckTrustRegistry;
 using FluentResults;
@@ -47,14 +47,10 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
 
 
         // TODO Then check the revocation
-        var checkRevocationStatusResult = await _mediator.Send(new CheckRevocationStatusRequest(request.OpenBadgeCredential), cancellationToken);
-        if (checkRevocationStatusResult.IsFailed)
-        {
-            return checkRevocationStatusResult.ToResult();
-        }
+        var checkRevocationStatusResult = await _mediator.Send(new CheckRevocationStatusRequest(request.OpenBadgeCredential.CredentialStatus), cancellationToken);
 
-        verificationResult.CredentialIsNotRevoked = !checkRevocationStatusResult.Value.Revoked;
-        verificationResult.ReferenceToRevocationList = checkRevocationStatusResult.Value.ReferenceToRevocationList;
+        verificationResult.CredentialIsNotRevoked = !checkRevocationStatusResult.IsRevoked;
+        verificationResult.ReferenceToRevocationList = checkRevocationStatusResult.CredentialId;
 
 
         // TODO Then check the trust registry

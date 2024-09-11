@@ -1,15 +1,14 @@
+using MediatR;
+using Blocktrust.CredentialBadges.OpenBadges;
+
 namespace Blocktrust.CredentialBadges.Core.Commands.CheckRevocationStatus;
 
-using FluentResults;
-using MediatR;
-using OpenBadges;
-
-public class CheckRevocationStatusRequest : IRequest<Result<CheckRevocationStatusResponse>>
+public class CheckRevocationStatusRequest : IRequest<CheckRevocationStatusResponse>
 {
-    public CheckRevocationStatusRequest(OpenBadgeCredential openBadgeCredential)
+    public CheckRevocationStatusRequest(CredentialStatus credentialStatus)
     {
-        OpenBadgeCredential = openBadgeCredential;
+        CredentialStatus = credentialStatus;
     }
 
-    public OpenBadgeCredential OpenBadgeCredential { get; } 
+    public CredentialStatus CredentialStatus { get; }
 }

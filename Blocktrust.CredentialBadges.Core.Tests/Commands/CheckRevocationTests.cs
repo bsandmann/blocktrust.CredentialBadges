@@ -1,6 +1,8 @@
+using Blocktrust.CredentialBadges.Core.Commands.CheckRevocationStatus;
+using Blocktrust.CredentialBadges.OpenBadges;
+
 namespace Blocktrust.CredentialBadges.Core.Tests.Commands;
 
-using Blocktrust.CredentialBadges.Core.Commands.CheckRevocation;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +38,7 @@ public class CheckRevocationTests
         {
             StatusPurpose = "Revocation",
             StatusListIndex = statusListIndex,
-            Id = $"http://10.10.50.105:8000/cloud-agent/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef#{statusListIndex}",
+            Id = new Uri($"http://10.10.50.105:8000/cloud-agent/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef#{statusListIndex}"),
             Type = "StatusList2021Entry",
             StatusListCredential = "http://10.10.50.105:8000/cloud-agent/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef"
         };
