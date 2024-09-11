@@ -26,7 +26,7 @@ namespace Blocktrust.CredentialBadges.OpenBadges
 
                     Image image = new Image
                     {
-                        Id = new Uri(root.GetProperty("id").GetString()),
+                        Id = !string.IsNullOrWhiteSpace(root.GetProperty("id").GetString()) ? new Uri(root.GetProperty("id").GetString()) : null,
                         Type = root.GetProperty("type").GetString()
                     };
 
@@ -51,6 +51,7 @@ namespace Blocktrust.CredentialBadges.OpenBadges
             {
                 writer.WriteString("caption", value.Caption);
             }
+
             writer.WriteEndObject();
         }
     }

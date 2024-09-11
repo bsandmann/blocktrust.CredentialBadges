@@ -14,7 +14,7 @@ public class Image
     /// The URI or Data URI of the image. [1]
     /// </summary>
     [JsonPropertyName("id")]
-    public required Uri Id { get; set; }
+    public Uri? Id { get; set; }
 
     /// <summary>
     /// MUST be the IRI 'Image'. [1]
