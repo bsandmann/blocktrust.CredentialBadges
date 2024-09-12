@@ -1,6 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Blocktrust.CredentialBadges.OpenBadges;
 using MediatR;
 
 
@@ -27,7 +27,7 @@ public class CheckRevocationStatusHandler : IRequestHandler<CheckRevocationStatu
         };
     }
 
-    private async Task<StatusListCredential> FetchStatusListCredential(string url, CancellationToken cancellationToken)
+    private async Task<StatusList2021Credential> FetchStatusListCredential(string url, CancellationToken cancellationToken)
     {
         // Development environment URL modification
         url = url.Replace("http://10.10.50.105:8000/", "http://212.124.51.147:35412/");
@@ -37,10 +37,10 @@ public class CheckRevocationStatusHandler : IRequestHandler<CheckRevocationStatu
         {
             PropertyNameCaseInsensitive = true
         };
-        return JsonSerializer.Deserialize<StatusListCredential>(response, options);
+        return JsonSerializer.Deserialize<StatusList2021Credential>(response, options);
     }
 
-    private bool CheckRevocationStatus(StatusListCredential statusListCredential, int? statusListIndex)
+    private bool CheckRevocationStatus(StatusList2021Credential statusListCredential, int? statusListIndex)
     {
         
         var decodedList = DecodeBase64Url(statusListCredential.CredentialSubject.EncodedList);
@@ -77,63 +77,3 @@ public class CheckRevocationStatusHandler : IRequestHandler<CheckRevocationStatu
             return compressedData;
         }
     }}
-
-public class StatusListCredential
-{
-    [JsonPropertyName("@context")]
-    public string[] Context { get; set; }
-
-    [JsonPropertyName("type")]
-    public string[] Type { get; set; }
-
-    [JsonPropertyName("issuer")]
-    public string Issuer { get; set; }
-
-    [JsonPropertyName("id")]
-    public string Id { get; set; }
-
-    [JsonPropertyName("issuanceDate")]
-    public long IssuanceDate { get; set; }
-
-    [JsonPropertyName("credentialSubject")]
-    public CredentialSubject CredentialSubject { get; set; }
-
-    [JsonPropertyName("proof")]
-    public Proof Proof { get; set; }
-}
-
-public class CredentialSubject
-{
-    [JsonPropertyName("id")]
-    public string Id { get; set; }
-
-    [JsonPropertyName("type")]
-    public string Type { get; set; }
-
-    [JsonPropertyName("statusPurpose")]
-    public string StatusPurpose { get; set; }
-
-    [JsonPropertyName("encodedList")]
-    public string EncodedList { get; set; }
-}
-
-public class Proof
-{
-    [JsonPropertyName("type")]
-    public string Type { get; set; }
-
-    [JsonPropertyName("proofPurpose")]
-    public string ProofPurpose { get; set; }
-
-    [JsonPropertyName("verificationMethod")]
-    public string VerificationMethod { get; set; }
-
-    [JsonPropertyName("created")]
-    public string Created { get; set; }
-
-    [JsonPropertyName("proofValue")]
-    public string ProofValue { get; set; }
-
-    [JsonPropertyName("cryptoSuite")]
-    public string CryptoSuite { get; set; }
-}

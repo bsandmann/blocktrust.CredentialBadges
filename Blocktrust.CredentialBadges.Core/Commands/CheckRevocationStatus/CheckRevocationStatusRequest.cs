@@ -1,5 +1,5 @@
-using MediatR;
 using Blocktrust.CredentialBadges.OpenBadges;
+using MediatR;
 
 namespace Blocktrust.CredentialBadges.Core.Commands.CheckRevocationStatus;
 
