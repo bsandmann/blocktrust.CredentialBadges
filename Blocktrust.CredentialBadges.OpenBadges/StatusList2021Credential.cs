@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Blocktrust.CredentialBadges.OpenBadges;
@@ -37,13 +38,14 @@ public class StatusList2021Credential
     /// The issuance date of the status list credential.
     /// </summary>
     [JsonPropertyName("issuanceDate")]
-    public long IssuanceDate { get; set; }
+    [JsonConverter(typeof(IssuanceDateConverter))]
+    public DateTimeOffset IssuanceDate { get; set; }
 
     /// <summary>
     /// The subject of the status list credential, containing the actual status list.
     /// </summary>
     [JsonPropertyName("credentialSubject")]
-    public CredentialSubject CredentialSubject { get; set; }
+    public StatusListCredentialSubject CredentialSubject { get; set; }
 
     /// <summary>
     /// The cryptographic proof that ensures the integrity of the credential.
@@ -55,7 +57,7 @@ public class StatusList2021Credential
 /// <summary>
 /// Represents the subject of a Status List 2021 Credential, containing the actual status list.
 /// </summary>
-public class CredentialSubject
+public class StatusListCredentialSubject
 {
     /// <summary>
     /// The identifier for the credential subject.
@@ -80,4 +82,43 @@ public class CredentialSubject
     /// </summary>
     [JsonPropertyName("encodedList")]
     public string EncodedList { get; set; }
+}
+
+/// <summary>
+/// Converts between JSON representations and DateTimeOffset for the issuance date.
+/// Handles both Unix timestamp (long integer) and ISO 8601 date string formats.
+/// </summary>
+public class IssuanceDateConverter : JsonConverter<DateTimeOffset>
+{
+    /// <summary>
+    /// Reads the JSON representation and converts it to a DateTimeOffset.
+    /// </summary>
+    /// <param name="reader">The Utf8JsonReader to read the JSON from.</param>
+    /// <param name="typeToConvert">The type to convert.</param>
+    /// <param name="options">An object that specifies serialization options to use.</param>
+    /// <returns>The converted DateTimeOffset value.</returns>
+    public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Number)
+        {
+            return DateTimeOffset.FromUnixTimeSeconds(reader.GetInt64());
+        }
+        else if (reader.TokenType == JsonTokenType.String)
+        {
+            return DateTimeOffset.Parse(reader.GetString());
+        }
+
+        throw new JsonException("Unexpected token type for issuanceDate");
+    }
+
+    /// <summary>
+    /// Writes a DateTimeOffset value as JSON.
+    /// </summary>
+    /// <param name="writer">The writer to write to.</param>
+    /// <param name="value">The value to convert to JSON.</param>
+    /// <param name="options">An object that specifies serialization options to use.</param>
+    public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString("o"));
+    }
 }
