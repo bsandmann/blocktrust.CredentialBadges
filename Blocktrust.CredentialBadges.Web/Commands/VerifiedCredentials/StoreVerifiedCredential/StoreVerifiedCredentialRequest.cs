@@ -15,5 +15,5 @@ public class StoreVerifiedCredentialRequest : IRequest<Result<VerifiedCredential
     public DateTime ValidUntil { get; set; }
     public string Issuer { get; set; }
     public EVerificationStatus Status { get; set; }
-    public string Domain { get; set; }
+    public string? Domain { get; set; }
 }

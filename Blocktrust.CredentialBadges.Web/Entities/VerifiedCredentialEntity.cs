@@ -20,7 +20,7 @@ public class VerifiedCredentialEntity
     public string Name { get; set; }
 
     [Column(TypeName = "text")]
-    public string Image { get; set; } = null;
+    public string? Image { get; set; }
 
     [Required(ErrorMessage = "Credential is required")]
     [Column(TypeName = "text")]
@@ -35,5 +35,5 @@ public class VerifiedCredentialEntity
     public string TemplateId { get; set; } = "noimage_no_description_light";
 
     [StringLength(253, ErrorMessage = "Domain must not exceed 253 characters")]
-    public string Domain { get; set; }
+    public string? Domain { get; set; }
 }
