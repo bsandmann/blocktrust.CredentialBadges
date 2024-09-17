@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Blocktrust.CredentialBadges.Web.Enums;
@@ -8,8 +7,7 @@ namespace Blocktrust.CredentialBadges.Web.Entities;
 public class VerifiedCredentialEntity
 {
     [Key]
-    public Guid StoredCredentialId { get; set; } // Primary Key
-
+    public Guid StoredCredentialId { get; set; }
 
     [Required]
     public EVerificationStatus Status { get; set; } = EVerificationStatus.Invalid;
@@ -22,18 +20,20 @@ public class VerifiedCredentialEntity
     public string Name { get; set; }
 
     [Column(TypeName = "text")]
-    public string Image { get; set; } = null; // Base64-encoded image string
+    public string? Image { get; set; }
 
     [Required(ErrorMessage = "Credential is required")]
     [Column(TypeName = "text")]
-    public string Credential { get; set; } // A very long string
+    public string Credential { get; set; }
     
-    public DateTime ValidFrom { get; set; } // Date when the credential is valid from
+    public DateTime ValidFrom { get; set; }
     
-    public DateTime ValidUntil { get; set; } // Date when the credential is valid until
+    public DateTime ValidUntil { get; set; }
     
-    // Issuer
-    public string Issuer { get; set; } // The entity that issued the credential
+    public string Issuer { get; set; }
     
-    public string TemplateId { get; set; } = "noimage_no_description_light"; // The template ID of the credential
+    public string TemplateId { get; set; } = "noimage_no_description_light";
+
+    [StringLength(253, ErrorMessage = "Domain must not exceed 253 characters")]
+    public string? Domain { get; set; }
 }

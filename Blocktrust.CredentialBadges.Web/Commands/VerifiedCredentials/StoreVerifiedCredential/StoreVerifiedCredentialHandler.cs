@@ -26,11 +26,10 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
             Image = request.Image,
             Credential = request.Credential,
             Status = request.Status,
-            //convert to utc
             ValidFrom = request.ValidFrom.ToUniversalTime(),
             ValidUntil = request.ValidUntil.ToUniversalTime(),
-            Issuer = request.Issuer
-            
+            Issuer = request.Issuer,
+            Domain = request.Domain
         };
 
         try
