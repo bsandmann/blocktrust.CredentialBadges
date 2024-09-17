@@ -37,6 +37,38 @@ namespace Blocktrust.CredentialBadges.Web.APIs
 
             var credential = credentialResult.Value;
 
+            // Check if the credential has a domain restriction
+            if (!string.IsNullOrEmpty(credential.Domain))
+            {
+                // Get the origin of the request
+                var origin = Request.Headers["Origin"].ToString();
+                if (string.IsNullOrEmpty(origin))
+                {
+                    // If no origin header, try to get the referer
+                    origin = Request.Headers["Referer"].ToString();
+                }
+
+                // Parse the origin to get just the domain
+                if (!string.IsNullOrEmpty(origin))
+                {
+                    Uri uri = new Uri(origin);
+                    string requestDomain = uri.Host;
+
+                    // Compare the request domain with the credential's domain
+                    if (!requestDomain.Equals(credential.Domain, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return StatusCode(StatusCodes.Status403Forbidden, 
+                            new { Message = "Access to this badge is restricted to the specified domain" });
+                    }
+                }
+                else
+                {
+                    // If we can't determine the origin, deny access
+                    return StatusCode(StatusCodes.Status403Forbidden, 
+                        new { Message = "Unable to verify request origin" });
+                }
+            }
+
             // Deserialize the credential to an AchievementCredential
             var achievementCredential = JsonSerializer.Deserialize<AchievementCredential>(credential.Credential);
 
@@ -63,7 +95,7 @@ namespace Blocktrust.CredentialBadges.Web.APIs
             {
                 status = EVerificationStatus.Revoked;
             }
-            
+                
             if (!verifyResponse.SignatureIsValid)
             {
                 status = EVerificationStatus.Invalid;
@@ -81,7 +113,7 @@ namespace Blocktrust.CredentialBadges.Web.APIs
                 Description = achievementCredential.CredentialSubject.Achievement.Description,
                 Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id?.ToString(),
                 Status = status,
-                ValidFrom = achievementCredential.ValidFrom is not null? achievementCredential.ValidFrom.Value : achievementCredential.IssuanceDate.Value,
+                ValidFrom = achievementCredential.ValidFrom ?? achievementCredential.IssuanceDate.Value,
             };
 
             // Get the populated template
