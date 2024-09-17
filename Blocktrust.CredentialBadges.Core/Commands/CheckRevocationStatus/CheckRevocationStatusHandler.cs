@@ -33,12 +33,12 @@ public class CheckRevocationStatusHandler : IRequestHandler<CheckRevocationStatu
         url = url.Replace("http://10.10.50.105:8000/", "http://212.124.51.147:35412/");
         try
         {
-        var response = await _httpClient.GetStringAsync(url, cancellationToken);
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-        return JsonSerializer.Deserialize<StatusList2021Credential>(response, options);
+            var response = await _httpClient.GetStringAsync(url, cancellationToken);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            return JsonSerializer.Deserialize<StatusList2021Credential>(response, options);
         
         }
         catch (Exception e)

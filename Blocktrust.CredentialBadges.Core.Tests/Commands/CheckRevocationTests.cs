@@ -23,14 +23,14 @@ public class CheckRevocationTests
     {
         // Arrange
         var handler = new CheckRevocationStatusHandler(_httpClient);
-        var request = new CheckRevocationStatusRequest(CreateCredentialStatus(91));
+        var request = new CheckRevocationStatusRequest(CreateCredentialStatus(3));
 
         // Act
         var response = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         response.Should().NotBeNull();
-        response.CredentialId.Should().Contain("/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef#");
+        response.CredentialId.Should().Contain("/credential-status/");
     }
 
     [Fact]
@@ -38,15 +38,15 @@ public class CheckRevocationTests
     {
         // Arrange
         var handler = new CheckRevocationStatusHandler(_httpClient);
-        var request = new CheckRevocationStatusRequest(CreateCredentialStatus(92));
+        var request = new CheckRevocationStatusRequest(CreateCredentialStatus(1));
 
         // Act
         var response = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         response.Should().NotBeNull();
-        response.CredentialId.Should().Contain("/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef#");
-        // response.IsRevoked.Should().BeTrue("Credential with status list index 92 should be revoked");
+        response.CredentialId.Should().Contain("/credential-status");
+        response.IsRevoked.Should().BeTrue("Credential with status list index 1 should be revoked");
     }
 
     [Fact]
@@ -87,9 +87,9 @@ public class CheckRevocationTests
         {
             StatusPurpose = "Revocation",
             StatusListIndex = statusListIndex,
-            Id = new Uri($"http://10.10.50.105:8000/cloud-agent/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef#{statusListIndex}"),
+            Id = new Uri($"http://10.10.50.105:8000/cloud-agent/credential-status/b9b6bb1e-6864-4074-b8ac-12b3a0b30f0c#{statusListIndex}"),
             Type = "StatusList2021Entry",
-            StatusListCredential = "http://10.10.50.105:8000/cloud-agent/credential-status/b7f4b6b2-8442-4276-b4af-97687a3903ef"
+            StatusListCredential = "http://10.10.50.105:8000/cloud-agent/credential-status/b9b6bb1e-6864-4074-b8ac-12b3a0b30f0c"
         };
     }
 

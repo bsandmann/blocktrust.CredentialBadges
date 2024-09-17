@@ -21,7 +21,7 @@ public class DIDKeySignatureVerificationTests
     public void VerifySignature_ValidCredential_ReturnsValid()
     {
         // Arrange
-        string credentialJson = TestDidKeyCredentials.ValidCredentialRevoked;
+        string credentialJson = TestDidKeyCredentials.ValidCredentialNotRevoked;
 
         // Act
         var result = _verifier.VerifySignature(credentialJson);
