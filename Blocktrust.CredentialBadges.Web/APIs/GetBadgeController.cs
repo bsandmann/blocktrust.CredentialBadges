@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
+using Blocktrust.CredentialBadges.Core.Common;
 using Blocktrust.CredentialBadges.OpenBadges;
 using Microsoft.AspNetCore.Mvc;
 using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById;
@@ -69,16 +70,23 @@ namespace Blocktrust.CredentialBadges.Web.APIs
                 }
             }
 
-            // Deserialize the credential to an AchievementCredential
-            var achievementCredential = JsonSerializer.Deserialize<AchievementCredential>(credential.Credential);
-
-            if (achievementCredential == null)
+            // // Deserialize the credential to an AchievementCredential
+            // var achievementCredential = JsonSerializer.Deserialize<AchievementCredential>(credential.Credential);
+            //
+            // if (achievementCredential == null)
+            // {
+            //     return BadRequest(new { Message = "Invalid credential" });
+            // }
+            
+            
+            var parserResult = CredentialParser.Parse(credential.Credential);
+            if (parserResult.IsFailed)
             {
-                return BadRequest(new { Message = "Invalid credential" });
+                return BadRequest(new { Message = "Invalid credential", Details = parserResult.Errors });
             }
 
             // Call the verification command to re-verify the credential
-            Result<VerifyOpenBadgeResponse> verifyResult = await _mediator.Send(new VerifyOpenBadgeRequest(achievementCredential));
+            Result<VerifyOpenBadgeResponse> verifyResult = await _mediator.Send(new VerifyOpenBadgeRequest(parserResult.Value));
 
             if (verifyResult.IsFailed)
             {
@@ -104,6 +112,8 @@ namespace Blocktrust.CredentialBadges.Web.APIs
             {
                 status = EVerificationStatus.NotDue;
             }
+            
+            AchievementCredential achievementCredential = parserResult.Value as AchievementCredential;
 
             var verifiedCredential = new VerifiedCredential
             {
