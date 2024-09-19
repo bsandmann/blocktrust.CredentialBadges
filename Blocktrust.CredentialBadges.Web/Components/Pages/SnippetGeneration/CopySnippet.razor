@@ -41,12 +41,14 @@
     [Parameter] public Guid credentialId { get; set; }
     [Parameter] public string selectedTemplateId { get; set; }
     private string snippetCode = string.Empty;
-    private string domain = "http://localhost:5159";
+    private string domain;
 
     protected override void OnInitialized()
     {
+        domain = NavigationManager.BaseUri.TrimEnd('/');
         GenerateSnippet();
     }
+
 
     private void GenerateSnippet()
     {

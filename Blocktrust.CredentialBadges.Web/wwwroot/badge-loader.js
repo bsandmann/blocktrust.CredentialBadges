@@ -1,6 +1,8 @@
 (function() {
-    const domain =   "http://localhost:5159";
-
+    const scripts = document.getElementsByTagName('script');
+    const currentScript = scripts[scripts.length - 1];
+    const scriptUrl = new URL(currentScript.src);
+    const domain = `${scriptUrl.protocol}//${scriptUrl.hostname}${scriptUrl.port ? ':' + scriptUrl.port : ''}`;
 
     function loadStyles() {
         const link = document.createElement('link');
