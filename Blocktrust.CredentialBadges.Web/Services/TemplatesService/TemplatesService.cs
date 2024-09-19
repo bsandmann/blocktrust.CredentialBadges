@@ -7,10 +7,16 @@ namespace Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 
 public class TemplatesService
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public TemplatesService(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+    }
     public string GetPopulatedTemplate(string templateId, string theme, VerifiedCredential credential)
     {
         StringBuilder templateBuilder = new StringBuilder();
-        string hostDomain = "https://credentialbadges.azurewebsites.net";
+        string hostDomain = GetHostDomain();
         string linkUrl = $"{hostDomain}/verifier/{credential.Id}";
 
         string themeClass = theme == "dark" ? "dark-theme" : "";
@@ -183,5 +189,20 @@ public class TemplatesService
             EVerificationStatus.Expired => "Expired",
             _ => "Unknown"
         };
+    }
+    
+    private string GetHostDomain()
+    {
+        var request = _httpContextAccessor.HttpContext?.Request;
+        if (request == null)
+        {
+            // Fallback to a default domain if HttpContext is not available
+            return "https://credentialbadges.azurewebsites.net";
+        }
+
+        var scheme = request.Scheme;
+        var host = request.Host.Value;
+
+        return $"{scheme}://{host}";
     }
 }

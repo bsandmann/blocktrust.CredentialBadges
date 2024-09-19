@@ -20,6 +20,7 @@ builder.Services.AddRazorComponents()
 // Register IHttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
+
 // Register GenerateSnippetService
 builder.Services.AddTransient<TemplatesService>();
 builder.Services.AddTransient<SelectTemplateService>();
