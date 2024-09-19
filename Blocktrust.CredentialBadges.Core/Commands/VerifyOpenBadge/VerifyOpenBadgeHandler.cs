@@ -46,11 +46,22 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
         // verificationResult.CredentialIsNotExpired = true;
 
 
-        // TODO Then check the revocation
-        var checkRevocationStatusResult = await _mediator.Send(new CheckRevocationStatusRequest(request.OpenBadgeCredential.CredentialStatus), cancellationToken);
+        // check the revocation
+            //if CredentialStatus is not null
+            if (request.OpenBadgeCredential.CredentialStatus is not null)
+            {
+                var checkRevocationStatusResult = await _mediator.Send(new CheckRevocationStatusRequest(request.OpenBadgeCredential.CredentialStatus), cancellationToken);
 
-        verificationResult.CredentialIsNotRevoked = !checkRevocationStatusResult.IsRevoked;
-        verificationResult.ReferenceToRevocationList = checkRevocationStatusResult.CredentialId;
+                verificationResult.CredentialIsNotRevoked = !checkRevocationStatusResult.IsRevoked;
+                verificationResult.ReferenceToRevocationList = checkRevocationStatusResult.CredentialId; 
+            }
+            else 
+            {
+                verificationResult.CredentialIsNotRevoked = true;
+                verificationResult.ReferenceToRevocationList = "";
+            }
+        
+  
 
 
         // TODO Then check the trust registry
