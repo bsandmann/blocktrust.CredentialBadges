@@ -5,15 +5,23 @@
     const domain = `${scriptUrl.protocol}//${scriptUrl.hostname}${scriptUrl.port ? ':' + scriptUrl.port : ''}`;
 
     function loadStyles() {
+        // Load custom CSS
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = `${domain}/credential-badge-style.css`;
         document.head.appendChild(link);
 
-        const fontLink = document.createElement('link');
-        fontLink.rel = 'stylesheet';
-        fontLink.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
-        document.head.appendChild(fontLink);
+        // Load Material Icons font
+        const materialIconsLink = document.createElement('link');
+        materialIconsLink.rel = 'stylesheet';
+        materialIconsLink.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+        document.head.appendChild(materialIconsLink);
+
+        // Load Material Symbols Outlined font
+        const materialSymbolsLink = document.createElement('link');
+        materialSymbolsLink.rel = 'stylesheet';
+        materialSymbolsLink.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0';
+        document.head.appendChild(materialSymbolsLink);
     }
 
     async function fetchAndRenderBadge(element) {
