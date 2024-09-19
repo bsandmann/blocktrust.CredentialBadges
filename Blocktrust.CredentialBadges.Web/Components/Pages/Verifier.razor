@@ -6,59 +6,100 @@
 @inject IMediator Mediator
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-<PageTitle>Verifier</PageTitle>
+<PageTitle>Blocktrust Credential Verifier</PageTitle>
 
-<h1>Verifier Page</h1>
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-gray-900 mb-6">Credential Verification</h2>
 
-<p>A user will be redirected to this page if they click on an embedded Credential</p>
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline">@ErrorMessage</span>
+        </div>
+    }
+    else if (isVerifying)
+    {
+        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6">
+            <div class="flex justify-center items-center h-48">
+                <span class="material-symbols-outlined animate-spin text-4xl text-gray-400">autorenew</span>
+            </div>
+            <p class="text-gray-600 text-center mt-4">Verifying credential, please wait...</p>
+        </div>
+    }
+    else if (credential != null)
+    {
+        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                <h3 class="text-2xl font-semibold mb-2 sm:mb-0">@credential.Name</h3>
+                <div class="flex items-center">
+                    <span class="inline-block px-3 py-1 text-sm font-medium leading-5 rounded-full @GetStatusClass(credential.Status) mr-2">@credential.Status</span>
+                    <button class="bg-slate-600 text-white px-4 py-2 rounded flex items-center hover:bg-slate-500 transition-colors duration-200" @onclick="RerunVerification">
+                        <span class="material-symbols-outlined mr-2">refresh</span> Re-verify
+                    </button>
+                </div>
+            </div>
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <div class="alert alert-danger">
-        @ErrorMessage
-    </div>
-}
-else if (credential != null)
-{
-    <div class="card">
-        <div class="card-body">
             @if (!string.IsNullOrEmpty(credential.Image))
             {
-                <img src="data:image;base64,@credential.Image" alt="Credential Image" class="img-fluid mb-3" />
-            }
-            <h5 class="card-title">@credential.Name</h5>
-            <p class="card-text">@credential.Description</p>
-            <p id="credential-status" class="@GetStatusColor(credential.Status)">Status: <i id="credential-status-icon" class="bi @GetStatusIcon(credential.Status)"></i> @credential.Status</p>
-           <button class="btn btn-primary" @onclick="RerunVerification">Re-run Verification</button>
-            @if (isVerifying)
-            {
-                <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
+                <div class="mb-6">
+                    <img src="data:image;base64,@credential.Image" alt="Credential Image" class="w-full h-auto rounded-lg border border-gray-300"/>
                 </div>
             }
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-300">
+                    <strong class="block text-gray-600 mb-2">Credential ID</strong>
+                    <div class="flex items-center">
+                        <p class="text-gray-800 truncate w-3/4" title="@SnippetId">@SnippetId</p>
+                        <button class="ml-2 text-slate-500 hover:text-slate-700 transition-colors duration-200" @onclick="() => CopyToClipboard(SnippetId)">
+                            <span class="material-symbols-outlined">content_copy</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-300">
+                    <strong class="block text-gray-600 mb-2">Verification Status:</strong>
+                    <div class="flex items-center">
+                        <span class="inline-block px-3 py-1 text-sm font-medium leading-5 rounded-full @GetStatusClass(credential.Status)">@credential.Status</span>
+                    </div>
+                </div>
+            </div>
+
+            @* <div class="bg-gray-50 p-4 rounded-lg border border-gray-300 mb-6"> *@
+            @*     <strong class="block text-gray-600 mb-2 text-lg">Credential Details:</strong> *@
+            @*     <p class="text-gray-800 mb-4">@credential.Description</p> *@
+            @*     @foreach (var field in credential.AdditionalFields) *@
+            @*     { *@
+            @*         <div class="flex flex-col sm:flex-row mb-2"> *@
+            @*             <strong class="text-gray-600 sm:w-1/4">@field.Key:</strong> *@
+            @*             <span class="text-gray-800 sm:w-3/4">@field.Value</span> *@
+            @*         </div> *@
+            @*     } *@
+            @* </div> *@
+
             @if (!string.IsNullOrEmpty(VerificationMessage))
             {
-                <div class="alert alert-info mt-3">
-                    @VerificationMessage
+                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg mb-6" role="alert">
+                    <span class="block sm:inline">@VerificationMessage</span>
                 </div>
             }
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     [Parameter] public string SnippetId { get; set; }
     private VerifiedCredential credential;
     private string ErrorMessage;
-    private string _baseUrl;
     private bool isVerifying = false;
     private string VerificationMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        _baseUrl = NavigationManager.BaseUri;
         if (Guid.TryParse(SnippetId, out Guid credentialId))
         {
             await LoadCredential(credentialId);
@@ -92,7 +133,7 @@ else if (credential != null)
                 VerificationMessage = string.Empty;
                 StateHasChanged();
 
-                var response = await HttpClient.GetAsync($"{_baseUrl}api/VerifyCredential/{credentialId}");
+                var response = await HttpClient.GetAsync($"{NavigationManager.BaseUri}api/VerifyCredential/{credentialId}");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadFromJsonAsync<VerificationResponse>();
@@ -126,28 +167,22 @@ else if (credential != null)
         }
     }
 
-    private string GetStatusColor(EVerificationStatus status)
+    private string GetStatusClass(EVerificationStatus status)
     {
         return status switch
         {
-            EVerificationStatus.Verified => "text-success",
-            EVerificationStatus.Revoked => "text-danger",
-            EVerificationStatus.Expired => "text-warning",
-            EVerificationStatus.NotDue => "text-info",
-            _ => "text-secondary",
+            EVerificationStatus.Verified => "bg-green-100 text-green-800",
+            EVerificationStatus.Revoked => "bg-red-100 text-red-800",
+            EVerificationStatus.Expired => "bg-yellow-100 text-yellow-800",
+            EVerificationStatus.NotDue => "bg-blue-100 text-blue-800",
+            _ => "bg-gray-100 text-gray-800",
         };
     }
 
-    private string GetStatusIcon(EVerificationStatus status)
+    private async Task CopyToClipboard(string text)
     {
-        return status switch
-        {
-            EVerificationStatus.Verified => "bi-check-circle-fill",
-            EVerificationStatus.Revoked => "bi-x-circle-fill",
-            EVerificationStatus.Expired => "bi-exclamation-circle-fill",
-            EVerificationStatus.NotDue => "bi-info-circle-fill",
-            _ => "bi-question-circle-fill",
-        };
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        // Optionally, you can show a toast or message to indicate successful copy
     }
 
     public class VerificationResponse

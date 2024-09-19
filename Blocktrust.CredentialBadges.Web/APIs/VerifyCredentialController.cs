@@ -3,6 +3,7 @@ using MediatR;
 using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById;
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
 using System.Text.Json;
+using Blocktrust.CredentialBadges.Core.Common;
 using Blocktrust.CredentialBadges.OpenBadges;
 using Blocktrust.CredentialBadges.Web.Domain;
 using Blocktrust.CredentialBadges.Web.Enums;
@@ -34,7 +35,15 @@ public class VerifyCredentialController : ControllerBase
         var credential = credentialResult.Value;
 
         // Deserialize the credential to an AchievementCredential
-        var achievementCredential = JsonSerializer.Deserialize<AchievementCredential>(credential.Credential);
+        
+        var parserResult = CredentialParser.Parse(credential.Credential);
+        if (parserResult.IsFailed)
+        {
+            return BadRequest(new { Message = "Invalid credential", Details = parserResult.Errors });
+        }
+
+        AchievementCredential achievementCredential = parserResult.Value as AchievementCredential;
+
 
         // Call the verification command to re-verify the credential
         
