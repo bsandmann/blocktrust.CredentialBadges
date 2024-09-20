@@ -133,7 +133,7 @@
     [Parameter] public string SnippetId { get; set; }
     private VerifiedCredential credential;
     private string ErrorMessage;
-    private bool isVerifying = false;
+    private bool isVerifying;
     private AchievementCredential parserResult;
 
     protected override async Task OnInitializedAsync()
@@ -188,11 +188,11 @@
                     var jsonResponse = await response.Content.ReadFromJsonAsync<VerificationResponse>();
                     if (jsonResponse != null)
                     {
-                        credential.Status = jsonResponse.Status;
-                        credential.Name = jsonResponse.Name;
-                        credential.Description = jsonResponse.Description;
-                        credential.Image = jsonResponse.Image;
-                        // Update other properties as needed
+                        // credential.Status = jsonResponse.Status;
+                        // credential.Name = jsonResponse.Name;
+                        // credential.Description = jsonResponse.Description;
+                        // credential.Image = jsonResponse.Image;
+                        // // Update other properties as needed
                     }
                 }
                 else

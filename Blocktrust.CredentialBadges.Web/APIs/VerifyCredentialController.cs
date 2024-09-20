@@ -67,7 +67,15 @@ public class VerifyCredentialController : ControllerBase
             Status = EVerificationStatus.Verified,
             Name = achievementCredential.CredentialSubject.Achievement.Name,
             Description = achievementCredential.CredentialSubject.Achievement.Description,
-            Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id!=null?achievementCredential.CredentialSubject.Achievement.Image.Id.ToString():""
+            Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id!=null?achievementCredential.CredentialSubject.Achievement.Image.Id.ToString():"",
+            VerificationChecks = new VerificationChecks
+            {
+                SignatureIsValid = verifyResponse.SignatureIsValid,
+                CredentialIsNotRevoked = verifyResponse.CredentialIsNotRevoked,
+                CredentialIsNotExpired = verifyResponse.CredentialIsNotExpired,
+                CredentialIssuanceDateIsNotInFuture = verifyResponse.CredentialIssuanceDateIsNotInFuture
+            }
+         
         };
         
         if(verifyResponse.CredentialIsNotExpired == false)
