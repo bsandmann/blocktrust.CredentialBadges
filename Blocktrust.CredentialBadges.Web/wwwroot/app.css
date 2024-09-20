@@ -749,6 +749,10 @@ button, .btn {
   width: 4rem;
 }
 
+.w-3\/4 {
+  width: 75%;
+}
+
 .w-32 {
   width: 8rem;
 }
@@ -765,8 +769,24 @@ button, .btn {
   width: 100vw;
 }
 
-.max-w-5xl {
-  max-width: 64rem;
+.w-48 {
+  width: 12rem;
+}
+
+.w-96 {
+  width: 24rem;
+}
+
+.w-1\/2 {
+  width: 50%;
+}
+
+.w-8\/12 {
+  width: 66.666667%;
+}
+
+.w-11\/12 {
+  width: 91.666667%;
 }
 
 .max-w-\[100vw\] {
@@ -827,6 +847,10 @@ button, .btn {
   flex-direction: column;
 }
 
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
 .items-center {
   align-items: center;
 }
@@ -873,6 +897,16 @@ button, .btn {
 
 .overflow-x-scroll {
   overflow-x: scroll;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-wrap {
+  text-wrap: wrap;
 }
 
 .rounded {
@@ -971,6 +1005,11 @@ button, .btn {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-red-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
 }
 
 .object-cover {
@@ -1141,6 +1180,11 @@ button, .btn {
   color: rgb(22 101 52 / var(--tw-text-opacity));
 }
 
+.text-red-600 {
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity));
+}
+
 .text-red-700 {
   --tw-text-opacity: 1;
   color: rgb(185 28 28 / var(--tw-text-opacity));
@@ -1176,9 +1220,9 @@ button, .btn {
   color: rgb(202 138 4 / var(--tw-text-opacity));
 }
 
-.text-red-600 {
+.text-green-950 {
   --tw-text-opacity: 1;
-  color: rgb(220 38 38 / var(--tw-text-opacity));
+  color: rgb(5 46 22 / var(--tw-text-opacity));
 }
 
 .underline {
