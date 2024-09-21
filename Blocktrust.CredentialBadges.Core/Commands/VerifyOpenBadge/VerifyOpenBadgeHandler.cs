@@ -33,7 +33,15 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
         
 
         // Then check the expiration & Issuance Date
-        verificationResult.CredentialIssuanceDateIsNotInFuture = request.OpenBadgeCredential.ValidFrom < checkDate;
+        
+        if (request.OpenBadgeCredential.ValidFrom is not null)
+        {
+            verificationResult.CredentialIssuanceDateIsNotInFuture = request.OpenBadgeCredential.ValidFrom < checkDate;
+        }
+        else
+        {
+            verificationResult.CredentialIssuanceDateIsNotInFuture = true;
+        }
 
         if (request.OpenBadgeCredential.ValidUntil is not null)
         {
@@ -44,7 +52,6 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
             verificationResult.CredentialIsNotExpired = null;
         }
 
-        // verificationResult.CredentialIsNotExpired = true;
 
 
         // check the revocation
