@@ -35,11 +35,11 @@ public class TemplatesService
         {
             case "image_no_description_light":
             case "image_no_description_dark":
-                templateBuilder.Append($@"
+                    templateBuilder.Append($@"
                         <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
                             <div class='credential-header'>
                                 <div class='credential-logo {logoClass}'>
-                                    <img src='{credential.Image}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
+                                    <img src='{GetImage(credential.Image)}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
                                 </div>
                                 <div class='credential-details'>
                                     <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
@@ -63,7 +63,7 @@ public class TemplatesService
                         <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
                             <div class='credential-header'>
                                 <div class='credential-logo {logoClass}'>
-                                    <img src='{credential.Image}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
+                                    <img src='{GetImage(credential.Image)}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
                                 </div>
                                 <div class='credential-details'>
                                     <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
@@ -204,5 +204,19 @@ public class TemplatesService
         var host = request.Host.Value;
 
         return $"{scheme}://{host}";
+    }
+    
+    //get image, if image is base 64 add data attribute else return image
+    private string GetImage(string? image)
+    {
+        if (image == null)
+        {
+            return "https://via.placeholder.com/150";
+        }
+        if (image.StartsWith("/"))
+        {
+            return $"data:image;base64,{image}";
+        }
+        return image;
     }
 }

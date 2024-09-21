@@ -669,6 +669,16 @@ button, .btn {
   margin-right: auto;
 }
 
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -733,6 +743,10 @@ button, .btn {
   height: 12rem;
 }
 
+.h-24 {
+  height: 6rem;
+}
+
 .min-h-\[30vh\] {
   min-height: 30vh;
 }
@@ -757,6 +771,14 @@ button, .btn {
   width: 8rem;
 }
 
+.w-8\/12 {
+  width: 66.666667%;
+}
+
+.w-96 {
+  width: 24rem;
+}
+
 .w-\[50vw\] {
   width: 50vw;
 }
@@ -769,24 +791,24 @@ button, .btn {
   width: 100vw;
 }
 
+.w-24 {
+  width: 6rem;
+}
+
 .w-48 {
   width: 12rem;
 }
 
-.w-96 {
-  width: 24rem;
+.w-64 {
+  width: 16rem;
 }
 
-.w-1\/2 {
-  width: 50%;
+.w-56 {
+  width: 14rem;
 }
 
-.w-8\/12 {
-  width: 66.666667%;
-}
-
-.w-11\/12 {
-  width: 91.666667%;
+.w-52 {
+  width: 13rem;
 }
 
 .max-w-\[100vw\] {
@@ -1007,14 +1029,19 @@ button, .btn {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-red-700 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.object-center {
+  -o-object-position: center;
+     object-position: center;
 }
 
 .p-2 {
@@ -1155,11 +1182,6 @@ button, .btn {
   color: rgb(248 250 252 / var(--tw-text-opacity));
 }
 
-.text-blue-600 {
-  --tw-text-opacity: 1;
-  color: rgb(37 99 235 / var(--tw-text-opacity));
-}
-
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
@@ -1220,9 +1242,24 @@ button, .btn {
   color: rgb(202 138 4 / var(--tw-text-opacity));
 }
 
-.text-green-950 {
+.text-blue-500 {
   --tw-text-opacity: 1;
-  color: rgb(5 46 22 / var(--tw-text-opacity));
+  color: rgb(59 130 246 / var(--tw-text-opacity));
+}
+
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
+}
+
+.text-red-800 {
+  --tw-text-opacity: 1;
+  color: rgb(153 27 27 / var(--tw-text-opacity));
+}
+
+.text-yellow-500 {
+  --tw-text-opacity: 1;
+  color: rgb(234 179 8 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -1373,10 +1410,6 @@ button, .btn {
 .hover\:text-slate-700:hover {
   --tw-text-opacity: 1;
   color: rgb(51 65 85 / var(--tw-text-opacity));
-}
-
-.hover\:underline:hover {
-  text-decoration-line: underline;
 }
 
 @media (min-width: 640px) {
