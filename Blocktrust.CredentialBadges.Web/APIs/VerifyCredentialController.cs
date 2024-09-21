@@ -68,7 +68,7 @@ public class VerifyCredentialController : ControllerBase
             Name = achievementCredential.CredentialSubject.Achievement.Name,
             Description = achievementCredential.CredentialSubject.Achievement.Description,
             Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id!=null?achievementCredential.CredentialSubject.Achievement.Image.Id.ToString():"",
-            VerificationChecks = new VerificationChecks
+            VerificationChecks = new VerifyOpenBadgeResponse
             {
                 SignatureIsValid = verifyResponse.SignatureIsValid,
                 CredentialIsNotRevoked = verifyResponse.CredentialIsNotRevoked,
