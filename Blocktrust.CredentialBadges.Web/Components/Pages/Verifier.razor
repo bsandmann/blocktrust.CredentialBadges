@@ -61,7 +61,7 @@
                 </div>
                 @if (!string.IsNullOrEmpty(credential.Image))
                 {
-                    <img src="data:image;base64,@credential.Image" alt="Credential Image" class="w-32 h-32 object-cover rounded-lg mb-4"/>
+                    <img src="data:image;base64,@credential.Image" alt="Credential Image" class="w-24 h-24 object-contain rounded-lg my-2"/>
                 }
                 <h2 class="text-2xl font-bold mb-2">@credential.Name</h2>
                 <p class="text-gray-600">Achievement Type: @parserResult.CredentialSubject.Achievement.AchievementType.Value</p>
@@ -75,11 +75,19 @@
                     <div class="flex items-center">
                         @if (!string.IsNullOrEmpty(credential.Image))
                         {
-                            <img src="@credential.Image" alt="Issuer Logo" class="w-16 h-16 object-cover rounded-full mr-4"/>
+                            
+                            <img src="data:image;base64,@credential.Image" alt="Issuer Logo" class="w-16 h-16 object-contain rounded-full mr-4"/>
+                            <div class="">
+                                <p class="font-semibold truncate w-48">@parserResult.Issuer.Id</p>
+                            </div>
                         }
-                        <div class="">
-                            <p class="font-semibold truncate w-96">@parserResult.Issuer.Id</p>
-                        </div>
+                        else
+                        {
+                            <div class="">
+                                <p class="font-semibold truncate w-96">@parserResult.Issuer.Id</p>
+                            </div>  
+                        }
+                    
                     </div>
                 </div>
 
