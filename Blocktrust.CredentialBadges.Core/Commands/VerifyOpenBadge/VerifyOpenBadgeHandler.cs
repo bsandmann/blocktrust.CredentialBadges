@@ -18,6 +18,7 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
     public async Task<Result<VerifyOpenBadgeResponse>> Handle(VerifyOpenBadgeRequest request, CancellationToken cancellationToken)
     {
         var verificationResult = new VerifyOpenBadgeResponse();
+        //current date
         var checkDate = DateTime.UtcNow;
         verificationResult.CheckedOn = checkDate;
 

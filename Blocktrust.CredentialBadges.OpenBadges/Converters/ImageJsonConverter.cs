@@ -13,7 +13,7 @@ namespace Blocktrust.CredentialBadges.OpenBadges
                 string imageUrl = reader.GetString();
                 return new Image
                 {
-                    Id = new Uri(imageUrl),
+                    Id = new string(imageUrl),
                     Type = "Image"
                 };
             }
@@ -26,7 +26,7 @@ namespace Blocktrust.CredentialBadges.OpenBadges
 
                     Image image = new Image
                     {
-                        Id = !string.IsNullOrWhiteSpace(root.GetProperty("id").GetString()) ? new Uri(root.GetProperty("id").GetString()) : null,
+                        Id = !string.IsNullOrWhiteSpace(root.GetProperty("id").GetString()) ? new string(root.GetProperty("id").GetString()) : null,
                         Type = root.GetProperty("type").GetString()
                     };
 
