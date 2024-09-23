@@ -766,22 +766,6 @@ button, .btn {
   width: 6rem;
 }
 
-.w-3\/4 {
-  width: 75%;
-}
-
-.w-48 {
-  width: 12rem;
-}
-
-.w-8\/12 {
-  width: 66.666667%;
-}
-
-.w-96 {
-  width: 24rem;
-}
-
 .w-\[50vw\] {
   width: 50vw;
 }
@@ -792,6 +776,14 @@ button, .btn {
 
 .w-screen {
   width: 100vw;
+}
+
+.min-w-0 {
+  min-width: 0px;
+}
+
+.max-w-7xl {
+  max-width: 80rem;
 }
 
 .max-w-\[100vw\] {
@@ -814,6 +806,10 @@ button, .btn {
   max-width: 28rem;
 }
 
+.flex-1 {
+  flex: 1 1 0%;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -830,10 +826,6 @@ button, .btn {
 
 .flex-col {
   flex-direction: column;
-}
-
-.flex-wrap {
-  flex-wrap: wrap;
 }
 
 .items-center {
@@ -890,8 +882,8 @@ button, .btn {
   white-space: nowrap;
 }
 
-.text-wrap {
-  text-wrap: wrap;
+.break-words {
+  overflow-wrap: break-word;
 }
 
 .rounded {
@@ -1385,12 +1377,21 @@ button, .btn {
     display: inline;
   }
 
+  .sm\:w-11\/12 {
+    width: 91.666667%;
+  }
+
   .sm\:p-4 {
     padding: 1rem;
   }
 
   .sm\:p-8 {
     padding: 2rem;
+  }
+
+  .sm\:px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 
   .sm\:text-2xl {
@@ -1415,30 +1416,43 @@ button, .btn {
 }
 
 @media (min-width: 768px) {
-  .md\:mb-0 {
-    margin-bottom: 0px;
-  }
-
-  .md\:w-1\/3 {
-    width: 33.333333%;
-  }
-
-  .md\:w-2\/3 {
-    width: 66.666667%;
-  }
-
-  .md\:flex-row {
-    flex-direction: row;
-  }
-
-  .md\:pr-4 {
-    padding-right: 1rem;
+  .md\:w-10\/12 {
+    width: 83.333333%;
   }
 }
 
 @media (min-width: 1024px) {
+  .lg\:mb-0 {
+    margin-bottom: 0px;
+  }
+
   .lg\:block {
     display: block;
+  }
+
+  .lg\:w-1\/3 {
+    width: 33.333333%;
+  }
+
+  .lg\:w-2\/3 {
+    width: 66.666667%;
+  }
+
+  .lg\:w-8\/12 {
+    width: 66.666667%;
+  }
+
+  .lg\:flex-row {
+    flex-direction: row;
+  }
+
+  .lg\:px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .lg\:pr-4 {
+    padding-right: 1rem;
   }
 }
 

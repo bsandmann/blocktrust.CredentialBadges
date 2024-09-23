@@ -1,4 +1,6 @@
-﻿@page "/verifier/{SnippetId}"
+﻿Responsive Verifier Page
+
+@page "/verifier/{SnippetId}"
 @using Blocktrust.CredentialBadges.Web.Domain
 @using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById
 @using Blocktrust.CredentialBadges.Web.Enums
@@ -12,17 +14,17 @@
 
 <PageTitle>Blocktrust Credential Verifier</PageTitle>
 
-<div class="max-w-10/12 mx-auto px-4 py-8 flex flex-col items-center">
+<div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center">
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6  w-8/12" role="alert">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12" role="alert">
             <strong class="font-bold">Error:</strong>
             <span class="block sm:inline">@ErrorMessage</span>
         </div>
     }
     else if (isVerifying)
     {
-        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-8/12">
+        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12">
             <div class="flex justify-center items-center h-48">
                 <span class="material-symbols-outlined animate-spin text-4xl text-gray-400">autorenew</span>
             </div>
@@ -31,7 +33,7 @@
     }
     else if (credential != null && verificationResponse != null)
     {
-        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-8/12">
+        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12">
             <!-- Top Section -->
             <div class="mb-6 border-b pb-4">
                 <div class="flex items-center mb-4">
@@ -68,47 +70,45 @@
             </div>
             
             <!-- Body Section -->
-            <div class="flex flex-col md:flex-row mb-8 ">
+            <div class="flex flex-col lg:flex-row mb-8">
                 <!-- Left Column (Issuer Info) -->
-                <div class="md:w-1/3 md:pr-4 mb-4 md:mb-0 ">
+                <div class="lg:w-1/3 lg:pr-4 mb-4 lg:mb-0">
                     <h3 class="text-xl font-semibold mb-4">Issuer Information</h3>
                     <div class="flex items-center">
                         @if (!string.IsNullOrEmpty(credential.Image))
                         {
-                            
                             <img src="data:image;base64,@credential.Image" alt="Issuer Logo" class="w-16 h-16 object-contain rounded-full mr-4"/>
-                            <div class="">
-                                <p class="font-semibold truncate w-48">@parserResult.Issuer.Id</p>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold truncate">@parserResult.Issuer.Id</p>
                             </div>
                         }
                         else
                         {
-                            <div class="">
-                                <p class="font-semibold truncate w-96">@parserResult.Issuer.Id</p>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold truncate">@parserResult.Issuer.Id</p>
                             </div>  
                         }
-                    
                     </div>
                 </div>
 
                 <!-- Right Column (Credential Data) -->
-                <div class="md:w-2/3 ">
+                <div class="lg:w-2/3">
                     <h3 class="text-xl font-semibold mb-4 text-red-600">Credential Details</h3>
-                    <p class="mb-2 w-96 truncate"><strong>Issued To:</strong> @parserResult.CredentialSubject.Id</p>
+                    <p class="mb-2 truncate"><strong>Issued To:</strong> @parserResult.CredentialSubject.Id</p>
                     <p class="mb-2"><strong>Description:</strong> @credential.Description</p>
                     <div class="mb-2">
                         <strong>Criteria:</strong>
-                        <p class="flex-wrap text-wrap  w-3/4">@parserResult.CredentialSubject.Achievement.Criteria.Narrative</p>
+                        <p class="break-words">@parserResult.CredentialSubject.Achievement.Criteria.Narrative</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Bottom Section (Verification Info) -->
-        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 w-8/12">
-            <div class="flex flex-col md:flex-row">
+        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12">
+            <div class="flex flex-col lg:flex-row">
                 <!-- Left Column -->
-                <div class="md:w-1/3 md:pr-4 mb-4 md:mb-0">
+                <div class="lg:w-1/3 lg:pr-4 mb-4 lg:mb-0">
                     <div class="@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800") p-4 rounded-lg mb-4">
                         <div class="flex items-center mb-2">
                             <span class="material-symbols-outlined mr-2">@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "check_circle" : "error")</span>
@@ -122,7 +122,7 @@
                 </div>
 
                 <!-- Right Column -->
-                <div class="md:w-2/3">
+                <div class="lg:w-2/3">
                     <h3 class="text-xl font-semibold mb-4">Verification Checks</h3>
                     <div class="mb-4">
                         <h4 class="font-semibold mb-2">Issuer</h4>
@@ -142,7 +142,7 @@
                         </div>
                         @if (!string.IsNullOrEmpty(verificationResponse.VerificationChecks.ReferenceToTrustRegistry))
                         {
-                            <p class="ml-6 text-sm text-gray-600">Registry: @verificationResponse.VerificationChecks.ReferenceToTrustRegistry</p>
+                            <p class="ml-6 text-sm text-gray-600 break-words">Registry: @verificationResponse.VerificationChecks.ReferenceToTrustRegistry</p>
                         }
                     </div>
                     <div>
@@ -173,7 +173,7 @@
                         </div>
                         @if (!string.IsNullOrEmpty(verificationResponse.VerificationChecks.ReferenceToRevocationList))
                         {
-                            <p class="ml-6 text-sm text-gray-600">Revocation List: @verificationResponse.VerificationChecks.ReferenceToRevocationList</p>
+                            <p class="ml-6 text-sm text-gray-600 break-words">Revocation List: @verificationResponse.VerificationChecks.ReferenceToRevocationList</p>
                         }
                     </div>
                 </div>
