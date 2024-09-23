@@ -3,36 +3,44 @@
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-<div class="relative min-h-screen w-screen bg-[#F0F1F2] flex items-center justify-center">
-    <!-- Corner images -->
-    <img src="/images/InputPageRectangle.svg" alt="" class="absolute top-36 left-36 w-16 h-16">
-    <img src="/images/InputPageTriangle.svg" alt="" class="absolute top-24 right-24 w-16 h-16">
-    <img src="/images/InputPageTriangle.svg" alt="" class="absolute bottom-24 left-24 w-16 h-16">
-    <img src="/images/InputPageRectangle.svg" alt="" class="absolute bottom-36 right-36 w-16 h-16">
-    <!-- Content container -->
+<div class="relative min-h-screen w-full bg-[#F0F1F2] flex items-center justify-center px-4 py-8">
+    <!-- Corner images - hidden on mobile -->
+    <img src="/images/InputPageRectangle.svg" alt="" class="absolute top-36 left-36 w-16 h-16 hidden lg:block">
+    <img src="/images/InputPageTriangle.svg" alt="" class="absolute top-24 right-24 w-16 h-16 hidden lg:block">
+    <img src="/images/InputPageTriangle.svg" alt="" class="absolute bottom-24 left-24 w-16 h-16 hidden lg:block">
+    <img src="/images/InputPageRectangle.svg" alt="" class="absolute bottom-36 right-36 w-16 h-16 hidden lg:block">
     
-    <div class="flex flex-col bg-[#FAFAFA] border border-gray-200 rounded-lg shadow-md backdrop-filter backdrop-blur-sm p-8 max-w-[42rem]">
-        <h1 class="text-2xl font-bold text-[#334155] mb-4">Copy Code Snippet</h1>
-        <p class="text-[#334155] mb-6">
+    <!-- Content container -->
+    <div class="flex flex-col bg-[#FAFAFA] border border-gray-200 rounded-lg shadow-md backdrop-filter backdrop-blur-sm p-4 sm:p-8 w-full max-w-[42rem]">
+        <h1 class="text-xl sm:text-2xl font-bold text-[#334155] mb-4">Copy Code Snippet</h1>
+        <p class="text-sm sm:text-base text-[#334155] mb-6">
             Use this code snippet to display your credential badge on your website.
         </p>
         
         <div class="bg-gray-100 rounded-lg p-4 mb-6">
             <div class="flex justify-between items-center mb-2">
-                <span class="text-[#334155] font-medium">HTML</span>
+                <span class="text-sm sm:text-base text-[#334155] font-medium">HTML</span>
                 <button @onclick="CopySnippetToClipboard" class="text-[#334155] hover:text-[#475569]">
                     <span class="material-symbols-outlined">content_copy</span>
                 </button>
             </div>
-            <pre class="bg-white p-4 rounded-md overflow-x-auto"><code class="text-sm text-[#334155]">@snippetCode</code></pre>
+            <pre class="bg-white p-2 sm:p-4 rounded-md overflow-x-auto"><code class="text-xs sm:text-sm text-[#334155]">@snippetCode</code></pre>
         </div>
         
         <a 
             href="@($"/previewbadge/{credentialId}")"
-            class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center no-underline text-center">
+            class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center no-underline text-center text-sm sm:text-base">
             Go Back
         </a>
     </div>
+
+    <!-- Toast component -->
+    @if (showToast)
+    {
+        <div class="fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg transition-opacity duration-300 @(showToast ? "opacity-100" : "opacity-0") @(isError ? "bg-red-500" : "bg-green-500") text-white">
+            @toastMessage
+        </div>
+    }
 </div>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -42,6 +50,9 @@
     [Parameter] public string selectedTemplateId { get; set; }
     private string snippetCode = string.Empty;
     private string domain;
+    private bool showToast = false;
+    private bool isError = false;
+    private string toastMessage = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -49,23 +60,34 @@
         GenerateSnippet();
     }
 
-
     private void GenerateSnippet()
     {
         snippetCode = $@"<div id='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}'></div><script src='{domain}/badge-loader.js'></script>";
     }
-
 
     private async Task CopySnippetToClipboard()
     {
         try
         {
             await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", snippetCode);
-            await JSRuntime.InvokeVoidAsync("alert", "Snippet copied to clipboard!");
+            ShowToast("Snippet copied to clipboard!", false);
         }
         catch (Exception)
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Failed to copy snippet. Please try again.");
+            ShowToast("Failed to copy snippet. Please try again.", true);
         }
+    }
+
+    private async Task ShowToast(string message, bool error)
+    {
+        toastMessage = message;
+        isError = error;
+        showToast = true;
+        StateHasChanged();
+
+        await Task.Delay(3000); // Show toast for 3 seconds
+
+        showToast = false;
+        StateHasChanged();
     }
 }
