@@ -70,6 +70,7 @@ public class VerifyCredentialController : ControllerBase
             Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id!=null?achievementCredential.CredentialSubject.Achievement.Image.Id.ToString():"",
             VerificationChecks = new VerifyOpenBadgeResponse
             {
+                CheckedOn = DateTime.UtcNow,
                 SignatureIsValid = verifyResponse.SignatureIsValid,
                 CredentialIsNotRevoked = verifyResponse.CredentialIsNotRevoked,
                 CredentialIsNotExpired = verifyResponse.CredentialIsNotExpired,
