@@ -706,6 +706,10 @@ button, .btn {
   margin-left: 0.25rem;
 }
 
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
 .ml-6 {
   margin-left: 1.5rem;
 }
@@ -720,6 +724,14 @@ button, .btn {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.ml-8 {
+  margin-left: 2rem;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
 }
 
 .block {
@@ -778,8 +790,20 @@ button, .btn {
   width: 100vw;
 }
 
+.w-52 {
+  width: 13rem;
+}
+
+.w-28 {
+  width: 7rem;
+}
+
 .min-w-0 {
   min-width: 0px;
+}
+
+.min-w-8 {
+  min-width: 2rem;
 }
 
 .max-w-7xl {
@@ -806,8 +830,24 @@ button, .btn {
   max-width: 28rem;
 }
 
+.max-w-44 {
+  max-width: 11rem;
+}
+
+.max-w-32 {
+  max-width: 8rem;
+}
+
 .flex-1 {
   flex: 1 1 0%;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.flex-grow {
+  flex-grow: 1;
 }
 
 @keyframes spin {
@@ -1147,6 +1187,11 @@ button, .btn {
   color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
 .text-gray-600 {
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity));
@@ -1360,6 +1405,11 @@ button, .btn {
 .hover\:text-\[\#475569\]:hover {
   --tw-text-opacity: 1;
   color: rgb(71 85 105 / var(--tw-text-opacity));
+}
+
+.hover\:text-gray-700:hover {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 
 .hover\:text-red-800:hover {
