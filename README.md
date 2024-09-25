@@ -64,12 +64,11 @@ This project is using ImageShartp as a third-party library:
 
 - **Project:** ImageSharp
 - **Copyright:** © Six Labors
-- **License:** Apache License 2.0
 - **Project URL:** [https://github.com/SixLabors/ImageSharp](https://github.com/SixLabors/ImageSharp)
 - **License URL:** [https://raw.githubusercontent.com/SixLabors/ImageSharp/refs/heads/main/LICENSE](https://raw.githubusercontent.com/SixLabors/ImageSharp/refs/heads/main/LICENSE)
 
 ImageSharp is a new, fully featured, fully managed, cross-platform, 2D graphics API. Designed to simplify image processing, ImageSharp brings you an incredibly powerful yet beautifully simple API.
-This project uses ImageSharp under the terms of the Apache License 2.0, in accordance with the Six Labors Split License.
+**This project uses ImageSharp under the terms of the Apache License 2.0, in accordance with the Six Labors Split License.**
 
 Note that ImageSharp is only used for building Credentials, not for the snippets. If a valid OpenBadge Credential already exists for which a badge should be created, the library is not needed.
 
