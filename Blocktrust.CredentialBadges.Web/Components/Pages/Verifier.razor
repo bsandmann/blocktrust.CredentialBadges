@@ -1,5 +1,4 @@
-﻿
-@page "/verifier/{SnippetId}"
+﻿@page "/verifier/{SnippetId}"
 @using Blocktrust.CredentialBadges.Web.Domain
 @using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById
 @using Blocktrust.CredentialBadges.Web.Enums
@@ -9,6 +8,7 @@
 @inject IMediator Mediator
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <PageTitle>Blocktrust Credential Verifier</PageTitle>
@@ -77,15 +77,21 @@
                         @if (!string.IsNullOrEmpty(credential.Image))
                         {
                             <img src="data:image;base64,@credential.Image" alt="Issuer Logo" class="w-16 h-16 object-contain rounded-full mr-4"/>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-semibold truncate">@parserResult.Issuer.Id</p>
+                            <div class="flex-1 min-w-0 flex items-center">
+                                <p class="font-semibold truncate flex-grow">@parserResult.Issuer.Id</p>
+                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())" class="ml-2 flex-shrink-0">
+                                    <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
+                                </button>
                             </div>
                         }
                         else
                         {
-                            <div class="flex-1 min-w-0">
-                                <p class="font-semibold truncate">@parserResult.Issuer.Id</p>
-                            </div>  
+                            <div class="flex-1 min-w-0 flex items-center">
+                                <p class="font-semibold truncate flex-grow">@parserResult.Issuer.Id</p>
+                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())" class="ml-2 flex-shrink-0">
+                                    <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
+                                </button>
+                            </div>
                         }
                     </div>
                 </div>
@@ -93,7 +99,16 @@
                 <!-- Right Column (Credential Data) -->
                 <div class="lg:w-2/3">
                     <h3 class="text-xl font-semibold mb-4 text-red-600">Credential Details</h3>
-                    <p class="mb-2 truncate"><strong>Issued To:</strong> @parserResult.CredentialSubject.Id</p>
+                    <div class="flex flex-col mb-2">
+                        <strong class="mr-1 min-w-8">Issued To:</strong>
+                        <div>
+                              <p class="truncate flex-grow ">@parserResult.CredentialSubject.Id</p>
+                                                    <button @onclick="() => CopyToClipboard(parserResult.CredentialSubject.Id.ToString())" class="ml-2 flex-shrink-0">
+                                                        <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
+                                                    </button>
+                        </div>
+                      
+                    </div>
                     <p class="mb-2"><strong>Description:</strong> @credential.Description</p>
                     <div class="mb-2">
                         <strong>Criteria:</strong>
@@ -181,6 +196,14 @@
     }
 </div>
 
+<!-- Toast component -->
+@if (showToast)
+{
+    <div class="fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg transition-opacity duration-300 @(showToast ? "opacity-100" : "opacity-0") @(isError ? "bg-red-500" : "bg-green-500") text-white">
+        @toastMessage
+    </div>
+}
+
 @code {
     [Parameter] public string SnippetId { get; set; }
     private VerifiedCredential credential;
@@ -188,6 +211,9 @@
     private bool isVerifying;
     private AchievementCredential parserResult;
     private VerificationResponse verificationResponse;
+    private bool showToast = false;
+    private bool isError = false;
+    private string toastMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -208,7 +234,7 @@
         {
             credential = result.Value;
             parserResult = (AchievementCredential)CredentialParser.Parse(credential.Credential).Value;
-            if (parserResult != null)
+           if (parserResult != null)
             {
                 await RerunVerification();
             }
@@ -260,5 +286,31 @@
         {
             ErrorMessage = "Invalid credential ID.";
         }
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+            await ShowToast("Copied to clipboard!", false);
+        }
+        catch (Exception)
+        {
+            await ShowToast("Failed to copy. Please try again.", true);
+        }
+    }
+
+    private async Task ShowToast(string message, bool error)
+    {
+        toastMessage = message;
+        isError = error;
+        showToast = true;
+        StateHasChanged();
+
+        await Task.Delay(3000); // Show toast for 3 seconds
+
+        showToast = false;
+        StateHasChanged();
     }
 }

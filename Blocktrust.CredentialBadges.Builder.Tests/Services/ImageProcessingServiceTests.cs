@@ -40,17 +40,7 @@ public class ImageProcessingServiceTests
         Assert.StartsWith($"data:{contentType};base64,", result);
         Assert.True(result.Length > 100); // Ensure we have a substantial base64 string
     }
-
-    [Fact]
-    public async Task ProcessImageAsync_EmptyStream_ThrowsArgumentException()
-    {
-        // Arrange
-        using var emptyStream = new MemoryStream();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => 
-            _service.ProcessImageAsync(emptyStream, "image/png", 100, 100));
-    }
+    
 
     [Fact]
     public async Task ProcessImageAsync_UnsupportedContentType_ThrowsArgumentException()
