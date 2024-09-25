@@ -56,6 +56,23 @@ We are aligning our project with the OpenBadges 3.0 specification, which is base
 
 This project is licensed under the Apache 2.0 License - see the [LICENSE.md](link-to-license-file) file for details.
 
+## Third-Party Libraries
+
+This project is using ImageShartp as a third-party library:
+
+### ImageSharp
+
+- **Project:** ImageSharp
+- **Copyright:** © Six Labors
+- **License:** Apache License 2.0
+- **Project URL:** [https://github.com/SixLabors/ImageSharp](https://github.com/SixLabors/ImageSharp])
+- **License URL:** [https://github.com/SixLabors/ImageSharp/blob/main/LICENSE](https://github.com/SixLabors/ImageSharp])
+
+ImageSharp is a new, fully featured, fully managed, cross-platform, 2D graphics API. Designed to simplify image processing, ImageSharp brings you an incredibly powerful yet beautifully simple API.
+This project uses ImageSharp under the terms of the Apache License 2.0, in accordance with the Six Labors Split License.
+
+Note that ImageSharp is only used for building Credentials, not for the snippets. If a valid OpenBadge Credential already exists for which a badge should be created, the library is not needed.
+
 ## Contact
 
 For more information about Blocktrust and our projects, visit [https://blocktrust.dev](https://blocktrust.dev).
