@@ -1,4 +1,8 @@
 (function() {
+    // Safeguard to prevent multiple executions
+    if (window.blocktrustBadgeLoaderExecuted) return;
+    window.blocktrustBadgeLoaderExecuted = true;
+
     function loadStyles(domain) {
         // Load custom CSS
         const link = document.createElement('link');
@@ -25,9 +29,10 @@
         const theme = templateId.split('_').pop();
 
         try {
+            console.log("API call")
             const response = await fetch(`${domain}/api/GetBadge/${credentialId}/${templateId}/${theme}`);
             if (!response.ok) {
-                console.error('Error fetching the credential:', response);
+                console.error('Error fetching the credential:', response.status, response.statusText);
                 return;
             }
             const badgeHtml = await response.text();
@@ -51,10 +56,19 @@
 
     function init() {
         const domain = getDomain();
-        if (!domain) return;
+        if (!domain) {
+            console.error('Badge loader initialization failed: Unable to determine domain');
+            return;
+        }
 
         loadStyles(domain);
-        document.querySelectorAll('.blocktrust-badge').forEach(element => fetchAndRenderBadge(element, domain));
+
+        const badges = document.querySelectorAll('.blocktrust-badge');
+        if (badges.length === 0) {
+            console.warn('No badge elements found on the page');
+        } else {
+            badges.forEach(element => fetchAndRenderBadge(element, domain));
+        }
     }
 
     // Ensure the script only executes after the page has fully loaded
