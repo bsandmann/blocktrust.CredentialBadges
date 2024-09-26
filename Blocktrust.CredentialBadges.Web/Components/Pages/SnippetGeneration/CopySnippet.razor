@@ -43,15 +43,14 @@
     }
 </div>
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
 @code {
     [Parameter] public Guid credentialId { get; set; }
     [Parameter] public string selectedTemplateId { get; set; }
     private string snippetCode = string.Empty;
     private string domain;
-    private bool showToast = false;
-    private bool isError = false;
+    private bool showToast;
+    private bool isError;
     private string toastMessage = string.Empty;
 
     protected override void OnInitialized()
@@ -62,7 +61,7 @@
 
     private void GenerateSnippet()
     {
-        snippetCode = $@"<div id='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}'></div><script src='{domain}/badge-loader.js'></script>";
+        snippetCode = $@"<div class='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}'></div><script src='{domain}/badge-loader.js'></script>";
     }
 
     private async Task CopySnippetToClipboard()
