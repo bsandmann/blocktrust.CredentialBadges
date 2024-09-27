@@ -805,6 +805,10 @@ button, .btn {
   height: 100%;
 }
 
+.h-32 {
+  height: 8rem;
+}
+
 .min-h-\[80vh\] {
   min-height: 80vh;
 }
