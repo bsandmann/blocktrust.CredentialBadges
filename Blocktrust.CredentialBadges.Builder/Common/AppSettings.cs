@@ -17,8 +17,16 @@ public class AppSettings
     
     
     public string IssuingDID { get; set; }
+    public string IssuingApiKey { get; set; }
+    
+    public string? SubjectDID { get; set; }
+    public string SubjectApiKey { get; set; }
+
     
     public string SnippetBaseUrl { get; set; }
+    
+    
+    
     
     /// <summary>
     /// API key for SendGrid

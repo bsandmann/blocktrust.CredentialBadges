@@ -12,7 +12,6 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.Ge
 public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialRequest, Result<string>>
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<GenerateCredentialHandler> _logger;
     private readonly AppSettings _appSettings;
     private readonly IMediator _mediator;
 
@@ -20,7 +19,6 @@ public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialReque
     {
         _httpClient = httpClientFactory.CreateClient("IdentusAgents");
         _appSettings = appSettings.Value;
-        _logger = logger;
         _mediator = mediator;
     }
 
@@ -40,7 +38,6 @@ public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialReque
 
         if (createOfferResponse.IsFailed)
         {
-            _logger.LogError("Failed to create offer: {Message}", createOfferResponse.Errors[0].Message);
             return Result.Fail(createOfferResponse.Errors);
         }
 
@@ -67,7 +64,6 @@ public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialReque
 
                 if (acceptOfferResponse.IsFailed)
                 {
-                    _logger.LogError("Failed to accept offer: {Message}", acceptOfferResponse.Errors[0].Message);
                     return Result.Fail(acceptOfferResponse.Errors);
                 }
 
@@ -81,19 +77,14 @@ public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialReque
                     return Result.Ok(getCredentialResponse.Value);
                 }
 
-                _logger.LogError("Failed to retrieve credential: {Message}", getCredentialResponse.Errors[0].Message);
                 return Result.Fail(getCredentialResponse.Errors);
             }
 
             if (attempt < maxRetries)
             {
-                _logger.LogWarning("Attempt {Attempt} to retrieve offer failed. Retrying in {DelayBetweenRetries} seconds...", attempt, delayBetweenRetries / 1000);
                 await Task.Delay(delayBetweenRetries, cancellationToken);
             }
-            else
-            {
-                _logger.LogError("All attempts to retrieve offer failed.");
-            }
+     
         }
 
         return Result.Fail("Failed to retrieve offer after multiple attempts.");

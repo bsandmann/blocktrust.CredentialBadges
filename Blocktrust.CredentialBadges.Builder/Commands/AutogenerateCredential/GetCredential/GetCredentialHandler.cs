@@ -7,12 +7,10 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.AutogenerateCredential.Ge
 public class GetCredentialHandler : IRequestHandler<GetCredentialRequest, Result<string>>
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<GetCredentialHandler> _logger;
 
     public GetCredentialHandler(IMediator mediator, ILogger<GetCredentialHandler> logger)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
     public async Task<Result<string>> Handle(GetCredentialRequest request, CancellationToken cancellationToken)
@@ -32,7 +30,6 @@ public class GetCredentialHandler : IRequestHandler<GetCredentialRequest, Result
 
                     if (recordResult.IsFailed)
                     {
-                        _logger.LogError("Failed to retrieve record details: " + recordResult.Errors.First().Message);
                         continue; // Retry if fetching record details fails
                     }
 
@@ -46,7 +43,7 @@ public class GetCredentialHandler : IRequestHandler<GetCredentialRequest, Result
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error processing GetCredentialRequest");
+                    return Result.Fail<string>($"An error occurred while processing the request: {ex.Message}");
                 }
 
                 // Wait before making the next attempt
@@ -58,7 +55,6 @@ public class GetCredentialHandler : IRequestHandler<GetCredentialRequest, Result
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing GetCredentialRequest");
             return Result.Fail<string>("An error occurred while processing the request.");
         }
     }

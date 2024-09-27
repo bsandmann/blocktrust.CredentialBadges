@@ -26,7 +26,7 @@ public class AcceptOfferHandler : IRequestHandler<AcceptOfferRequest, Result<str
 
         // if api key is null, use agent 2 api key
         if (string.IsNullOrEmpty(request.ApiKey))
-            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.SubjectApiKey);
         else
         {
             _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);

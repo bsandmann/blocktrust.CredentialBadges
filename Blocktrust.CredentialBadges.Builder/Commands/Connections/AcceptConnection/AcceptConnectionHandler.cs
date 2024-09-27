@@ -17,6 +17,8 @@ public class AcceptConnectionHandler : IRequestHandler<AcceptConnectionRequest, 
         _httpClient = httpClientFactory.CreateClient("UserAgent");
         _httpClient.BaseAddress = new Uri(appSettings.Value.UserAgentBaseUrl);
         _httpClient.DefaultRequestHeaders.Clear();
+        //apiKey
+        _httpClient.DefaultRequestHeaders.Add("apiKey", appSettings.Value.SubjectApiKey);
     }
 
     public async Task<Result<AcceptConnectionResponse>> Handle(AcceptConnectionRequest request, CancellationToken cancellationToken)
@@ -34,6 +36,7 @@ public class AcceptConnectionHandler : IRequestHandler<AcceptConnectionRequest, 
                 _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
             }
 
+        
             var acceptInvitationRequest = new AcceptConnectionInvitationRequest
             {
                 Invitation = request.InvitationUrl
