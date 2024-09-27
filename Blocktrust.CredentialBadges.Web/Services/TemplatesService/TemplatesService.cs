@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using Blocktrust.CredentialBadges.Web.Domain;
 using Blocktrust.CredentialBadges.Web.Enums;
@@ -20,44 +19,38 @@ public class TemplatesService
         string hostDomain = GetHostDomain();
         string linkUrl = $"{hostDomain}/verifier/{credential.Id}";
 
-        bool isDarkTheme = theme == "dark";
+        bool isDarkTheme = theme.ToLower() == "dark";
         string backgroundColor = isDarkTheme ? "#020617" : "#F8FAFC";
-        string textColor = isDarkTheme ? "#F1F5F9" : "inherit";
-        string titleColor = isDarkTheme ? "#ffffff" : "inherit";
+        string textColor = isDarkTheme ? "#F1F5F9" : "#1E293B";
+        string titleColor = isDarkTheme ? "#ffffff" : "#1E293B";
         string subtitleColor = isDarkTheme ? "#cbd5e0" : "#718096";
-        string descriptionColor = isDarkTheme ? "#e2e8f0" : "inherit";
+        string descriptionColor = isDarkTheme ? "#e2e8f0" : "#4B5563";
         string validityLabelColor = isDarkTheme ? "#94A3B8" : "#718096";
         string validityDateColor = isDarkTheme ? "#ffffff" : "#2d3748";
-        string borderColor = "#e2e8f0";
+        string borderColor = isDarkTheme ? "#1e293b" : "#e2e8f0";
         string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
 
         string truncatedName = TruncateString(credential.Name, 60);
         string truncatedIssuer = TruncateString(credential.Issuer, 20);
         string truncatedDescription = TruncateString(credential.Description, 150);
 
-        string wrapperStyles = @"
-            display: inline-block;
-            width: 30rem;
-        ";
+        string containerStyles = $@"
+                display: block;
+                width: 30rem;
+                font-family: 'Poppins', sans-serif;
+                border: 1px solid {borderColor};
+                border-radius: 0.5rem;
+                padding: 1rem;
+                margin: 1rem auto;
+                background-color: {backgroundColor};
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+                text-decoration: none;
+                color: {textColor};
+                transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out, background-color 0.2s ease-in-out;
+            ";
 
-        string commonStyles = $@"
-            font-family: 'Poppins', sans-serif;
-            width: 30rem;
-            border: 1px solid {borderColor};
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin: 1rem auto;
-            background: {backgroundColor};
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            display: block;
-            text-decoration: none;
-            color: {textColor};
-            transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out;
-            box-sizing: border-box;
-        ";
-
-        string hoverEffect = "this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'; this.style.filter='brightness(1.05)';";
-        string resetEffect = "this.style.boxShadow='0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'; this.style.filter='brightness(1)';";
+        string hoverEffect = $"this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'; this.style.filter='brightness(1.05)';";
+        string resetEffect = $"this.style.boxShadow='0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'; this.style.filter='brightness(1)';";
 
         switch (templateId)
         {
@@ -70,32 +63,28 @@ public class TemplatesService
             case "noimage_no_description_light":
             case "noimage_no_description_dark":
                 templateBuilder.Append($@"
-                    <div style='{wrapperStyles}'>
-                        <div style='{commonStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
-                            <a href='{linkUrl}' style='text-decoration: none; color: inherit; display: block;' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
-                                <div style='display: flex; align-items: flex-start; gap: 1rem;'>
-                                    {(templateId.StartsWith("image") ? $@"
-                                    <div style='width: 7rem; height: 7rem; flex-shrink: 0; background-color: {logoBackgroundColor}; border-radius: 0.5rem; overflow: hidden;'>
-                                        <img src='{GetImage(credential.Image)}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
-                                    </div>" : "")}
-                                    <div style='flex-grow: 1; min-width: 0;'>
-                                        <h2 style='font-size: 1.25rem; margin-bottom: 0.5rem; line-height: 1.5; color: {titleColor}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' title='{credential.Name}'>{truncatedName}</h2>
-                                        <p style='color: {subtitleColor}; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' title='{credential.Issuer}'>{truncatedIssuer}</p>
-                                        {(templateId.Contains("description") ? $@"
-                                        <p style='font-size: 0.875rem; margin-bottom: 1rem; color: {descriptionColor}; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;' title='{credential.Description}'>{truncatedDescription}</p>" : "")}
-                                        <div style='display: flex; align-items: center; justify-content: space-between; margin-top: 0.25rem;'>
-                                            <div>
-                                                <span style='color: {validityLabelColor}; font-size: 0.75rem; font-weight: 400;'>Valid from</span>
-                                                <span style='color: {validityDateColor}; font-size: 0.875rem; font-weight: 500; margin-left: 0.25rem;'>{((DateTime)credential.ValidFrom).ToString("dd MMMM, yyyy")}</span>
-                                            </div>
-                                            {GetStatusButton(isDarkTheme, credential.Status)}
+                        <a href='{linkUrl}' style='{containerStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"" id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
+                            <div style='display: flex; align-items: flex-start; gap: 1rem;'>
+                                {(templateId.StartsWith("image") ? $@"
+                                <div style='width: 7rem; height: 7rem; flex-shrink: 0; background-color: {logoBackgroundColor}; border-radius: 0.5rem; overflow: hidden;'>
+                                    <img src='{GetImage(credential.Image)}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
+                                </div>" : "")}
+                                <div style='flex-grow: 1; min-width: 0;'>
+                                    <h2 style='font-size: 1.25rem; margin: 0 0 0.5rem 0; line-height: 1.5; color: {titleColor}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'>{truncatedName}</h2>
+                                    <p style='color: {subtitleColor}; font-size: 0.875rem; font-weight: 500; margin: 0 0 0.5rem 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'>{truncatedIssuer}</p>
+                                    {(templateId.Contains("description") ? $@"
+                                    <p style='font-size: 0.875rem; margin: 0 0 1rem 0; color: {descriptionColor}; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;'>{truncatedDescription}</p>" : "")}
+                                    <div style='display: flex; align-items: center; justify-content: space-between; margin-top: 0.25rem;'>
+                                        <div>
+                                            <span style='color: {validityLabelColor}; font-size: 0.75rem; font-weight: 400;'>Valid from</span>
+                                            <span style='color: {validityDateColor}; font-size: 0.875rem; font-weight: 500; margin-left: 0.25rem;'>{((DateTime)credential.ValidFrom).ToString("dd MMMM, yyyy")}</span>
                                         </div>
+                                        {GetStatusButton(isDarkTheme, credential.Status)}
                                     </div>
                                 </div>
-                            </a>
-                        </div>
-                    </div>
-                ");
+                            </div>
+                        </a>
+                    ");
                 break;
 
             default:
@@ -109,7 +98,7 @@ public class TemplatesService
     {
         if (string.IsNullOrEmpty(input) || input.Length <= maxLength)
             return input;
-        
+            
         return input.Substring(0, maxLength - 3) + "...";
     }
 
@@ -119,11 +108,11 @@ public class TemplatesService
         string statusText = GetStatusText(status);
 
         return $@"
-            <button style='background-color: {backgroundColor}; color: {textColor}; padding: 0.375rem 0.75rem; border-radius: 0.25rem; display: flex; align-items: center; font-size: 0.875rem; font-weight: 500; border: none; outline: none; cursor: pointer;'>
-                {GetStatusIcon(status, iconColor)}
-                <span style='margin-left: 0.25rem;'>{statusText}</span>
-            </button>
-        ";
+                <button style='background-color: {backgroundColor}; color: {textColor}; padding: 0.375rem 0.75rem; border-radius: 0.25rem; display: flex; align-items: center; font-size: 0.875rem; font-weight: 500; border: none; outline: none; cursor: pointer;'>
+                    {GetStatusIcon(status, iconColor)}
+                    <span style='margin-left: 0.25rem;'>{statusText}</span>
+                </button>
+            ";
     }
 
     private (string backgroundColor, string textColor, string iconColor) GetStatusStyles(bool isDarkTheme, EVerificationStatus status)
@@ -160,7 +149,7 @@ public class TemplatesService
             _ => "Unknown"
         };
     }
-    
+        
     private string GetHostDomain()
     {
         var request = _httpContextAccessor.HttpContext?.Request;
@@ -175,7 +164,7 @@ public class TemplatesService
 
         return $"{scheme}://{host}";
     }
-    
+        
     private string GetImage(string? image)
     {
         if (image == null)
