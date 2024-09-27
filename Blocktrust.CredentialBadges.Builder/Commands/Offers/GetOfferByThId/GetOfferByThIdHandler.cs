@@ -29,7 +29,7 @@ public class GetOfferByThIdHandler : IRequestHandler<GetOfferByThIdRequest, Resu
         else
         {
             _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.SubjectApiKey);
         }   
         var identusClient = new IdentusClient(_httpClient)
         {

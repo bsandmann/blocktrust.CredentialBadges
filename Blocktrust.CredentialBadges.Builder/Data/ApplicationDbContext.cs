@@ -50,6 +50,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             entity.HasKey(e => e.CredentialId);
         });
     }
+    public async Task<bool> AnyUsersAsync()
+    {
+        return  await Users.AnyAsync();
+    }
 
     public DbSet<BuilderCredentialEntity> BuilderCredentials { get; set; }
 }

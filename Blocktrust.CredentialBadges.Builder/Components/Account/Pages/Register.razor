@@ -1,19 +1,21 @@
 ﻿@page "/Account/Register"
-
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using Blocktrust.CredentialBadges.Builder.Data
+@using Blocktrust.CredentialBadges.Builder.Data.Entities
 
 @inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<ApplicationRole> RoleManager
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject ApplicationDbContext DbContext
 
 <PageTitle>Register</PageTitle>
 
@@ -62,8 +64,11 @@
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
-    public async Task RegisterUser(EditContext editContext)
+ public async Task RegisterUser(EditContext editContext)
     {
+        // Check if this is the first user
+        bool isNotFirstUser = await DbContext.AnyUsersAsync();
+
         var user = CreateUser();
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -78,6 +83,20 @@
         }
 
         Logger.LogInformation("User created a new account with password.");
+
+     
+        if (!isNotFirstUser)
+        {
+            // Assign admin role
+            await UserManager.AddToRoleAsync(user, "adminRole");
+            Logger.LogInformation("First user registered. Assigned admin role.");
+        }
+        else
+        {
+            // Assign non-admin role
+            await UserManager.AddToRoleAsync(user, "nonAdminRole");
+            Logger.LogInformation("User registered. Assigned non-admin role.");
+        }
 
         var userId = await UserManager.GetUserIdAsync(user);
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
@@ -98,7 +117,6 @@
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
     }
-
     private ApplicationUser CreateUser()
     {
         try

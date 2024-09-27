@@ -9,14 +9,12 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.Credentials.GetRecordById
 public class GetRecordByIdHandler : IRequestHandler<GetRecordByIdRequest, Result<IssueCredentialRecord>>
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<GetRecordByIdHandler> _logger;
     private readonly AppSettings _appSettings;
 
     public GetRecordByIdHandler(IHttpClientFactory httpClientFactory, ILogger<GetRecordByIdHandler> logger, IOptions<AppSettings> appSettings)
     {
         _httpClient = httpClientFactory.CreateClient("IdentusAgents");
         _appSettings = appSettings.Value;
-        _logger = logger;
     }
 
     public async Task<Result<IssueCredentialRecord>> Handle(GetRecordByIdRequest request, CancellationToken cancellationToken)
@@ -28,7 +26,7 @@ public class GetRecordByIdHandler : IRequestHandler<GetRecordByIdRequest, Result
         }
         else
         {
-            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent2ApiKey);
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.SubjectApiKey);
         }
         
         
@@ -46,7 +44,6 @@ public class GetRecordByIdHandler : IRequestHandler<GetRecordByIdRequest, Result
         }
         catch (ApiException ex)
         {
-            _logger.LogError(ex, "Error retrieving credential record");
             return Result.Fail($"Error retrieving credential record: {ex.Message}");
         }
     }
