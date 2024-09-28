@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using Blocktrust.CredentialBadges.Web.Domain;
 using Blocktrust.CredentialBadges.Web.Enums;
@@ -13,116 +12,82 @@ public class TemplatesService
     {
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
+
     public string GetPopulatedTemplate(string templateId, string theme, VerifiedCredential credential)
     {
         StringBuilder templateBuilder = new StringBuilder();
         string hostDomain = GetHostDomain();
         string linkUrl = $"{hostDomain}/verifier/{credential.Id}";
 
-        string themeClass = theme == "dark" ? "dark-theme" : "";
-        string logoClass = theme == "dark" ? "dark-logo" : "";
-        string titleClass = theme == "dark" ? "dark-title" : "";
-        string subtitleClass = theme == "dark" ? "dark-subtitle" : "";
-        string descriptionClass = theme == "dark" ? "dark-description" : "";
-        string validityLabelClass = theme == "dark" ? "dark-validity-label" : "";
-        string validityDateClass = theme == "dark" ? "dark-validity-date" : "";
+        bool isDarkTheme = theme == "dark";
+        string backgroundColor = isDarkTheme ? "#020617" : "#F8FAFC";
+        string textColor = isDarkTheme ? "#F1F5F9" : "inherit";
+        string titleColor = isDarkTheme ? "#ffffff" : "inherit";
+        string subtitleColor = isDarkTheme ? "#cbd5e0" : "#718096";
+        string descriptionColor = isDarkTheme ? "#e2e8f0" : "inherit";
+        string validityLabelColor = isDarkTheme ? "#94A3B8" : "#718096";
+        string validityDateColor = isDarkTheme ? "#ffffff" : "#2d3748";
+        string borderColor = "#e2e8f0";
+        string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
 
         string truncatedName = TruncateString(credential.Name, 60);
         string truncatedIssuer = TruncateString(credential.Issuer, 20);
         string truncatedDescription = TruncateString(credential.Description, 150);
 
+        string commonStyles = $@"
+            display: inline-block;
+            width: 30rem;
+            border: 1px solid {borderColor};
+            border-radius: 0.5rem;
+            background: {backgroundColor};
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            margin: 1rem ;
+            padding: 1rem;
+            box-sizing: border-box;
+            transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out;
+            font-family: 'Poppins', sans-serif;
+            color: {textColor};
+
+        ";
+        
+        string hoverEffect = "this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'; this.style.filter='brightness(1.05)';";
+        string resetEffect = "this.style.boxShadow='0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'; this.style.filter='brightness(1)';";
+
         switch (templateId)
         {
             case "image_no_description_light":
             case "image_no_description_dark":
-                    templateBuilder.Append($@"
-                        <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
-                            <div class='credential-header'>
-                                <div class='credential-logo {logoClass}'>
-                                    <img src='{GetImage(credential.Image)}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
-                                </div>
-                                <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
-                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
-                                    <div class='credential-validity'>
-                                        <div>
-                                            <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
-                                            <span class='credential-validity-date {validityDateClass}'>{((DateTime)credential.ValidFrom).ToString("dd MMMM, yyyy")}</span>
-                                        </div>
-                                        {GetStatusButton(theme, credential.Status)}
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    ");
-                break;
-
             case "image_description_light":
             case "image_description_dark":
-                templateBuilder.Append($@"
-                        <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
-                            <div class='credential-header'>
-                                <div class='credential-logo {logoClass}'>
-                                    <img src='{GetImage(credential.Image)}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
-                                </div>
-                                <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
-                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
-                                    <p class='credential-description {descriptionClass}' title='{credential.Description}'>{truncatedDescription}</p>
-                                    <div class='credential-validity'>
-                                        <div>
-                                            <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
-                                            <span class='credential-validity-date {validityDateClass}'>{((DateTime)credential.ValidFrom).ToString("dd MMMM, yyyy")}</span>
-                                        </div>
-                                        {GetStatusButton(theme, credential.Status)}
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    ");
-                break;
-
             case "noimage_description_light":
             case "noimage_description_dark":
-                templateBuilder.Append($@"
-                        <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
-                            <div class='credential-header'>
-                                <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
-                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
-                                    <p class='credential-description {descriptionClass}' title='{credential.Description}'>{truncatedDescription}</p>
-                                    <div class='credential-validity'>
-                                        <div>
-                                            <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
-                                            <span class='credential-validity-date {validityDateClass}'>{((DateTime)credential.ValidFrom).ToString("dd MMMM, yyyy")}</span>
-                                        </div>
-                                        {GetStatusButton(theme, credential.Status)}
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    ");
-                break;
-
             case "noimage_no_description_light":
             case "noimage_no_description_dark":
                 templateBuilder.Append($@"
-                        <a href='{linkUrl}' class='credential-container {themeClass}' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
-                            <div class='credential-header'>
-                                <div class='credential-details'>
-                                    <h2 class='credential-title {titleClass}' title='{credential.Name}'>{truncatedName}</h2>
-                                    <p class='credential-subtitle {subtitleClass}' title='{credential.Issuer}'>{truncatedIssuer}</p>
-                                    <div class='credential-validity'>
-                                        <div>
-                                            <span class='credential-validity-label {validityLabelClass}'>Valid from</span>
-                                            <span class='credential-validity-date {validityDateClass}'>{((DateTime)credential.ValidFrom).ToString("dd MMMM, yyyy")}</span>
+                    <div style='{commonStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
+                            <a href='{linkUrl}' style='text-decoration: none; color: inherit; display: block;' id='{credential.Id}' data-credential-id='{credential.Id}' data-template-id='{templateId}'>
+                                <div style='display: flex; align-items: flex-start; gap: 1rem;'>
+                                    {(templateId.StartsWith("image") ? $@"
+                                    <div style='width: 7rem; height: 7rem; flex-shrink: 0; background-color: {logoBackgroundColor}; border-radius: 0.5rem; overflow: hidden;'>
+                                        <img src='{GetImage(credential.Image)}' alt='{truncatedName}' style='width: 100%; height: 100%; object-fit: contain;' />
+                                    </div>" : "")}
+                                    <div style='flex-grow: 1; min-width: 0;'>
+                                        <h2 style='font-size: 1.25rem; margin-bottom: 0.5rem; line-height: 1.5; color: {titleColor}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' title='{credential.Name}'>{truncatedName}</h2>
+                                        <p style='color: {subtitleColor}; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' title='{credential.Issuer}'>{truncatedIssuer}</p>
+                                        {(templateId.Contains("description") ? $@"
+                                        <p style='font-size: 0.875rem; margin-bottom: 1rem; color: {descriptionColor}; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;' title='{credential.Description}'>{truncatedDescription}</p>" : "")}
+                                        <div style='display: flex; align-items: center; justify-content: space-between; margin-top: 0.25rem;'>
+                                            <div>
+                                                <span style='color: {validityLabelColor}; font-size: 0.75rem; font-weight: 400;'>Valid from</span>
+                                                <span style='color: {validityDateColor}; font-size: 0.875rem; font-weight: 500; margin-left: 0.25rem;'>{((DateTime)credential.ValidFrom).ToString("dd MMMM, yyyy")}</span>
+                                            </div>
+                                            {GetStatusButton(isDarkTheme, credential.Status)}
                                         </div>
-                                        {GetStatusButton(theme, credential.Status)}
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    ");
+                            </a>
+                    </div>
+                ");
                 break;
 
             default:
@@ -139,45 +104,42 @@ public class TemplatesService
         
         return input.Substring(0, maxLength - 3) + "...";
     }
-    
 
-    private string GetStatusButton(string theme, EVerificationStatus status)
+    private string GetStatusButton(bool isDarkTheme, EVerificationStatus status)
     {
-        string buttonClass = GetStatusButtonClass(theme, status);
-        string iconName = GetStatusIcon(status);
+        var (backgroundColor, textColor, iconColor) = GetStatusStyles(isDarkTheme, status);
         string statusText = GetStatusText(status);
-        string textClass = theme == "dark" ? "credential-verified-text-dark" : "credential-verified-text";
 
         return $@"
-                <button class='{buttonClass}'>
-                    <span class='material-symbols-outlined credential-verified-icon'>{iconName}</span>
-                    <span class='{textClass}'>{statusText}</span>
-                </button>
-            ";
+            <button style='background-color: {backgroundColor}; color: {textColor}; padding: 0.375rem 0.75rem; border-radius: 0.25rem; display: flex; align-items: center; font-size: 0.875rem; font-weight: 500; border: none; outline: none; cursor: pointer;'>
+                {GetStatusIcon(status, iconColor)}
+                <span style='margin-left: 0.25rem;'>{statusText}</span>
+            </button>
+        ";
     }
 
-    private string GetStatusButtonClass(string theme, EVerificationStatus status)
-    {
-        string baseClass = "credential-button-";
-        string statusClass = status switch
-        {
-            EVerificationStatus.Verified => "verified",
-            EVerificationStatus.Revoked => "revoked",
-            EVerificationStatus.Expired => "expired",
-            _ => "unknown"
-        };
-        return $"{baseClass}{statusClass}";
-    }
-
-    private string GetStatusIcon(EVerificationStatus status)
+    private (string backgroundColor, string textColor, string iconColor) GetStatusStyles(bool isDarkTheme, EVerificationStatus status)
     {
         return status switch
         {
-            EVerificationStatus.Verified => "verified",
-            EVerificationStatus.Revoked => "block",
-            EVerificationStatus.Expired => "access_time",
-            _ => "help"
+            EVerificationStatus.Verified => isDarkTheme ? ("#718096", "#0F172A", "#0F172A") : ("#334155", "#ffffff", "#ffffff"),
+            EVerificationStatus.Revoked => ("#FEE2E2", "#DC2626", "#DC2626"),
+            EVerificationStatus.Expired => ("#FEF9C3", "#713F12", "#713F12"),
+            _ => ("#E2E8F0", "#4A5568", "#4A5568")
         };
+    }
+
+    private string GetStatusIcon(EVerificationStatus status, string color)
+    {
+        string iconPath = status switch
+        {
+            EVerificationStatus.Verified => "M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4L12 14.01l-3-3",
+            EVerificationStatus.Revoked => "M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM9 9L15 15 M15 9L9 15",
+            EVerificationStatus.Expired => "M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 6V12L16 14",
+            _ => "M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 16V18 M12 6V14"
+        };
+
+        return $@"<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='{color}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='{iconPath}'></path></svg>";
     }
 
     private string GetStatusText(EVerificationStatus status)
@@ -206,14 +168,13 @@ public class TemplatesService
         return $"{scheme}://{host}";
     }
     
-    //get image, if image is base 64 add data attribute else return image
     private string GetImage(string? image)
     {
         if (image == null)
         {
             return "https://via.placeholder.com/150";
         }
-        if (image.StartsWith("/"))
+        if (!image.StartsWith("http") && !image.StartsWith("data:image"))
         {
             return $"data:image;base64,{image}";
         }
