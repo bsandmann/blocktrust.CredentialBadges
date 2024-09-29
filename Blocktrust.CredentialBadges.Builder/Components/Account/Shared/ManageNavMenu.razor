@@ -3,32 +3,26 @@
 
 @inject SignInManager<ApplicationUser> SignInManager
 
-<nav class="space-y-1">
+<nav class="flex flex-col space-y-1">
     <NavLink href="Account/Manage" Match="NavLinkMatch.All" class="@GetNavLinkClass">
-        <span class="mr-3">👤</span>
         Profile
     </NavLink>
     <NavLink href="Account/Manage/Email" class="@GetNavLinkClass">
-        <span class="mr-3">📧</span>
         Email
     </NavLink>
     <NavLink href="Account/Manage/ChangePassword" class="@GetNavLinkClass">
-        <span class="mr-3">🔒</span>
         Password
     </NavLink>
     @if (hasExternalLogins)
     {
         <NavLink href="Account/Manage/ExternalLogins" class="@GetNavLinkClass">
-            <span class="mr-3">🔗</span>
             External logins
         </NavLink>
     }
     <NavLink href="Account/Manage/TwoFactorAuthentication" class="@GetNavLinkClass">
-        <span class="mr-3">🛡️</span>
         Two-factor authentication
     </NavLink>
     <NavLink href="Account/Manage/PersonalData" class="@GetNavLinkClass">
-        <span class="mr-3">📁</span>
         Personal data
     </NavLink>
 </nav>
@@ -43,7 +37,7 @@
 
     private string GetNavLinkClass(NavLinkMatch? match = null)
     {
-        return "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 ease-in-out " +
+        return "px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 ease-in-out " +
                (match == NavLinkMatch.All 
                    ? "bg-slate-800 text-white" 
                    : "text-gray-600 hover:bg-gray-100");

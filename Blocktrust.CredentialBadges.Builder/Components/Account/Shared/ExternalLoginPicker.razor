@@ -5,33 +5,53 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityRedirectManager RedirectManager
 
-@if (externalLogins.Length == 0)
-{
-    <div>
-        <p>
-            There are no external authentication services configured. See this
-            <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
-                article
-                about setting up this ASP.NET application to support logging in via external services
-            </a>.
-        </p>
-    </div>
-}
-else
-{
-    <form class="form-horizontal" action="Account/PerformExternalLogin" method="post">
-        <div>
-            <AntiforgeryToken/>
-            <input type="hidden" name="ReturnUrl" value="@ReturnUrl"/>
-            <p>
-                @foreach (var provider in externalLogins)
-                {
-                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                }
+<div class="max-w-md mx-auto">
+    @if (externalLogins.Length == 0)
+    {
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+            <p class="font-bold">No external authentication services configured</p>
+            <p class="mt-2">
+                See this
+                <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="text-yellow-800 underline hover:text-yellow-900">
+                    article about setting up this ASP.NET application to support logging in via external services
+                </a>.
             </p>
         </div>
-    </form>
-}
+    }
+    else
+    {
+        <form class="space-y-4" action="Account/PerformExternalLogin" method="post">
+            <AntiforgeryToken/>
+            <input type="hidden" name="ReturnUrl" value="@ReturnUrl"/>
+            <div class="flex flex-col space-y-2">
+                @foreach (var provider in externalLogins)
+                {
+                    <button type="submit" 
+                            name="provider" 
+                            value="@provider.Name" 
+                            class="bg-slate-700 text-white px-4 py-2 rounded hover:bg-slate-600 transition duration-200 flex items-center justify-center"
+                            title="Log in using your @provider.DisplayName account">
+                        <span class="mr-2">
+                            @switch (provider.Name.ToLower())
+                            {
+                                case "google":
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+                                    break;
+                                case "facebook":
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    break;
+                                default:
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm6.804 9.146c.007.159.011.319.011.479 0 4.888-3.721 10.525-10.525 10.525-2.09 0-4.037-.611-5.676-1.662.29.034.585.051.883.051 1.736 0 3.334-.591 4.603-1.582-1.622-.03-2.991-1.1-3.463-2.573.226.043.459.066.696.066.337 0 .664-.045.975-.131C4.631 13.95 3.205 12.29 3.205 10.3v-.042c.492.273 1.054.437 1.652.456-1.005-.671-1.665-1.819-1.665-3.121 0-.687.184-1.33.506-1.884 1.843 2.261 4.595 3.745 7.699 3.9-.064-.273-.097-.558-.097-.854 0-2.067 1.676-3.743 3.743-3.743 1.076 0 2.048.454 2.73 1.18.852-.168 1.652-.478 2.373-.903-.279.873-.871 1.605-1.643 2.068.756-.09 1.477-.291 2.147-.588-.5.75-1.132 1.407-1.862 1.935z"/></svg>
+                                break;
+                            }
+                        </span>
+                        Login with @provider.DisplayName
+                    </button>
+                }
+            </div>
+        </form>
+    }
+</div>
 
 @code {
     private AuthenticationScheme[] externalLogins = [];
@@ -42,5 +62,4 @@ else
     {
         externalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToArray();
     }
-
 }
