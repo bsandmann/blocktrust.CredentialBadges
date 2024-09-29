@@ -10,58 +10,65 @@
 @inject IUserStore<ApplicationUser> UserStore
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Manage your external logins</PageTitle>
+<PageTitle>Manage Your External Logins</PageTitle>
 
-<StatusMessage/>
-@if (currentLogins?.Count > 0)
-{
-    <h3>Registered Logins</h3>
-    <table class="table">
-        <tbody>
-        @foreach (var login in currentLogins)
-        {
-            <tr>
-                <td>@login.ProviderDisplayName</td>
-                <td>
-                    @if (showRemoveButton)
-                    {
-                        <form @formname="@($"remove-login-{login.LoginProvider}")" @onsubmit="OnSubmitAsync" method="post">
-                            <AntiforgeryToken/>
-                            <div>
-                                <input type="hidden" name="@nameof(LoginProvider)" value="@login.LoginProvider"/>
-                                <input type="hidden" name="@nameof(ProviderKey)" value="@login.ProviderKey"/>
-                                <button type="submit" class="btn btn-primary" title="Remove this @login.ProviderDisplayName login from your account">Remove</button>
-                            </div>
-                        </form>
-                    }
-                    else
-                    {
-                        @: &nbsp;
-                    }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
-@if (otherLogins?.Count > 0)
-{
-    <h4>Add another service to log in.</h4>
-    <hr/>
-    <form class="form-horizontal" action="Account/Manage/LinkExternalLogin" method="post">
-        <AntiforgeryToken/>
-        <div>
-            <p>
-                @foreach (var provider in otherLogins)
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Manage Your External Logins</h1>
+    
+    <StatusMessage/>
+    
+    @if (currentLogins?.Count > 0)
+    {
+        <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm mb-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Registered Logins</h2>
+            <table class="w-full">
+                <tbody>
+                @foreach (var login in currentLogins)
                 {
-                    <button type="submit" class="btn btn-primary" name="Provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
-                        @provider.DisplayName
-                    </button>
+                    <tr class="border-b border-gray-200 last:border-b-0">
+                        <td class="py-3">@login.ProviderDisplayName</td>
+                        <td class="py-3 text-right">
+                            @if (showRemoveButton)
+                            {
+                                <form @formname="@($"remove-login-{login.LoginProvider}")" @onsubmit="OnSubmitAsync" method="post" class="inline-block">
+                                    <AntiforgeryToken/>
+                                    <input type="hidden" name="@nameof(LoginProvider)" value="@login.LoginProvider"/>
+                                    <input type="hidden" name="@nameof(ProviderKey)" value="@login.ProviderKey"/>
+                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition duration-200" title="Remove this @login.ProviderDisplayName login from your account">
+                                        Remove
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
                 }
-            </p>
+                </tbody>
+            </table>
         </div>
-    </form>
-}
+    }
+    
+    @if (otherLogins?.Count > 0)
+    {
+        <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Add Another Service to Log In</h2>
+            <form class="space-y-4" action="Account/Manage/LinkExternalLogin" method="post">
+                <AntiforgeryToken/>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (var provider in otherLogins)
+                    {
+                        <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded hover:bg-slate-600 transition duration-200" name="Provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                            @provider.DisplayName
+                        </button>
+                    }
+                </div>
+            </form>
+        </div>
+    }
+    
+    <div class="mt-6 text-center">
+        <a href="/Account/Manage" class="text-slate-600 hover:text-slate-800 underline">Back to Manage Account</a>
+    </div>
+</div>
 
 @code {
     public const string LinkLoginCallbackAction = "LinkLoginCallback";
@@ -133,5 +140,4 @@
 
         RedirectManager.RedirectToCurrentPageWithStatus("The external login was added.", HttpContext);
     }
-
 }
