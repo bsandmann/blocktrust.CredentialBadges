@@ -13,58 +13,76 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
 
-<PageTitle>Configure authenticator app</PageTitle>
+<PageTitle>Configure Authenticator App</PageTitle>
 
-@if (recoveryCodes is not null)
-{
-    <ShowRecoveryCodes RecoveryCodes="recoveryCodes.ToArray()" StatusMessage="@message"/>
-}
-else
-{
-    <StatusMessage Message="@message"/>
-    <h3>Configure authenticator app</h3>
-    <div>
-        <p>To use an authenticator app go through the following steps:</p>
-        <ol class="list">
-            <li>
-                <p>
-                    Download a two-factor authenticator app like Microsoft Authenticator for
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
-                    Google Authenticator for
-                    <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
-                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
-                </p>
-            </li>
-            <li>
-                <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
-                <div></div>
-                <div data-url="@authenticatorUri"></div>
-            </li>
-            <li>
-                <p>
-                    Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
-                    with a unique code. Enter the code in the confirmation box below.
-                </p>
-                <div class="row">
-                    <div class="col-md-6">
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Configure Authenticator App</h1>
+    
+    @if (recoveryCodes is not null)
+    {
+        <ShowRecoveryCodes RecoveryCodes="recoveryCodes.ToArray()" StatusMessage="@message"/>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4" role="alert">
+                <p>@message</p>
+            </div>
+        }
+        
+        <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm">
+            <p class="mb-4">To use an authenticator app, follow these steps:</p>
+            <ol class="list-decimal pl-6 space-y-4">
+                <li>
+                    <p>
+                        Download a two-factor authenticator app like Microsoft Authenticator for
+                        <a href="https://go.microsoft.com/fwlink/?Linkid=825072" class="text-blue-600 hover:text-blue-800 underline">Android</a> and
+                        <a href="https://go.microsoft.com/fwlink/?Linkid=825073" class="text-blue-600 hover:text-blue-800 underline">iOS</a> or
+                        Google Authenticator for
+                        <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en" class="text-blue-600 hover:text-blue-800 underline">Android</a> and
+                        <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" class="text-blue-600 hover:text-blue-800 underline">iOS</a>.
+                    </p>
+                </li>
+                <li>
+                    <p class="mb-2">Scan the QR Code or enter this key <kbd class="bg-gray-100 px-2 py-1 rounded">@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
+                    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4">
+                        Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423" class="text-blue-800 hover:text-blue-900 underline">enable QR code generation</a>.
+                    </div>
+                    <div class="mb-4">
+                        <!-- Placeholder for QR code -->
+                        <div class="w-48 h-48 bg-gray-200 flex items-center justify-center">
+                            QR Code Placeholder
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <p class="mb-4">
+                        Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
+                        with a unique code. Enter the code in the confirmation box below.
+                    </p>
+                    <div class="max-w-md">
                         <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
                             <DataAnnotationsValidator/>
-                            <div class="form-floating mb-3">
-                                <InputText @bind-Value="Input.Code" class="form-control" autocomplete="off" placeholder="Please enter the code."/>
-                                <label for="code" class="control-label form-label">Verification Code</label>
-                                <ValidationMessage For="() => Input.Code" class="text-danger"/>
+                            <div class="mb-4">
+                                <label for="code" class="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
+                                <InputText @bind-Value="Input.Code" id="code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-0 focus:border-slate-500" autocomplete="off" placeholder="Enter the code from your app" />
+                                <ValidationMessage For="() => Input.Code" class="text-red-600 text-sm mt-1" />
                             </div>
-                            <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
-                            <ValidationSummary class="text-danger" role="alert"/>
+                            <button type="submit" class="w-full bg-slate-700 text-white px-4 py-2 rounded hover:bg-slate-600 transition duration-200">
+                                Verify
+                            </button>
                         </EditForm>
                     </div>
-                </div>
-            </li>
-        </ol>
+                </li>
+            </ol>
+        </div>
+    }
+    
+    <div class="mt-6 text-center">
+        <a href="/Account/Manage/TwoFactorAuthentication" class="text-slate-600 hover:text-slate-800 underline">Back to Two-Factor Authentication</a>
     </div>
-}
+</div>
 
 @code {
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
@@ -168,5 +186,4 @@ else
         [Display(Name = "Verification Code")]
         public string Code { get; set; } = "";
     }
-
 }

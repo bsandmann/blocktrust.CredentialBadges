@@ -8,26 +8,36 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<Disable2fa> Logger
 
-<PageTitle>Disable two-factor authentication (2FA)</PageTitle>
+<PageTitle>Disable Two-Factor Authentication (2FA)</PageTitle>
 
-<StatusMessage/>
-<h3>Disable two-factor authentication (2FA)</h3>
+<div class="max-w-md mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Disable Two-Factor Authentication (2FA)</h1>
+    
+    <StatusMessage/>
+    
+    <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm mb-6">
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
+            <p class="font-bold mb-2">Important Information</p>
+            <p class="mb-2">
+                <strong>This action only disables 2FA.</strong>
+            </p>
+            <p>
+                Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
+                used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator" class="text-blue-600 hover:text-blue-800 underline">reset your authenticator keys.</a>
+            </p>
+        </div>
 
-<div class="alert alert-warning" role="alert">
-    <p>
-        <strong>This action only disables 2FA.</strong>
-    </p>
-    <p>
-        Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
-        used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator">reset your authenticator keys.</a>
-    </p>
-</div>
-
-<div>
-    <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
-        <AntiforgeryToken/>
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
-    </form>
+        <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
+            <AntiforgeryToken/>
+            <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-200">
+                Disable 2FA
+            </button>
+        </form>
+    </div>
+    
+    <div class="mt-6 text-center">
+        <a href="/Account/Manage/TwoFactorAuthentication" class="text-slate-600 hover:text-slate-800 underline">Back to Two-Factor Authentication</a>
+    </div>
 </div>
 
 @code {
@@ -60,5 +70,4 @@
             "2fa has been disabled. You can reenable 2fa when you setup an authenticator app",
             HttpContext);
     }
-
 }

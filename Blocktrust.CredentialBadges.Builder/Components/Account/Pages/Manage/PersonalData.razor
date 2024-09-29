@@ -4,22 +4,35 @@
 
 <PageTitle>Personal Data</PageTitle>
 
-<StatusMessage/>
-<h3>Personal Data</h3>
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Personal Data</h1>
 
-<div class="row">
-    <div class="col-md-6">
-        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
-        <p>
-            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+    <StatusMessage/>
+
+    <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm mb-6">
+        <p class="mb-4 text-gray-600">
+            Your account contains personal data that you have given us. This page allows you to download or delete that data.
         </p>
-        <form action="Account/Manage/DownloadPersonalData" method="post">
-            <AntiforgeryToken/>
-            <button class="btn btn-primary" type="submit">Download</button>
-        </form>
-        <p>
-            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">Delete</a>
-        </p>
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
+            <p class="font-bold">
+                Deleting this data will permanently remove your account, and this cannot be recovered.
+            </p>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+            <form action="Account/Manage/DownloadPersonalData" method="post" class="w-full sm:w-auto">
+                <AntiforgeryToken/>
+                <button type="submit" class="w-full sm:w-auto bg-slate-700 text-white px-6 py-2 rounded hover:bg-slate-600 transition duration-200">
+                    Download Data
+                </button>
+            </form>
+            <a href="Account/Manage/DeletePersonalData" class="w-full sm:w-auto bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition duration-200 text-center">
+                Delete Data
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-6 text-center">
+        <a href="/Account/Manage" class="text-slate-600 hover:text-slate-800 underline">Back to Manage Account</a>
     </div>
 </div>
 
@@ -30,5 +43,4 @@
     {
         _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
     }
-
 }
