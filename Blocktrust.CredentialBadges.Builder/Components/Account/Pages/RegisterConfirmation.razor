@@ -13,7 +13,7 @@
 <PageTitle>Register Confirmation</PageTitle>
 
 <div class="max-w-md mx-auto px-4 py-8">
-    <h1 class="text-2xl font-semibold text-gray-800 mb-4">Register Confirmation</h1>
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Register Confirmation</h1>
     
     <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm">
         @if (!string.IsNullOrEmpty(statusMessage))
@@ -26,13 +26,13 @@
         @if (emailConfirmationLink is not null)
         {
             <div class="mb-4">
-                <p class="text-gray-600 mb-2">
-                    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf" class="text-slate-700 hover:text-slate-900 underline">these docs</a> for how to configure a real email sender.
+                <p class="text-gray-600 mb-4">
+                    This app does not currently have a real email sender registered. See <a href="https://aka.ms/aspaccountconf" class="text-slate-700 hover:text-slate-900 underline">these docs</a> for how to configure a real email sender.
                 </p>
-                <p class="text-gray-600">
-                    Normally this would be emailed: 
+                <p class="text-gray-700 font-medium mb-2">
+                    Normally this would be emailed:
                 </p>
-                <a href="@emailConfirmationLink" class="inline-block mt-2 bg-slate-700 text-white px-4 py-2 rounded hover:bg-slate-600 transition duration-200">
+                <a href="@emailConfirmationLink" class="inline-block w-full text-center bg-slate-700 text-white px-4 py-2 rounded hover:bg-slate-600 transition duration-200">
                     Click here to confirm your account
                 </a>
             </div>

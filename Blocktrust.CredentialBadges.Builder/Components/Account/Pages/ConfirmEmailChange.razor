@@ -9,11 +9,39 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Confirm email change</PageTitle>
+<PageTitle>Confirm Email Change</PageTitle>
 
-<h1>Confirm email change</h1>
-
-<StatusMessage Message="@message"/>
+<div class="max-w-md mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Confirm Email Change</h1>
+    
+    <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm">
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="@(message.StartsWith("Thank you") ? "bg-green-100 border-l-4 border-green-500 text-green-700" : "bg-red-100 border-l-4 border-red-500 text-red-700") p-4 mb-4" role="alert">
+                <p>@message</p>
+            </div>
+        }
+        
+        <p class="text-gray-600">
+            @if (message?.StartsWith("Thank you") == true)
+            {
+                <span>Your email has been successfully changed. You can now use your new email address to log in.</span>
+            }
+            else if (!string.IsNullOrEmpty(message))
+            {
+                <span>There was an issue confirming your email change. Please try again or contact support if the problem persists.</span>
+            }
+            else
+            {
+                <span>We're processing your email change confirmation. Please wait...</span>
+            }
+        </p>
+    </div>
+    
+    <div class="mt-6 text-center">
+        <a href="/" class="text-slate-600 hover:text-slate-800 underline">Return to Home</a>
+    </div>
+</div>
 
 @code {
     private string? message;
@@ -61,5 +89,4 @@
         await SignInManager.RefreshSignInAsync(user);
         message = "Thank you for confirming your email change.";
     }
-
 }

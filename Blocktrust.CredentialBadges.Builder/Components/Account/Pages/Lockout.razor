@@ -1,8 +1,28 @@
 ﻿@page "/Account/Lockout"
 
-<PageTitle>Locked out</PageTitle>
+<PageTitle>Account Locked Out</PageTitle>
 
-<header>
-    <h1 class="text-danger">Locked out</h1>
-    <p class="text-danger">This account has been locked out, please try again later.</p>
-</header>
+<div class="max-w-md mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-red-600 mb-6">Account Locked Out</h1>
+    
+    <div class="bg-white border border-red-300 rounded-lg p-6 shadow-sm">
+        <div class="flex items-center mb-4">
+            <span class="material-symbols-outlined text-red-500 mr-2">lock</span>
+            <p class="text-lg text-red-700 font-medium">Access Denied</p>
+        </div>
+        
+        <p class="text-gray-700 mb-4">
+            This account has been locked out for security reasons.
+        </p>
+        
+        <p class="text-gray-600">
+            Please try again later or contact support if you believe this is an error.
+        </p>
+    </div>
+    
+    <div class="mt-6 flex justify-center space-x-4">
+        <a href="/Account/ForgotPassword" class="text-slate-600 hover:text-slate-800 underline">Reset Password</a>
+        <span class="text-gray-300">|</span>
+        <a href="/" class="text-slate-600 hover:text-slate-800 underline">Return to Home</a>
+    </div>
+</div>
