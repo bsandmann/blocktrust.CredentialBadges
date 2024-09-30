@@ -1,7 +1,9 @@
+using Blocktrust.CredentialBadges.Builder.Data.Entities;
+
 namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetBuilderCrdentialByUserId;
 
-using Blocktrust.CredentialBadges.Builder.Data;
-using Blocktrust.CredentialBadges.Builder.Domain;
+using Data;
+using Domain;
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +23,15 @@ public class GetBuilderCredentialsByUserIdHandler : IRequestHandler<GetBuilderCr
     {
         try
         {
-            var entities = await _context.BuilderCredentials
-                .Where(c => c.UserId == request.UserId)
-                .ToListAsync(cancellationToken);
+            IQueryable<BuilderCredentialEntity> query = _context.BuilderCredentials
+                .Where(c => c.UserId == request.UserId);
+
+            if (!string.IsNullOrEmpty(request.SubjectDid))
+            {
+                query = query.Where(c => c.SubjectDid == request.SubjectDid);
+            }
+
+            var entities = await query.ToListAsync(cancellationToken);
 
             var credentials = entities
                 .Select(entity => BuilderCredential.FromEntity(entity))
@@ -33,8 +41,8 @@ public class GetBuilderCredentialsByUserIdHandler : IRequestHandler<GetBuilderCr
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving builder credentials for user ID: {UserId}", request.UserId);
-            return Result.Fail<List<BuilderCredential>>("Failed to retrieve builder credentials for the specified user ID");
+            _logger.LogError(ex, "Error retrieving builder credentials for user ID: {UserId}, Subject DID: {SubjectDid}", request.UserId, request.SubjectDid);
+            return Result.Fail<List<BuilderCredential>>("Failed to retrieve builder credentials for the specified user ID and Subject DID");
         }
     }
 }

@@ -21,6 +21,9 @@ window.localStorageFunctions = {
     },
     getItem: function (key) {
         return localStorage.getItem(key);
+    },
+    removeItem: function (key) {
+        localStorage.removeItem(key);
     }
 };
 
