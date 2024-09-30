@@ -13,8 +13,15 @@
 <PageTitle>@GetBrowserPageTitle()</PageTitle>
 
 <div class="max-w-4xl mx-auto px-4 py-8 min-h-screen">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-16">
+    <!-- Status Indicator -->
+    <div class="flex items-center justify-end mb-4">
+        <div class="flex items-center @(isConnected ? "text-green-500" : "text-gray-400")">
+            <span class="material-symbols-outlined mr-2">@(isConnected ? "radio_button_checked" : "radio_button_unchecked")</span>
+            <span class="text-sm font-medium">@(isConnected ? "Connected" : "Not Connected")</span>
+        </div>
+    </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
         <!-- Invitation URL Section -->
         <div class="mt-10">
             <h2 class="block text-slate-700 mb-1">Invitation URL</h2>
@@ -63,11 +70,12 @@
                     <span>Connect</span>
                 }
             </button>
-
-            <p class="text-red-500 mt-2" style="display: @errorMessageDisplay">@errorMessage</p>
-            <p class="text-green-500 mt-2" style="display: @successMessageDisplay">@successMessage</p>
         </div>
     </div>
+</div>
+
+<div class="fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg transition-opacity duration-300 @(showToast ? "opacity-100" : "opacity-0") @(isToastError ? "bg-red-500" : "bg-green-500") text-white">
+    @toastMessage
 </div>
 
 @code {
@@ -76,10 +84,10 @@
     private string invitationUrl = "Loading...";
     private bool isInitialized;
     private bool isConnecting;
-    private string errorMessage = "";
-    private string successMessage = "";
-    private string errorMessageDisplay => string.IsNullOrEmpty(errorMessage) ? "none" : "block";
-    private string successMessageDisplay => string.IsNullOrEmpty(successMessage) ? "none" : "block";
+    private bool showToast;
+    private bool isToastError;
+    private string toastMessage = "";
+    private bool isConnected = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,6 +101,7 @@
             await GenerateNewInvitationUrl();
         }
         await UpdatePageTitle();
+        await CheckConnectionStatus();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -108,6 +117,7 @@
         await InvokeAsync(async () =>
         {
             await UpdatePageTitle();
+            await CheckConnectionStatus();
             StateHasChanged();
         });
     }
@@ -131,6 +141,13 @@
         return "Blocktrust Credentials - Generate Connections";
     }
 
+    private async Task CheckConnectionStatus()
+    {
+        var initializeConnectionId = await JS.InvokeAsync<string>("localStorage.getItem", "initializeConnectionId");
+        var acceptConnectionId = await JS.InvokeAsync<string>("localStorage.getItem", "acceptConnectionId");
+        isConnected = !string.IsNullOrEmpty(initializeConnectionId) && !string.IsNullOrEmpty(acceptConnectionId);
+    }
+
     private async Task GenerateNewInvitationUrl()
     {
         invitationUrl = "Loading...";
@@ -142,16 +159,15 @@
         {
             invitationUrl = result.Value.InvitationUrl;
             await JS.InvokeVoidAsync("localStorage.setItem", "initializeConnectionId", result.Value.ConnectionId);
-            successMessage = "";
-            errorMessage = "";
+            ShowToast("New invitation URL generated", false);
         }
         else
         {
-            errorMessage = "Error generating invitation URL.";
-            successMessage = "";
+            ShowToast("Error generating invitation URL", true);
         }
 
         isConnecting = false;
+        await CheckConnectionStatus();
         StateHasChanged();
     }
 
@@ -173,31 +189,29 @@
         if (result.IsSuccess)
         {
             await JS.InvokeVoidAsync("localStorage.setItem", "acceptConnectionId", result.Value.ConnectionId);
-            successMessage = "Connection saved";
-            errorMessage = "";
+            ShowToast("Connection saved", false);
         }
         else
         {
-            errorMessage = "Error accepting connection.";
-            successMessage = "";
+            ShowToast("Error accepting connection", true);
         }
 
         isConnecting = false;
+        await CheckConnectionStatus();
         StateHasChanged();
     }
 
     private void CopyToClipboard(string text)
     {
         JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
-        Console.WriteLine($"Copied {text} to clipboard.");
+        ShowToast("Copied to clipboard", false);
     }
 
     private async Task SaveToLocalStorage()
     {
         await JS.InvokeVoidAsync("localStorage.setItem", "did", did);
         await JS.InvokeVoidAsync("localStorage.setItem", "apiKey", apiKey);
-        successMessage = "DID and API Key saved to local storage";
-        StateHasChanged();
+        ShowToast("DID and API Key saved to local storage", false);
     }
 
     public string ExtractBase64FromInvitation(string invitationUrl)
@@ -215,5 +229,19 @@
         string base64String = invitationUrl.Substring(startIndex);
 
         return base64String;
+    }
+
+    private void ShowToast(string message, bool isError)
+    {
+        toastMessage = message;
+        isToastError = isError;
+        showToast = true;
+        StateHasChanged();
+
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            showToast = false;
+            StateHasChanged();
+        });
     }
 }
