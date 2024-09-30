@@ -17,15 +17,25 @@
             Use this code snippet to display your credential badge on your website.
         </p>
         
-        <div class="bg-gray-100 rounded-lg p-4 mb-6">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-sm sm:text-base text-[#334155] font-medium">HTML</span>
-                <button @onclick="CopySnippetToClipboard" class="text-[#334155] hover:text-[#475569]">
-                    <span class="material-symbols-outlined">content_copy</span>
-                </button>
+        @if (isLoading)
+        {
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-[#334155]"></div>
+                <p class="mt-4 text-[#334155] font-medium">Generating snippet...</p>
             </div>
-            <pre class="bg-white p-2 sm:p-4 rounded-md overflow-x-auto"><code class="text-xs sm:text-sm text-[#334155]">@snippetCode</code></pre>
-        </div>
+        }
+        else
+        {
+            <div class="bg-gray-100 rounded-lg p-4 mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm sm:text-base text-[#334155] font-medium">HTML</span>
+                    <button @onclick="CopySnippetToClipboard" class="text-[#334155] hover:text-[#475569]">
+                        <span class="material-symbols-outlined">content_copy</span>
+                    </button>
+                </div>
+                <pre class="bg-white p-2 sm:p-4 rounded-md overflow-x-auto"><code class="text-xs sm:text-sm text-[#334155]">@snippetCode</code></pre>
+            </div>
+        }
         
         <a 
             href="@($"/previewbadge/{credentialId}")"
@@ -43,7 +53,6 @@
     }
 </div>
 
-
 @code {
     [Parameter] public Guid credentialId { get; set; }
     [Parameter] public string selectedTemplateId { get; set; }
@@ -52,16 +61,21 @@
     private bool showToast;
     private bool isError;
     private string toastMessage = string.Empty;
+    private bool isLoading = true;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         domain = NavigationManager.BaseUri.TrimEnd('/');
-        GenerateSnippet();
+        await Task.Delay(1000); // Simulating network delay
+        await GenerateSnippet();
     }
 
-    private void GenerateSnippet()
+    private async Task GenerateSnippet()
     {
+        // Simulating an asynchronous operation
+        await Task.Delay(500);
         snippetCode = $@"<div class='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}'></div><script src='{domain}/badge-loader.js'></script>";
+        isLoading = false;
     }
 
     private async Task CopySnippetToClipboard()
@@ -69,11 +83,11 @@
         try
         {
             await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", snippetCode);
-            ShowToast("Snippet copied to clipboard!", false);
+            await ShowToast("Snippet copied to clipboard!", false);
         }
         catch (Exception)
         {
-            ShowToast("Failed to copy snippet. Please try again.", true);
+            await ShowToast("Failed to copy snippet. Please try again.", true);
         }
     }
 
