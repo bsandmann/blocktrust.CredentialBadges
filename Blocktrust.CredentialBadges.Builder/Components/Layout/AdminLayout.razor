@@ -1,13 +1,14 @@
 @inherits LayoutComponentBase
 @layout MainLayout
 
-
-
 <AuthorizeView Roles="adminRole">
-    <div class="min-h-screen flex flex-col md:flex-row">
-        <AdminNavigation/>
-        <div class="flex-1 p-6 bg-gray-100 mt-16">
-            @Body
+    <div class="min-h-screen flex flex-col">
+        <hr class="w-full border-t border-gray-300" />
+        <div class="flex flex-col md:flex-row flex-grow">
+            <AdminNavigation/>
+            <div class="flex-1 p-6 bg-gray-100">
+                @Body
+            </div>
         </div>
     </div>
 </AuthorizeView>

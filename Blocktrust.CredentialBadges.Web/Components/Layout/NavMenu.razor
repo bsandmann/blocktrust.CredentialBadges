@@ -16,25 +16,11 @@
         <span class="font-museo text-3xl text-slate-900 font-light ml-1">Badges</span>
     </a>
     <div class="flex items-center space-x-8">
-        <NavLink href="/credentialinput" class="nav-link gap-1" Match="NavLinkMatch.All">
+        <NavLink href="/credentialinput" class="nav-link flex items-center justify-center gap-1" Match="NavLinkMatch.All">
             <span class="material-symbols-outlined">link</span>
             <span class="font-museo font-medium text-lg">Generate snippet</span>
         </NavLink>
   
-        @* @if (user.Identity.IsAuthenticated) *@
-        @* { *@
-        @*     <NavLink href="/profile" class="nav-link gap-1" Match="NavLinkMatch.All"> *@
-        @*         <span class="material-symbols-outlined">account_circle</span> *@
-        @*         <span class="font-museo font-medium text-lg">Profile</span> *@
-        @*     </NavLink> *@
-        @* } *@
-        @* else *@
-        @* { *@
-        @*     <NavLink href="/account/login" class="nav-link gap-1" Match="NavLinkMatch.All"> *@
-        @*         <span class="material-symbols-outlined">login</span> *@
-        @*         <span class="font-museo font-medium text-lg">Login</span> *@
-        @*     </NavLink> *@
-        @* } *@
     </div>
 </nav>
 
