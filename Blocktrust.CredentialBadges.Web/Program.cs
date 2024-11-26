@@ -10,6 +10,13 @@ using Blocktrust.CredentialBadges.Core.Commands.CheckDIDKeySignature;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+#if !DEBUG
+    options.ListenAnyIP(8080); // Listen on port 8080 for HTTP - HTTPS is handled by Traefik enterily! No https ports or redirection here!
+#endif
+});
+
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("CredentialBadgesDatabase")));
@@ -19,7 +26,6 @@ builder.Services.AddRazorComponents()
 
 // Register IHttpContextAccessor
 builder.Services.AddHttpContextAccessor();
-
 
 // Register GenerateSnippetService
 builder.Services.AddTransient<TemplatesService>();
@@ -75,7 +81,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
