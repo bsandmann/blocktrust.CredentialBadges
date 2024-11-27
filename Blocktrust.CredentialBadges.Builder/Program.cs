@@ -56,7 +56,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
-            options.Password.RequiredLength = 4;
+            options.Password.RequiredLength = 5;
             options.Password.RequireDigit = false;
 
             // default password requirements :
