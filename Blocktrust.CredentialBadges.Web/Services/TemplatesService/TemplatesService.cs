@@ -13,28 +13,32 @@ public class TemplatesService
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
-    public string GetPopulatedTemplate(string templateId, string theme, VerifiedCredential credential)
-    {
-        string hostDomain = GetHostDomain();
-        string linkUrl = $"{hostDomain}/verifier/{credential.Id}";
+   public string GetPopulatedTemplate(string templateId, string theme, VerifiedCredential credential)
+{
+    string hostDomain = GetHostDomain();
+    string linkUrl = $"{hostDomain}/verifier/{credential.Id}";
 
-        bool isDarkTheme = theme == "dark";
-        string backgroundColor = isDarkTheme ? "#020617" : "#FDFDFD";
-        string textColor = isDarkTheme ? "#F1F5F9" : "inherit";
-        string titleColor = isDarkTheme ? "#ffffff" : "inherit";
-        string subtitleColor = isDarkTheme ? "#cbd5e0" : "#718096";
-        string descriptionColor = isDarkTheme ? "#e2e8f0" : "inherit";
-        string validityLabelColor = isDarkTheme ? "#94A3B8" : "#718096";
-        string validityDateColor = isDarkTheme ? "#ffffff" : "#2d3748";
-        string borderColor = "#dedede";
-        string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
+    bool isDarkTheme = theme == "dark";
+    string backgroundColor = isDarkTheme ? "#020617" : "#FDFDFD";
+    string textColor = isDarkTheme ? "#F1F5F9" : "inherit";
+    string titleColor = isDarkTheme ? "#ffffff" : "inherit";
+    string subtitleColor = isDarkTheme ? "#cbd5e0" : "#718096";
+    string descriptionColor = isDarkTheme ? "#e2e8f0" : "inherit";
+    string validityLabelColor = isDarkTheme ? "#94A3B8" : "#718096";
+    string validityDateColor = isDarkTheme ? "#ffffff" : "#2d3748";
+    string borderColor = "#dedede";
+    string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
 
-        string truncatedName = TruncateString(credential.Name, 60);
-        string truncatedIssuer = TruncateString(credential.Issuer, 50);
-        string truncatedDescription = TruncateString(credential.Description, 170);
+    // Helpful booleans for display logic
+    bool showDescription = templateId.Contains("description") && !templateId.Contains("no_description");
+    bool showTypes = templateId.Contains("_withTypes");
 
-        // Common container styles
-        string commonStyles = $@"
+    string truncatedName = TruncateString(credential.Name, 60);
+    string truncatedIssuer = TruncateString(credential.Issuer, 50);
+    string truncatedDescription = TruncateString(credential.Description, 170);
+
+    // Common container styles
+    string commonStyles = $@"
         display: inline-block !important;
         width: 30rem !important;
         border: 1px solid {borderColor} !important;
@@ -48,178 +52,213 @@ public class TemplatesService
         color: {textColor} !important;
     ";
 
-        string hoverEffect = @"
+    string hoverEffect = @"
         this.style.setProperty('box-shadow','0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)','important');
         this.style.setProperty('filter','brightness(1.05)','important');
     ";
 
-        string resetEffect = @"
+    string resetEffect = @"
         this.style.setProperty('box-shadow','0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)','important');
         this.style.setProperty('filter','brightness(1)','important');
     ";
 
-        StringBuilder templateBuilder = new StringBuilder();
+    // Valid template IDs (16 in total)
+    var validTemplates = new HashSet<string>
+    {
+        "image_no_description_light",
+        "image_no_description_dark",
+        "image_description_light",
+        "image_description_dark",
+        "noimage_description_light",
+        "noimage_description_dark",
+        "noimage_no_description_light",
+        "noimage_no_description_dark",
+        "image_no_description_light_withTypes",
+        "image_no_description_dark_withTypes",
+        "image_description_light_withTypes",
+        "image_description_dark_withTypes",
+        "noimage_description_light_withTypes",
+        "noimage_description_dark_withTypes",
+        "noimage_no_description_light_withTypes",
+        "noimage_no_description_dark_withTypes"
+    };
 
-        switch (templateId)
-        {
-            case "image_no_description_light":
-            case "image_no_description_dark":
-            case "image_description_light":
-            case "image_description_dark":
-            case "noimage_description_light":
-            case "noimage_description_dark":
-            case "noimage_no_description_light":
-            case "noimage_no_description_dark":
-                templateBuilder.Append($@"
-                <div style='{commonStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
-                    <a href='{linkUrl}'
-                       style='
-                            text-decoration: none !important;
-                            color: inherit !important;
-                            display: block !important;
-                            border-bottom: none !important;
-                       '
-                       id='{credential.Id}'
-                       data-credential-id='{credential.Id}'
-                       data-template-id='{templateId}'>
+    if (!validTemplates.Contains(templateId))
+    {
+        throw new ArgumentException($"Invalid template ID: {templateId}", nameof(templateId));
+    }
 
+    StringBuilder templateBuilder = new StringBuilder();
+    templateBuilder.Append($@"
+        <div style='{commonStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
+            <a href='{linkUrl}'
+               style='
+                    text-decoration: none !important;
+                    color: inherit !important;
+                    display: block !important;
+                    border-bottom: none !important;
+               '
+               id='{credential.Id}'
+               data-credential-id='{credential.Id}'
+               data-template-id='{templateId}'>
+
+                <div style='
+                    display: flex !important;
+                    align-items: flex-start !important;
+                    gap: 1rem !important;
+                '>
+                    {(templateId.StartsWith("image") ? $@"
+                    <div style='
+                        width: 7rem !important;
+                        height: 7rem !important;
+                        flex-shrink: 0 !important;
+                        background-color: {logoBackgroundColor} !important;
+                        border-radius: 0.5rem !important;
+                        overflow: hidden !important;
+                    '>
+                        <img src='{GetImage(credential.Image)}'
+                             alt='{truncatedName}'
+                             style='
+                                width: 100% !important;
+                                height: 100% !important;
+                                object-fit: contain !important;
+                             ' />
+                    </div>" : "")}
+
+                    <div style='
+                        flex-grow: 1 !important;
+                        min-width: 0 !important;
+                    '>
+                        <!-- Title -->
                         <div style='
-                            display: flex !important;
-                            align-items: flex-start !important;
-                            gap: 1rem !important;
-                        '>
-                            {(templateId.StartsWith("image") ? $@"
-                            <div style='
-                                width: 7rem !important;
-                                height: 7rem !important;
-                                flex-shrink: 0 !important;
-                                background-color: {logoBackgroundColor} !important;
-                                border-radius: 0.5rem !important;
-                                overflow: hidden !important;
-                            '>
-                                <img src='{GetImage(credential.Image)}'
-                                     alt='{truncatedName}'
-                                     style='
-                                        width: 100% !important;
-                                        height: 100% !important;
-                                        object-fit: contain !important;
-                                     ' />
-                            </div>" : "")}
+                            font-size: 1.5rem !important;
+                            margin-bottom: 0.5rem !important;
+                            line-height: 1.5 !important;
+                            color: {titleColor} !important;
+                            overflow: hidden !important;
+                            text-overflow: ellipsis !important;
+                            white-space: nowrap !important;
+                            font-weight: bold !important;
+                        '
+                        title='{credential.Name}'>{truncatedName}</div>
 
-                            <div style='
-                                flex-grow: 1 !important;
-                                min-width: 0 !important;
-                            '>
-                                <!-- Title -->
-                                <div style='
-                                    font-size: 1.5rem !important;
-                                    margin-bottom: 0.5rem !important;
-                                    line-height: 1.5 !important;
-                                    color: {titleColor} !important;
-                                    overflow: hidden !important;
-                                    text-overflow: ellipsis !important;
-                                    white-space: nowrap !important;
-                                    font-weight: bold !important;
-                                '
-                                title='{credential.Name}'>{truncatedName}</div>
-
-                                <!-- Issuer -->
-                                <div style='
-                                    color: {subtitleColor} !important;
+                        {(showTypes
+                           && credential.Types != null
+                           && credential.Types.Count > 0
+                           ? $@"
+                            <!-- Types -->
+                            <div style='margin: 0 !important; padding: 0 !important;'>
+                                <span style='
+                                    color: {validityLabelColor} !important;
+                                    font-size: 0.75rem !important;
+                                    font-weight: 400 !important;
+                                '>
+                                    {(credential.Types.Count == 1 ? "Type" : "Types")}
+                                </span>
+                                <span style='
+                                    color: {validityDateColor} !important;
                                     font-size: 0.875rem !important;
                                     font-weight: 500 !important;
-                                    margin-bottom: 0.5rem !important;
-                                    overflow: hidden !important;
-                                    text-overflow: ellipsis !important;
-                                    white-space: nowrap !important;
-                                '
-                                title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
-
-                                {(templateId.Contains("description") && !templateId.Contains("no_description") ? $@"
-                                <!-- Description -->
-                                <div style='
-                                    font-size: 0.875rem !important;
-                                    margin-bottom: 1rem !important;
-                                    color: {descriptionColor} !important;
-                                    overflow: hidden !important;
-                                    text-overflow: ellipsis !important;
-                                    display: -webkit-box !important;
-                                    -webkit-line-clamp: 2 !important;
-                                    -webkit-box-orient: vertical !important;
-                                '
-                                title='{credential.Description}'>{truncatedDescription}</div>
-                                " : "")}
-
-                                <!-- Validity + Status row -->
-                                <div style='
-                                    display: flex !important;
-                                    align-items: center !important;
-                                    justify-content: space-between !important;
-                                    margin-top: 0.25rem !important;
+                                    margin-left: 0.25rem !important;
                                 '>
-                                    <!-- Left side: stacked ValidFrom / ValidUntil -->
-                                    <div style='
-                                        display: flex !important;
-                                        flex-direction: column !important;
-                                        line-height: 1 !important; /* tighten line spacing */
-                                    '>
-                                        <!-- Valid from block -->
-                                        <div style='margin: 0 !important; padding: 0 !important;'>
-                                            <span style='
-                                                color: {validityLabelColor} !important;
-                                                font-size: 0.75rem !important;
-                                                font-weight: 400 !important;
-                                            '>
-                                                Valid from
-                                            </span>
-                                            <span style='
-                                                color: {validityDateColor} !important;
-                                                font-size: 0.875rem !important;
-                                                font-weight: 500 !important;
-                                                margin-left: 0.25rem !important;
-                                            '>
-                                                {credential.ValidFrom:dd MMMM, yyyy}
-                                            </span>
-                                        </div>
-
-                                        <!-- Valid until block (only if not default) -->
-                                        {(credential.ValidUntil != default(DateTime) ? $@"
-                                            <div style='margin: 0 !important; padding: 0 !important;'>
-                                                <span style='
-                                                    color: {validityLabelColor} !important;
-                                                    font-size: 0.75rem !important;
-                                                    font-weight: 400 !important;
-                                                '>
-                                                    Valid until
-                                                </span>
-                                                <span style='
-                                                    color: {validityDateColor} !important;
-                                                    font-size: 0.875rem !important;
-                                                    font-weight: 500 !important;
-                                                    margin-left: 0.25rem !important;
-                                                '>
-                                                    {credential.ValidUntil:dd MMMM, yyyy}
-                                                </span>
-                                            </div>
-                                        " : "")}
-                                    </div>
-
-                                    <!-- Right side: Status button -->
-                                    {GetStatusButton(isDarkTheme, credential.Status)}
-                                </div>
+                                    {string.Join(", ", credential.Types)}
+                                </span>
                             </div>
+                        " : "")}
+
+                        <!-- Issuer -->
+                        <div style='
+                            color: {subtitleColor} !important;
+                            font-size: 0.875rem !important;
+                            font-weight: 500 !important;
+                            margin-bottom: 0.5rem !important;
+                            overflow: hidden !important;
+                            text-overflow: ellipsis !important;
+                            white-space: nowrap !important;
+                        '
+                        title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
+
+                        {(showDescription ? $@"
+                        <!-- Description -->
+                        <div style='
+                            font-size: 0.875rem !important;
+                            margin-bottom: 1rem !important;
+                            color: {descriptionColor} !important;
+                            overflow: hidden !important;
+                            text-overflow: ellipsis !important;
+                            display: -webkit-box !important;
+                            -webkit-line-clamp: 2 !important;
+                            -webkit-box-orient: vertical !important;
+                        '
+                        title='{credential.Description}'>{truncatedDescription}</div>
+                        " : "")}
+
+                        <!-- Validity + Status row -->
+                        <div style='
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: space-between !important;
+                            margin-top: 0.25rem !important;
+                        '>
+                            <!-- Left side: stacked ValidFrom / ValidUntil -->
+                            <div style='
+                                display: flex !important;
+                                flex-direction: column !important;
+                                line-height: 1 !important; /* tighten line spacing */
+                            '>
+                                <!-- Valid from block -->
+                                <div style='margin: 0 !important; padding: 0 !important;'>
+                                    <span style='
+                                        color: {validityLabelColor} !important;
+                                        font-size: 0.75rem !important;
+                                        font-weight: 400 !important;
+                                    '>
+                                        Valid from
+                                    </span>
+                                    <span style='
+                                        color: {validityDateColor} !important;
+                                        font-size: 0.875rem !important;
+                                        font-weight: 500 !important;
+                                        margin-left: 0.25rem !important;
+                                    '>
+                                        {credential.ValidFrom:dd MMMM, yyyy}
+                                    </span>
+                                </div>
+
+                                <!-- Valid until block (only if not default) -->
+                                {(credential.ValidUntil != default(DateTime) ? $@"
+                                    <div style='margin: 0 !important; padding: 0 !important;'>
+                                        <span style='
+                                            color: {validityLabelColor} !important;
+                                            font-size: 0.75rem !important;
+                                            font-weight: 400 !important;
+                                        '>
+                                            Valid until
+                                        </span>
+                                        <span style='
+                                            color: {validityDateColor} !important;
+                                            font-size: 0.875rem !important;
+                                            font-weight: 500 !important;
+                                            margin-left: 0.25rem !important;
+                                        '>
+                                            {credential.ValidUntil:dd MMMM, yyyy}
+                                        </span>
+                                    </div>
+                                " : "")}
+                            </div>
+
+                            <!-- Right side: Status button -->
+                            {GetStatusButton(isDarkTheme, credential.Status)}
                         </div>
-                    </a>
+                    </div>
                 </div>
-            ");
-                break;
+            </a>
+        </div>
+    ");
 
-            default:
-                throw new ArgumentException($"Invalid template ID: {templateId}", nameof(templateId));
-        }
+    return templateBuilder.ToString();
+}
 
-        return templateBuilder.ToString();
-    }
 
 
     private string TruncateString(string input, int maxLength)
