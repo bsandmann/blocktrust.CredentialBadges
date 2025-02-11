@@ -1,9 +1,9 @@
+namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateCredentialTemplateId;
+
 using Blocktrust.CredentialBadges.Web.Entities;
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-
-namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateTemplateId;
 
 public class UpdateCredentialTemplateIdHandler : IRequestHandler<UpdateCredentialTemplateIdRequest, Result>
 {

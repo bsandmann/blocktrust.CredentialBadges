@@ -1,7 +1,7 @@
-namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateTemplateId;
+namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateCredentialTemplateId;
 
-using MediatR;
 using FluentResults;
+using MediatR;
 
 public class UpdateCredentialTemplateIdRequest : IRequest<Result>
 {

@@ -1,15 +1,15 @@
+namespace Blocktrust.CredentialBadges.Web.Controllers;
+
 using Blocktrust.CredentialBadges.Core.Commands.VerifyOpenBadge;
 using Blocktrust.CredentialBadges.Core.Common;
 using Blocktrust.CredentialBadges.OpenBadges;
-using Microsoft.AspNetCore.Mvc;
 using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById;
-using Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 using Blocktrust.CredentialBadges.Web.Domain;
 using Blocktrust.CredentialBadges.Web.Enums;
-using MediatR;
+using Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 using FluentResults;
-
-namespace Blocktrust.CredentialBadges.Web.APIs;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]

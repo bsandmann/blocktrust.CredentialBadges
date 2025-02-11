@@ -15,24 +15,43 @@
         <h1 class="text-xl mb-8">Welcome, @username!</h1>
     </div>
 
-    <p>You can now use this application to set up a DID and request Credentials to be issued to your name.</p>
-    <ul>
-        <li>Go to "New DID" add the top and let the system generate a new DID for you. It's automatically been saved in
-            the Browser.
-        </li>
-        <li>Next go to "Connections" and click the "Connect"-Button. All the values should already be pre-filled for you
-            to establish a connection to the Credential Issuance-Instance. We'll use this instance to issue a credential
-            to you.
-        </li>
-        <li>Now go to "Credentials" to create a new Credential to you own liking. We currently use the Open-Badges 3.0
-            format to model suitable Credentials types. We would encourage you to also upload some image of a badge.
-        </li>
-        <li>The Credntial is now being send to the admin interface of this application. The Admin will then review your
-            request and you get an Credential-Offer.
-        </li>
-    </ul>
+    <!-- Updated explanation text -->
+    <p class="mb-6">
+        You can now use this application to set up a DID and request credentials to be issued to your name.
+    </p>
 
-    <form action="Account/Logout" method="post" class="text-center">
+    <!-- Tailwind-styled numbered list -->
+    <ol class="list-decimal list-inside space-y-2">
+        <li>
+            Go to <strong>"New DID"</strong> at the top and let the system generate a new DID for you.
+            It is automatically saved in the browser.
+        </li>
+        <li>
+            Next, go to <strong>"Connections"</strong> and click the <strong>"Connect"</strong> button.
+            All values should be pre-filled for you to establish a connection to the Credential Issuance instance.
+            We'll use this instance to issue a credential to you.
+        </li>
+        <li>
+            Now, go to <strong>"Credentials"</strong> to create a new credential to your liking.
+            We currently use the Open Badges 3.0 format to model suitable credential types.
+            We encourage you to also upload an image of a badge.
+        </li>
+        <li>
+            The credential is now sent to the admin interface of this application.
+            The admin will review your request, and you will receive a Credential Offer.
+        </li>
+        <li>
+            You can now see the status changing to <strong>"Waiting Acceptance"</strong>.
+            You can accept the credential, and it will be added to your wallet a few seconds later.
+            Refresh the credential state to see the changes.
+        </li>
+        <li>
+            You can copy the credential and create a badge at
+            <a href="https://badges.blocktrust.dev/" class="text-blue-500 hover:underline">https://badges.blocktrust.dev/</a>.
+        </li>
+    </ol>
+
+    <form action="Account/Logout" method="post" class="text-center mt-8">
         <AntiforgeryToken/>
         <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
         <button type="submit" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
@@ -97,5 +116,4 @@
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
-
 }
