@@ -8,16 +8,19 @@ using FluentResults;
 
 public class GetVerifiedCredentialByIdHandler : IRequestHandler<GetVerifiedCredentialByIdRequest, Result<VerifiedCredential>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
 
-    public GetVerifiedCredentialByIdHandler(ApplicationDbContext context)
+    public GetVerifiedCredentialByIdHandler(IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<VerifiedCredential>> Handle(GetVerifiedCredentialByIdRequest request, CancellationToken cancellationToken)
     {
-        var credential = await _context.VerifiedCredentials.FindAsync(new object[] { request.CredentialId }, cancellationToken);
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var credential = await context.VerifiedCredentials.FindAsync(new object[] { request.CredentialId }, cancellationToken);
             
         if (credential == null)
         {

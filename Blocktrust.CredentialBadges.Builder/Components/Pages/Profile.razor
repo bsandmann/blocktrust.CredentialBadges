@@ -12,13 +12,29 @@
 
 <div class="container mx-auto p-6 max-w-xl bg-white rounded-lg shadow-md mt-16">
     <div class="text-center mt-16">
-        <h1 class="text-3xl font-bold mb-4">User Profile</h1>
-        <p class="text-xl mb-8">Welcome, @username!</p>
+        <h1 class="text-xl mb-8">Welcome, @username!</h1>
     </div>
 
+    <p>You can now use this application to set up a DID and request Credentials to be issued to your name.</p>
+    <ul>
+        <li>Go to "New DID" add the top and let the system generate a new DID for you. It's automatically been saved in
+            the Browser.
+        </li>
+        <li>Next go to "Connections" and click the "Connect"-Button. All the values should already be pre-filled for you
+            to establish a connection to the Credential Issuance-Instance. We'll use this instance to issue a credential
+            to you.
+        </li>
+        <li>Now go to "Credentials" to create a new Credential to you own liking. We currently use the Open-Badges 3.0
+            format to model suitable Credentials types. We would encourage you to also upload some image of a badge.
+        </li>
+        <li>The Credntial is now being send to the admin interface of this application. The Admin will then review your
+            request and you get an Credential-Offer.
+        </li>
+    </ul>
+
     <form action="Account/Logout" method="post" class="text-center">
-        <AntiforgeryToken />
-        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+        <AntiforgeryToken/>
+        <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
         <button type="submit" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
             <span class="bi bi-box-arrow-right mr-2" aria-hidden="true"></span> Logout
         </button>
@@ -81,4 +97,5 @@
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
+
 }

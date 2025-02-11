@@ -8,20 +8,23 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetBui
 
 public class GetBuilderCredentialByIdHandler : IRequestHandler<GetBuilderCredentialByIdRequest, Result<BuilderCredential>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<GetBuilderCredentialByIdHandler> _logger;
 
-    public GetBuilderCredentialByIdHandler(ApplicationDbContext context, ILogger<GetBuilderCredentialByIdHandler> logger)
+    public GetBuilderCredentialByIdHandler(ILogger<GetBuilderCredentialByIdHandler> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context;
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<BuilderCredential>> Handle(GetBuilderCredentialByIdRequest request, CancellationToken cancellationToken)
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         try
         {
-            var entity = await _context.BuilderCredentials
+            var entity = await context.BuilderCredentials
                 .SingleOrDefaultAsync(bc => bc.CredentialId == request.CredentialId, cancellationToken);
 
             if (entity == null)

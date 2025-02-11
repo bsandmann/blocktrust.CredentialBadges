@@ -7,20 +7,23 @@ namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateTem
 
 public class UpdateCredentialTemplateIdHandler : IRequestHandler<UpdateCredentialTemplateIdRequest, Result>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<UpdateCredentialTemplateIdHandler> _logger;
 
-    public UpdateCredentialTemplateIdHandler(ApplicationDbContext context, ILogger<UpdateCredentialTemplateIdHandler> logger)
+    public UpdateCredentialTemplateIdHandler(ILogger<UpdateCredentialTemplateIdHandler> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context;
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result> Handle(UpdateCredentialTemplateIdRequest request, CancellationToken cancellationToken)
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         try
         {
-            var entity = await _context.Set<VerifiedCredentialEntity>()
+            var entity = await context.Set<VerifiedCredentialEntity>()
                 .FirstOrDefaultAsync(vc => vc.StoredCredentialId == request.CredentialId, cancellationToken);
 
             if (entity == null)
@@ -31,7 +34,7 @@ public class UpdateCredentialTemplateIdHandler : IRequestHandler<UpdateCredentia
 
             entity.TemplateId = request.TemplateId;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Updated template ID for credential {CredentialId} to {TemplateId}", request.CredentialId, request.TemplateId);
             return Result.Ok();

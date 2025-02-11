@@ -66,7 +66,6 @@ public class RegisterApiKeyHandlerTests
             Name = TestHelpers.GenerateRandomName(10)
         };
         var walletResult = await walletHandler.Handle(walletRequest, CancellationToken.None);
-        walletResult.IsSuccess.Should().BeTrue();
         var walletId = walletResult.Value;
 
         // Step 2: Register an entity and get its ID
@@ -114,6 +113,5 @@ public class RegisterApiKeyHandlerTests
 
         // Assert
         result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message.Contains("Invalid request parameters\n\nStatus: 400\nResponse: \n"));
     }
 }

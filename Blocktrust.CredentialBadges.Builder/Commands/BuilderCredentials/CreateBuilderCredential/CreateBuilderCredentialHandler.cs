@@ -8,17 +8,20 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.Create
 
 public class CreateBuilderCredentialHandler : IRequestHandler<CreateBuilderCredentialRequest, Result<BuilderCredential>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<CreateBuilderCredentialHandler> _logger;
 
-    public CreateBuilderCredentialHandler(ApplicationDbContext context, ILogger<CreateBuilderCredentialHandler> logger)
+    public CreateBuilderCredentialHandler(ILogger<CreateBuilderCredentialHandler> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<BuilderCredential>> Handle(CreateBuilderCredentialRequest request, CancellationToken cancellationToken)
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         var entity = new BuilderCredentialEntity
         {
             CredentialId = Guid.NewGuid(),
@@ -38,8 +41,8 @@ public class CreateBuilderCredentialHandler : IRequestHandler<CreateBuilderCrede
 
         try
         {
-            _context.BuilderCredentials.Add(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.BuilderCredentials.Add(entity);
+            await context.SaveChangesAsync(cancellationToken);
 
             var credential = BuilderCredential.FromEntity(entity);
             return Result.Ok(credential);

@@ -10,20 +10,23 @@ using Microsoft.EntityFrameworkCore;
 
 public class GetBuilderCredentialsByUserIdHandler : IRequestHandler<GetBuilderCredentialsByUserIdRequest, Result<List<BuilderCredential>>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<GetBuilderCredentialsByUserIdHandler> _logger;
 
-    public GetBuilderCredentialsByUserIdHandler(ApplicationDbContext context, ILogger<GetBuilderCredentialsByUserIdHandler> logger)
+    public GetBuilderCredentialsByUserIdHandler(ILogger<GetBuilderCredentialsByUserIdHandler> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context;
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<List<BuilderCredential>>> Handle(GetBuilderCredentialsByUserIdRequest request, CancellationToken cancellationToken)
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         try
         {
-            IQueryable<BuilderCredentialEntity> query = _context.BuilderCredentials
+            IQueryable<BuilderCredentialEntity> query = context.BuilderCredentials
                 .Where(c => c.UserId == request.UserId);
 
             if (!string.IsNullOrEmpty(request.SubjectDid))

@@ -7,17 +7,20 @@ namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVeri
 
 public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCredentialRequest, Result<VerifiedCredential>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<StoreVerifiedCredentialHandler> _logger;
 
-    public StoreVerifiedCredentialHandler(ApplicationDbContext context, ILogger<StoreVerifiedCredentialHandler> logger)
+    public StoreVerifiedCredentialHandler(ILogger<StoreVerifiedCredentialHandler> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context;
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<VerifiedCredential>> Handle(StoreVerifiedCredentialRequest request, CancellationToken cancellationToken)
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         var entity = new VerifiedCredentialEntity
         {
             StoredCredentialId = Guid.NewGuid(),
@@ -34,8 +37,8 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
 
         try
         {
-            _context.Set<VerifiedCredentialEntity>().Add(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.Set<VerifiedCredentialEntity>().Add(entity);
+            await context.SaveChangesAsync(cancellationToken);
 
             var credential = VerifiedCredential.FromEntity(entity);
             return Result.Ok(credential);

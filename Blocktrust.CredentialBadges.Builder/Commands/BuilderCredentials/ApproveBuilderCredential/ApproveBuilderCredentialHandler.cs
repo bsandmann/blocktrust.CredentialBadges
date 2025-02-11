@@ -13,26 +13,29 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.Approv
 
 public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCredentialRequest, Result<BuilderCredential>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly IMediator _mediator;
     private readonly ILogger<ApproveBuilderCredentialHandler> _logger;
     private readonly AppSettings _appSettings;
 
 
-    public ApproveBuilderCredentialHandler(ApplicationDbContext context, IMediator mediator, ILogger<ApproveBuilderCredentialHandler> logger,IOptions<AppSettings> appSettings)
+    public ApproveBuilderCredentialHandler(IMediator mediator, ILogger<ApproveBuilderCredentialHandler> logger,IOptions<AppSettings> appSettings, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _appSettings = appSettings.Value;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<BuilderCredential>> Handle(ApproveBuilderCredentialRequest request, CancellationToken cancellationToken)
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         try
         {
             // Retrieve the credential entity
-            var entity = await _context.BuilderCredentials
+            var entity = await context.BuilderCredentials
                 .FirstOrDefaultAsync(c => c.CredentialId == request.CredentialId, cancellationToken);
 
             if (entity == null)

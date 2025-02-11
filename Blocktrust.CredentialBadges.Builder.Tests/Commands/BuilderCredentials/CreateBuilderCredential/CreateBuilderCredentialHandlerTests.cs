@@ -3,44 +3,61 @@ using Blocktrust.CredentialBadges.Builder.Data;
 using Blocktrust.CredentialBadges.Builder.Enums;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Blocktrust.CredentialBadges.Tests.Commands.BuilderCredentials;
 
-/// <summary>
-///  Test for creating a builder credential
-/// </summary>
 public class CreateBuilderCredentialHandlerTests : IDisposable
 {
+    private readonly ServiceProvider _serviceProvider;
     private readonly ApplicationDbContext _context;
     private readonly ILogger<CreateBuilderCredentialHandler> _logger;
     private readonly CreateBuilderCredentialHandler _handler;
-    /// <summary>
-    ///     Constructor to initialize the test class
-    /// </summary>
+
     public CreateBuilderCredentialHandlerTests()
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql("Host=localhost; Database=BuilderDatabase; Username=postgres; Password=Post@0DB")
-            .Options;
+        // 1. Create a ServiceCollection for tests
+        var services = new ServiceCollection();
 
-        _context = new ApplicationDbContext(options);
+        // 2. Register the DbContext with the desired PostgreSQL connection string
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql("Host=10.10.20.103; Database=CredentialBadgesTests; Username=postgres; Password=postgres"));
+
+        // 3. Register logging
+        services.AddLogging();
+
+        // 4. Build the ServiceProvider
+        _serviceProvider = services.BuildServiceProvider();
+
+        // 5. Resolve the DbContext for seeding and verifying
+        _context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
         _context.Database.EnsureCreated();
-        _logger = new LoggerFactory().CreateLogger<CreateBuilderCredentialHandler>();
-        _handler = new CreateBuilderCredentialHandler(_context, _logger);
+
+        // 6. Resolve the ILogger
+        _logger = _serviceProvider
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger<CreateBuilderCredentialHandler>();
+
+        // 7. Resolve the IServiceScopeFactory
+        var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+        // 8. Instantiate the handler with ILogger and IServiceScopeFactory
+        _handler = new CreateBuilderCredentialHandler(_logger, scopeFactory);
     }
 
     /// <summary>
-    ///     Clean up the test class
+    ///  Clean up after each test
     /// </summary>
     public void Dispose()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
+        _serviceProvider.Dispose();
     }
 
     /// <summary>
-    ///   Test to create a builder credential
+    ///   Test to create a builder credential when request is valid
     /// </summary>
     [Fact]
     public async Task Handle_ShouldCreateBuilderCredential_WhenRequestIsValid()
@@ -82,10 +99,13 @@ public class CreateBuilderCredentialHandlerTests : IDisposable
         result.Value.RecordIdOnAgent.Should().Be(request.RecordIdOnAgent);
         result.Value.VerifiableCredential.Should().Be(request.VerifiableCredential);
 
-        // Verify that the credential was added to the database
-        var savedCredential = await _context.BuilderCredentials.FirstOrDefaultAsync(c => c.CredentialId == result.Value.CredentialId);
+        // Verify that the credential was indeed added to the database
+        var savedCredential = await _context.BuilderCredentials
+            .FirstOrDefaultAsync(c => c.CredentialId == result.Value.CredentialId);
+
         savedCredential.Should().NotBeNull();
     }
+
     /// <summary>
     ///  Test to create a builder credential with invalid data
     /// </summary>
@@ -96,18 +116,18 @@ public class CreateBuilderCredentialHandlerTests : IDisposable
         var request = new CreateBuilderCredentialRequest
         {
             // Provide invalid or missing data
-            Date = DateTime.MinValue, // Invalid date
-            Label = "", // Empty label
-            SubjectDid = null, // Null SubjectDid
-            IssuerDid = "", // Empty IssuerDid
-            Status = (EBuilderCredentialStatus)999, // Invalid status
-            IssuerConnectionId = Guid.Empty, // Empty GUID
-            SubjectConnectionId = Guid.Empty, // Empty GUID
-            CredentialSubject = null, // Null CredentialSubject
-            UserId = "", // Empty UserId
-            ThId = Guid.Empty, // Empty GUID
-            RecordIdOnAgent = Guid.Empty, // Empty GUID
-            VerifiableCredential = null // Null VerifiableCredential
+            Date = DateTime.MinValue,  // Invalid date
+            Label = "",                // Empty label
+            SubjectDid = null,         // Null SubjectDid
+            IssuerDid = "",            // Empty IssuerDid
+            Status = (EBuilderCredentialStatus)999,  // Invalid status enum
+            IssuerConnectionId = Guid.Empty,          // Empty GUID
+            SubjectConnectionId = Guid.Empty,          // Empty GUID
+            CredentialSubject = null,                 // Null credential subject
+            UserId = "",                              // Empty userId
+            ThId = Guid.Empty,                        // Empty GUID
+            RecordIdOnAgent = Guid.Empty,             // Empty GUID
+            VerifiableCredential = null               // Null verifiable credential
         };
 
         // Act

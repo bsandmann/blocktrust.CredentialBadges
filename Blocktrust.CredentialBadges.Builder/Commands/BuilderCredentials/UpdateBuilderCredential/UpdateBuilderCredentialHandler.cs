@@ -8,18 +8,21 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.Update
 
 public class UpdateBuilderCredentialHandler : IRequestHandler<UpdateBuilderCredentialRequest, Result<BuilderCredential>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<UpdateBuilderCredentialHandler> _logger;
 
-    public UpdateBuilderCredentialHandler(ApplicationDbContext context, ILogger<UpdateBuilderCredentialHandler> logger)
+    public UpdateBuilderCredentialHandler( ILogger<UpdateBuilderCredentialHandler> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<BuilderCredential>> Handle(UpdateBuilderCredentialRequest request, CancellationToken cancellationToken)
     {
-        var entity = await _context.BuilderCredentials
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var entity = await context.BuilderCredentials
             .FirstOrDefaultAsync(c => c.CredentialId == request.CredentialId, cancellationToken);
 
         if (entity == null)
@@ -79,7 +82,7 @@ public class UpdateBuilderCredentialHandler : IRequestHandler<UpdateBuilderCrede
 
         try
         {
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
             var updatedCredential = BuilderCredential.FromEntity(entity);
             return Result.Ok(updatedCredential);

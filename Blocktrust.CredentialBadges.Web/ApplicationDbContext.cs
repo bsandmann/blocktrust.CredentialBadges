@@ -9,9 +9,10 @@ public class ApplicationDbContext : DbContext
 
     // Constructor that accepts DbContextOptions
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        :base(options)
+        : base(options)
     {
     }
+
 
     // DbSet property
     public DbSet<VerifiedCredentialEntity> VerifiedCredentials { get; set; }

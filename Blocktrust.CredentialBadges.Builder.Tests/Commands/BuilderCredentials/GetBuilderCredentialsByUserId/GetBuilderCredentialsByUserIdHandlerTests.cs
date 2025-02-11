@@ -8,38 +8,44 @@ using Microsoft.Extensions.Logging;
 namespace Blocktrust.CredentialBadges.Builder.Tests.Commands.BuilderCredentials.GetBuilderCredentialsByUserId;
 
 using Builder.Commands.BuilderCredentials.GetBuilderCrdentialByUserId;
+using Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Test for fetching builder credentials by user id and optionally by subject did
 /// </summary>
 public class GetBuilderCredentialsByUserIdHandlerTests : IDisposable
 {
+    private readonly ServiceProvider _serviceProvider;
     private readonly ApplicationDbContext _context;
     private readonly ILogger<GetBuilderCredentialsByUserIdHandler> _logger;
     private readonly GetBuilderCredentialsByUserIdHandler _handler;
-    
-    /// <summary>
-    /// Constructor to initialize the test class
-    /// </summary>
+
     public GetBuilderCredentialsByUserIdHandlerTests()
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql("Host=localhost; Database=BuilderDatabase; Username=postgres; Password=Post@0DB")
-            .Options;
+        var services = new ServiceCollection();
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql("Host=10.10.20.103; Database=CredentialBadgesTests; Username=postgres; Password=postgres"));
 
-        _context = new ApplicationDbContext(options);
+        services.AddLogging();
+
+        _serviceProvider = services.BuildServiceProvider();
+
+        _context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
         _context.Database.EnsureCreated();
-        _logger = new LoggerFactory().CreateLogger<GetBuilderCredentialsByUserIdHandler>();
-        _handler = new GetBuilderCredentialsByUserIdHandler(_context, _logger);
+
+        _logger = _serviceProvider
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger<GetBuilderCredentialsByUserIdHandler>();
+        var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        _handler = new GetBuilderCredentialsByUserIdHandler(_logger, scopeFactory);
     }
 
-    /// <summary>
-    ///  Clean up the test class
-    /// </summary>
+    // Clean up after each test
     public void Dispose()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
+        _serviceProvider.Dispose();
     }
 
     /// <summary>
@@ -193,23 +199,5 @@ public class GetBuilderCredentialsByUserIdHandlerTests : IDisposable
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEmpty();
-    }
-
-    /// <summary>
-    ///  Test to get all builder credentials by user id
-    /// </summary>
-    [Fact]
-    public async Task Handle_ShouldReturnFailResult_WhenExceptionOccurs()
-    {
-        // Arrange
-        var faultyHandler = new GetBuilderCredentialsByUserIdHandler(null, _logger);
-        var request = new GetBuilderCredentialsByUserIdRequest("testuser");
-
-        // Act
-        var result = await faultyHandler.Handle(request, CancellationToken.None);
-
-        // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().NotBeEmpty();
     }
 }

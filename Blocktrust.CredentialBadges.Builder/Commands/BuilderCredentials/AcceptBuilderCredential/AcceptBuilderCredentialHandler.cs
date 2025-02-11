@@ -12,19 +12,22 @@ namespace Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.Accept
 
 public class AcceptBuilderCredentialHandler : IRequestHandler<AcceptBuilderCredentialRequest, Result<BuilderCredential>>
 {
-    private readonly ApplicationDbContext _context;
+    private IServiceScopeFactory _serviceScopeFactory;
     private readonly IMediator _mediator;
     private readonly ILogger<AcceptBuilderCredentialHandler> _logger;
 
-    public AcceptBuilderCredentialHandler(ApplicationDbContext context, IMediator mediator, ILogger<AcceptBuilderCredentialHandler> logger)
+    public AcceptBuilderCredentialHandler(IMediator mediator, ILogger<AcceptBuilderCredentialHandler> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Result<BuilderCredential>> Handle(AcceptBuilderCredentialRequest request, CancellationToken cancellationToken)
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         // Fetch the credential by ThId
         var offerResult = await _mediator.Send(new GetOfferByThIdRequest(request.ThId, request.ApiKey), cancellationToken);
         
@@ -44,7 +47,7 @@ public class AcceptBuilderCredentialHandler : IRequestHandler<AcceptBuilderCrede
         }
 
         // Retrieve the credential entity using ThId
-        var entity = await _context.BuilderCredentials
+        var entity = await context.BuilderCredentials
             .FirstOrDefaultAsync(c => c.ThId.ToString() == request.ThId, cancellationToken);
 
         if (entity == null)

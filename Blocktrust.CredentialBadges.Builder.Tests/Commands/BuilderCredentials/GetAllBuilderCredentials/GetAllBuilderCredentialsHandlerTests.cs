@@ -1,42 +1,45 @@
 using Blocktrust.CredentialBadges.Builder.Commands.BuilderCredentials.GetAllBuilderCredentials;
 using Blocktrust.CredentialBadges.Builder.Data;
 using Blocktrust.CredentialBadges.Builder.Data.Entities;
+using Blocktrust.CredentialBadges.Builder.Enums;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Blocktrust.CredentialBadges.Builder.Enums;
 
 namespace Blocktrust.CredentialBadges.Tests.Commands.BuilderCredentials;
-/// <summary>
-///  Test for fetching all builder credentials
-/// </summary>
+
 public class GetAllBuilderCredentialsHandlerTests : IDisposable
 {
+    private readonly ServiceProvider _serviceProvider;
     private readonly ApplicationDbContext _context;
     private readonly ILogger<GetAllBuilderCredentialsHandler> _logger;
     private readonly GetAllBuilderCredentialsHandler _handler;
-    /// <summary>
-    ///  Constructor to initialize the test class
-    /// </summary>
+
     public GetAllBuilderCredentialsHandlerTests()
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql("Host=localhost; Database=BuilderDatabase; Username=postgres; Password=Post@0DB")
-            .Options;
-
-        _context = new ApplicationDbContext(options);
+        var services = new ServiceCollection();
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql("Host=10.10.20.103; Database=CredentialBadgesTests; Username=postgres; Password=postgres"));
+        services.AddLogging();
+        _serviceProvider = services.BuildServiceProvider();
+        _context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
         _context.Database.EnsureCreated();
-        _logger = new LoggerFactory().CreateLogger<GetAllBuilderCredentialsHandler>();
-        _handler = new GetAllBuilderCredentialsHandler(_context, _logger);
+        _logger = _serviceProvider
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger<GetAllBuilderCredentialsHandler>();
+        var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        _handler = new GetAllBuilderCredentialsHandler(_logger, scopeFactory);
     }
 
     /// <summary>
-    ///  Clean up the test class
+    ///  Clean up after each test
     /// </summary>
     public void Dispose()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
+        _serviceProvider.Dispose();
     }
 
     /// <summary>
@@ -82,6 +85,7 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
             }
         };
 
+        // Seed data into the test DbContext
         await _context.BuilderCredentials.AddRangeAsync(credentials);
         await _context.SaveChangesAsync();
 
@@ -92,9 +96,7 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        //COUNT TWO OR MORE 
         result.Value.Should().HaveCountGreaterOrEqualTo(2);
-     
     }
 
     /// <summary>
@@ -114,21 +116,4 @@ public class GetAllBuilderCredentialsHandlerTests : IDisposable
         result.Value.Should().BeEmpty();
     }
 
-    /// <summary>
-    ///  Test to get all builder credentials with invalid context 
-    /// </summary>
-    [Fact]
-    public async Task Handle_ShouldReturnFailResult_WhenExceptionOccurs()
-    {
-        // Arrange
-        var handlerWithFaultyContext = new GetAllBuilderCredentialsHandler(null, _logger);
-        var request = new GetAllBuilderCredentialsRequest();
-
-        // Act
-        var result = await handlerWithFaultyContext.Handle(request, CancellationToken.None);
-
-        // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().NotBeEmpty();
-    }
 }
