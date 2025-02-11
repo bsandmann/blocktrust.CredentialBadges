@@ -9,6 +9,7 @@ public class VerifiedCredential
     public EVerificationStatus Status { get; set; }
     public string Description { get; set; }
     public string Name { get; set; }
+    public List<string> Types { get; set; }
     public string? Image { get; set; }
     public string Credential { get; set; }
     public DateTime ValidFrom { get; set; }

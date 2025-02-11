@@ -12,28 +12,29 @@ public class TemplatesService
     {
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
-public string GetPopulatedTemplate(string templateId, string theme, VerifiedCredential credential)
-{
-    string hostDomain = GetHostDomain();
-    string linkUrl = $"{hostDomain}/verifier/{credential.Id}";
 
-    bool isDarkTheme = theme == "dark";
-    string backgroundColor = isDarkTheme ? "#020617" : "#FDFDFD";
-    string textColor = isDarkTheme ? "#F1F5F9" : "inherit";
-    string titleColor = isDarkTheme ? "#ffffff" : "inherit";
-    string subtitleColor = isDarkTheme ? "#cbd5e0" : "#718096";
-    string descriptionColor = isDarkTheme ? "#e2e8f0" : "inherit";
-    string validityLabelColor = isDarkTheme ? "#94A3B8" : "#718096";
-    string validityDateColor = isDarkTheme ? "#ffffff" : "#2d3748";
-    string borderColor = "#dedede";
-    string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
+    public string GetPopulatedTemplate(string templateId, string theme, VerifiedCredential credential)
+    {
+        string hostDomain = GetHostDomain();
+        string linkUrl = $"{hostDomain}/verifier/{credential.Id}";
 
-    string truncatedName = TruncateString(credential.Name, 60);
-    string truncatedIssuer = TruncateString(credential.Issuer, 50);
-    string truncatedDescription = TruncateString(credential.Description, 170);
+        bool isDarkTheme = theme == "dark";
+        string backgroundColor = isDarkTheme ? "#020617" : "#FDFDFD";
+        string textColor = isDarkTheme ? "#F1F5F9" : "inherit";
+        string titleColor = isDarkTheme ? "#ffffff" : "inherit";
+        string subtitleColor = isDarkTheme ? "#cbd5e0" : "#718096";
+        string descriptionColor = isDarkTheme ? "#e2e8f0" : "inherit";
+        string validityLabelColor = isDarkTheme ? "#94A3B8" : "#718096";
+        string validityDateColor = isDarkTheme ? "#ffffff" : "#2d3748";
+        string borderColor = "#dedede";
+        string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
 
-    // Common container styles
-    string commonStyles = $@"
+        string truncatedName = TruncateString(credential.Name, 60);
+        string truncatedIssuer = TruncateString(credential.Issuer, 50);
+        string truncatedDescription = TruncateString(credential.Description, 170);
+
+        // Common container styles
+        string commonStyles = $@"
         display: inline-block !important;
         width: 30rem !important;
         border: 1px solid {borderColor} !important;
@@ -47,29 +48,29 @@ public string GetPopulatedTemplate(string templateId, string theme, VerifiedCred
         color: {textColor} !important;
     ";
 
-    string hoverEffect = @"
+        string hoverEffect = @"
         this.style.setProperty('box-shadow','0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)','important');
         this.style.setProperty('filter','brightness(1.05)','important');
     ";
 
-    string resetEffect = @"
+        string resetEffect = @"
         this.style.setProperty('box-shadow','0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)','important');
         this.style.setProperty('filter','brightness(1)','important');
     ";
 
-    StringBuilder templateBuilder = new StringBuilder();
+        StringBuilder templateBuilder = new StringBuilder();
 
-    switch (templateId)
-    {
-        case "image_no_description_light":
-        case "image_no_description_dark":
-        case "image_description_light":
-        case "image_description_dark":
-        case "noimage_description_light":
-        case "noimage_description_dark":
-        case "noimage_no_description_light":
-        case "noimage_no_description_dark":
-            templateBuilder.Append($@"
+        switch (templateId)
+        {
+            case "image_no_description_light":
+            case "image_no_description_dark":
+            case "image_description_light":
+            case "image_description_dark":
+            case "noimage_description_light":
+            case "noimage_description_dark":
+            case "noimage_no_description_light":
+            case "noimage_no_description_dark":
+                templateBuilder.Append($@"
                 <div style='{commonStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
                     <a href='{linkUrl}'
                        style='
@@ -134,7 +135,7 @@ public string GetPopulatedTemplate(string templateId, string theme, VerifiedCred
                                 '
                                 title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
 
-                                {(templateId.Contains("description") ? $@"
+                                {(templateId.Contains("description") && !templateId.Contains("no_description") ? $@"
                                 <!-- Description -->
                                 <div style='
                                     font-size: 0.875rem !important;
@@ -146,7 +147,8 @@ public string GetPopulatedTemplate(string templateId, string theme, VerifiedCred
                                     -webkit-line-clamp: 2 !important;
                                     -webkit-box-orient: vertical !important;
                                 '
-                                title='{credential.Description}'>{truncatedDescription}</div>" : "")}
+                                title='{credential.Description}'>{truncatedDescription}</div>
+                                " : "")}
 
                                 <!-- Validity + Status row -->
                                 <div style='
@@ -176,7 +178,7 @@ public string GetPopulatedTemplate(string templateId, string theme, VerifiedCred
                                                 font-weight: 500 !important;
                                                 margin-left: 0.25rem !important;
                                             '>
-                                                {credential.ValidFrom.ToString("dd MMMM, yyyy")}
+                                                {credential.ValidFrom:dd MMMM, yyyy}
                                             </span>
                                         </div>
 
@@ -196,7 +198,7 @@ public string GetPopulatedTemplate(string templateId, string theme, VerifiedCred
                                                     font-weight: 500 !important;
                                                     margin-left: 0.25rem !important;
                                                 '>
-                                                    {credential.ValidUntil.ToString("dd MMMM, yyyy")}
+                                                    {credential.ValidUntil:dd MMMM, yyyy}
                                                 </span>
                                             </div>
                                         " : "")}
@@ -210,14 +212,15 @@ public string GetPopulatedTemplate(string templateId, string theme, VerifiedCred
                     </a>
                 </div>
             ");
-            break;
+                break;
 
-        default:
-            throw new ArgumentException($"Invalid template ID: {templateId}", nameof(templateId));
+            default:
+                throw new ArgumentException($"Invalid template ID: {templateId}", nameof(templateId));
+        }
+
+        return templateBuilder.ToString();
     }
 
-    return templateBuilder.ToString();
-}
 
     private string TruncateString(string input, int maxLength)
     {
