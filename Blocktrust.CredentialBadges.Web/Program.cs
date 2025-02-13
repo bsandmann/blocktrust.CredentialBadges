@@ -7,6 +7,7 @@ using Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 using Microsoft.EntityFrameworkCore;
 using Blocktrust.CredentialBadges.Core.Services.DIDPrism;
 using Blocktrust.CredentialBadges.Core.Commands.CheckDIDKeySignature;
+using Blocktrust.CredentialBadges.Web.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,43 +18,38 @@ builder.WebHost.ConfigureKestrel(options =>
 #endif
 });
 
-// Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("CredentialBadgesDatabase")));
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Register IHttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
-// Register GenerateSnippetService
+builder.Services.AddMemoryCache();
+builder.Services.AddLazyCache();
+
+builder.Services.AddHostedService<UpdateCacheBackgroundService>();
+
 builder.Services.AddTransient<TemplatesService>();
 builder.Services.AddTransient<SelectTemplateService>();
 
-// Register MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VerifyOpenBadgeHandler).Assembly));
 // Register all MediatR handlers from the current domain's assemblies
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
-// Register HttpClient
 builder.Services.AddHttpClient();
 
-// Add controllers to the services
 builder.Services.AddControllers();
 
-// Register CryptoService
 builder.Services.AddScoped<IEcService, EcServiceBouncyCastle>();
 
-// Register EcServiceBouncyCastle explicitly
 builder.Services.AddScoped<EcServiceBouncyCastle>();
 
-// Register SHA256 service
 builder.Services.AddScoped<ISha256Service, Sha256ServiceBouncyCastle>();
 
 builder.Services.AddScoped<ImageBytesToBase64>();
 
-// Register the ExtractPrismPubKeyFromLongFormDid service
 builder.Services.AddScoped<ExtractPrismPubKeyFromLongFormDid>();
 
 builder.Services.AddServerSideBlazor()

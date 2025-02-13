@@ -3,13 +3,16 @@ namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifi
 using MediatR;
 using Domain;
 using FluentResults;
+using System;
 
 public class GetVerifiedCredentialByIdRequest : IRequest<Result<VerifiedCredential>>
 {
-    public Guid CredentialId { get; set; }
+    public Guid CredentialId { get; }
+    public bool SkipCache { get; }
 
-    public GetVerifiedCredentialByIdRequest(Guid credentialId)
+    public GetVerifiedCredentialByIdRequest(Guid credentialId, bool skipCache = false)
     {
         CredentialId = credentialId;
+        SkipCache = skipCache;
     }
 }

@@ -28,7 +28,7 @@ public class GetBadgeController : ControllerBase
     public async Task<IActionResult> GetBadge(Guid id, string templateId, string theme)
     {
         // Get the credential from the database by calling the mediator with GetVerifiedCredentialByIdRequest
-        Result<VerifiedCredential> credentialResult = await _mediator.Send(new GetVerifiedCredentialByIdRequest(id));
+        Result<VerifiedCredential> credentialResult = await _mediator.Send(new GetVerifiedCredentialByIdRequest(id,true));
 
         if (credentialResult.IsFailed)
         {

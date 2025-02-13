@@ -85,7 +85,7 @@
 
     private async Task LoadCredential()
     {
-        var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId));
+        var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId,true));
         if (result.IsSuccess)
         {
             credential = result.Value;
