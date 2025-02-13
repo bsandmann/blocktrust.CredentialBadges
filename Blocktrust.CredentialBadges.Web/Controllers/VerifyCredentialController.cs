@@ -64,9 +64,11 @@ public class VerifyCredentialController : ControllerBase
         {
             Id = id,
             Status = EVerificationStatus.Verified,
-            Name = achievementCredential.CredentialSubject.Achievement.Name,
-            Description = achievementCredential.CredentialSubject.Achievement.Description,
-            Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id!=null?achievementCredential.CredentialSubject.Achievement.Image.Id.ToString():"",
+            Name = achievementCredential.CredentialSubject?.Achievement?.Name ?? achievementCredential.CredentialSubject?.Id?.ToString() ?? "Unknown",
+            Description = achievementCredential.CredentialSubject?.Achievement?.Description ?? "",
+            Claims = achievementCredential.CredentialSubject?.Claims,
+            Issuer = achievementCredential.Issuer?.Id?.ToString() ?? "Unknown Issuer",
+            Image = achievementCredential.CredentialSubject?.Achievement?.Image?.Id!=null?achievementCredential.CredentialSubject.Achievement.Image.Id.ToString():"",
             VerificationChecks = new VerifyOpenBadgeResponse
             {
                 CheckedOn = DateTime.UtcNow,

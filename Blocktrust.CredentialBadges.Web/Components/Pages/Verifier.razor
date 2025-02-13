@@ -5,6 +5,7 @@
 @using MediatR
 @using Blocktrust.CredentialBadges.Core.Common
 @using Blocktrust.CredentialBadges.OpenBadges
+@using Blocktrust.CredentialBadges.Web.Services.TemplatesService
 @inject IMediator Mediator
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
@@ -16,14 +17,17 @@
 <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center">
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12" role="alert">
+        <div
+            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12"
+            role="alert">
             <strong class="font-bold">Error:</strong>
             <span class="block sm:inline">@ErrorMessage</span>
         </div>
     }
     else if (isVerifying)
     {
-        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12">
+        <div
+            class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12">
             <div class="flex justify-center items-center h-48">
                 <span class="material-symbols-outlined animate-spin text-4xl text-gray-400">autorenew</span>
             </div>
@@ -32,7 +36,8 @@
     }
     else if (credential != null && verificationResponse != null)
     {
-        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12">
+        <div
+            class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6 w-full sm:w-11/12 md:w-10/12 lg:w-8/12">
             <!-- Top Section -->
             <div class="mb-6 border-b pb-4">
                 <div class="flex items-center mb-4">
@@ -62,12 +67,16 @@
                 </div>
                 @if (!string.IsNullOrEmpty(credential.Image))
                 {
-                    <img src="data:image;base64,@credential.Image" alt="Credential Image" class="w-24 h-24 object-contain rounded-lg my-2"/>
+                    <img src="data:image;base64,@credential.Image" alt="Credential Image"
+                         class="w-24 h-24 object-contain rounded-lg my-2"/>
                 }
-                <h2 class="text-2xl font-bold mb-2">@credential.Name</h2>
-                <p class="text-gray-600">Achievement Type: @parserResult.CredentialSubject.Achievement.AchievementType.Value</p>
+                <h2 class="text-2xl font-bold truncate mb-2">@credential.Name</h2>
+                @if (types.Any())
+                {
+                    <p class="text-gray-600">Type: @types.FirstOrDefault()</p>
+                }
             </div>
-            
+
             <!-- Body Section -->
             <div class="flex flex-col lg:flex-row mb-8">
                 <!-- Left Column (Issuer Info) -->
@@ -76,10 +85,12 @@
                     <div class="flex items-center">
                         @if (!string.IsNullOrEmpty(credential.Image))
                         {
-                            <img src="data:image;base64,@credential.Image" alt="Issuer Logo" class="w-16 h-16 object-contain rounded-full mr-4"/>
+                            <img src="data:image;base64,@credential.Image" alt="Issuer Logo"
+                                 class="w-16 h-16 object-contain rounded-full mr-4"/>
                             <div class="flex-1 min-w-0 flex items-center">
                                 <p class="font-semibold truncate flex-grow">@parserResult.Issuer.Id</p>
-                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())" class="ml-2 flex-shrink-0">
+                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())"
+                                        class="ml-2 flex-shrink-0">
                                     <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
                                 </button>
                             </div>
@@ -88,7 +99,8 @@
                         {
                             <div class="flex-1 min-w-0 flex items-center">
                                 <p class="font-semibold truncate flex-grow">@parserResult.Issuer.Id</p>
-                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())" class="ml-2 flex-shrink-0">
+                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())"
+                                        class="ml-2 flex-shrink-0">
                                     <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
                                 </button>
                             </div>
@@ -102,18 +114,33 @@
                     <div class="flex flex-col mb-2">
                         <strong class="mr-1 min-w-8">Issued To:</strong>
                         <div class="flex flex-row">
-                              <p class="truncate flex-grow ">@parserResult.CredentialSubject.Id</p>
-                                                    <button @onclick="() => CopyToClipboard(parserResult.CredentialSubject.Id.ToString())" class="ml-2 flex-shrink-0">
-                                                        <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
-                                                    </button>
+                            <p class="truncate flex-grow ">@parserResult.CredentialSubject.Id</p>
+                            <button @onclick="() => CopyToClipboard(parserResult.CredentialSubject.Id.ToString())"
+                                    class="ml-2 flex-shrink-0">
+                                <span
+                                    class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
+                            </button>
                         </div>
-                      
+
                     </div>
-                    <p class="mb-2"><strong>Description:</strong> @credential.Description</p>
-                    <div class="mb-2">
-                        <strong>Criteria:</strong>
-                        <p class="break-words">@parserResult.CredentialSubject.Achievement.Criteria.Narrative</p>
-                    </div>
+                    @if (!string.IsNullOrEmpty(credential.Description))
+                    {
+                        <p class="mb-2"><strong>Description:</strong> @credential.Description</p>
+                        @if (!string.IsNullOrEmpty(parserResult.CredentialSubject.Achievement.Criteria.Narrative))
+                        {
+                            <div class="mb-2">
+                                <strong>Criteria:</strong>
+                                <p class="break-words">@parserResult.CredentialSubject.Achievement.Criteria.Narrative</p>
+                            </div>
+                        }
+                    }
+                    else if (credential.Claims is not null && credential.Claims.Any())
+                    {
+                        foreach (var claim in credential.Claims)
+                        {
+                            <p class="mb-2"><strong>@claim.Key:</strong> @claim.Value</p>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -123,14 +150,20 @@
             <div class="flex flex-col lg:flex-row">
                 <!-- Left Column -->
                 <div class="lg:w-1/3 lg:pr-4 mb-4 lg:mb-0">
-                    <div class="@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800") p-4 rounded-lg mb-4">
+                    <div
+                        class="@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800") p-4 rounded-lg mb-4">
                         <div class="flex items-center mb-2">
-                            <span class="material-symbols-outlined mr-2">@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "check_circle" : "error")</span>
-                            <span class="font-semibold">@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "Credential Verified" : "Verification Failed")</span>
+                            <span
+                                class="material-symbols-outlined mr-2">@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "check_circle" : "error")</span>
+                            <span
+                                class="font-semibold">@(verificationResponse.VerificationChecks.VerificationIsSuccessfull() ? "Credential Verified" : "Verification Failed")</span>
                         </div>
-                        <p class="ml-8">Last Checked: <br/>@verificationResponse.VerificationChecks.CheckedOn.ToString("MMM dd, yyyy")</p>
+                        <p class="ml-8">Last Checked:
+                            <br/>@verificationResponse.VerificationChecks.CheckedOn.ToString("MMM dd, yyyy")</p>
                     </div>
-                    <button class="bg-slate-600 text-white px-4 py-2 rounded flex items-center hover:bg-slate-500 transition-colors duration-200 w-full" @onclick="RerunVerification">
+                    <button
+                        class="bg-slate-600 text-white px-4 py-2 rounded flex items-center hover:bg-slate-500 transition-colors duration-200 w-full"
+                        @onclick="RerunVerification">
                         <span class="material-symbols-outlined mr-2">refresh</span>Rerun Verification
                     </button>
                 </div>
@@ -148,7 +181,8 @@
                             }
                             else
                             {
-                                <span class="material-symbols-outlined @(verificationResponse.VerificationChecks.IssuerFoundInTrustRegistry == true ? "text-green-500" : "text-red-500") mr-2">
+                                <span
+                                    class="material-symbols-outlined @(verificationResponse.VerificationChecks.IssuerFoundInTrustRegistry == true ? "text-green-500" : "text-red-500") mr-2">
                                     @(verificationResponse.VerificationChecks.IssuerFoundInTrustRegistry == true ? "check_circle" : "cancel")
                                 </span>
                                 <p>@(verificationResponse.VerificationChecks.IssuerFoundInTrustRegistry == true ? "Issuer found in trust registry" : "Issuer not found in trust registry")</p>
@@ -156,38 +190,44 @@
                         </div>
                         @if (!string.IsNullOrEmpty(verificationResponse.VerificationChecks.ReferenceToTrustRegistry))
                         {
-                            <p class="ml-6 text-sm text-gray-600 break-words">Registry: @verificationResponse.VerificationChecks.ReferenceToTrustRegistry</p>
+                            <p class="ml-6 text-sm text-gray-600 break-words">
+                                Registry: @verificationResponse.VerificationChecks.ReferenceToTrustRegistry</p>
                         }
                     </div>
                     <div>
                         <h4 class="font-semibold mb-2">Credential</h4>
                         <div class="flex items-center mb-1">
-                            <span class="material-symbols-outlined @(verificationResponse.VerificationChecks.SignatureIsValid ? "text-green-500" : "text-red-500") mr-2">
+                            <span
+                                class="material-symbols-outlined @(verificationResponse.VerificationChecks.SignatureIsValid ? "text-green-500" : "text-red-500") mr-2">
                                 @(verificationResponse.VerificationChecks.SignatureIsValid ? "check_circle" : "cancel")
                             </span>
                             <p>@(verificationResponse.VerificationChecks.SignatureIsValid ? "Has a valid digital signature" : "Invalid digital signature")</p>
                         </div>
                         <div class="flex items-center mb-1">
-                            <span class="material-symbols-outlined @(verificationResponse.VerificationChecks.CredentialIsNotExpired != false ? "text-green-500" : "text-red-500") mr-2">
+                            <span
+                                class="material-symbols-outlined @(verificationResponse.VerificationChecks.CredentialIsNotExpired != false ? "text-green-500" : "text-red-500") mr-2">
                                 @(verificationResponse.VerificationChecks.CredentialIsNotExpired != false ? "check_circle" : "cancel")
                             </span>
                             <p>@(verificationResponse.VerificationChecks.CredentialIsNotExpired != false ? "Has not expired" : "Has expired")</p>
                         </div>
                         <div class="flex items-center mb-1">
-                            <span class="material-symbols-outlined @(verificationResponse.VerificationChecks.CredentialIssuanceDateIsNotInFuture ? "text-green-500" : "text-red-500") mr-2">
+                            <span
+                                class="material-symbols-outlined @(verificationResponse.VerificationChecks.CredentialIssuanceDateIsNotInFuture ? "text-green-500" : "text-red-500") mr-2">
                                 @(verificationResponse.VerificationChecks.CredentialIssuanceDateIsNotInFuture ? "check_circle" : "cancel")
                             </span>
                             <p>@(verificationResponse.VerificationChecks.CredentialIssuanceDateIsNotInFuture ? "Issuance date is not in the future" : "Issuance date is in the future")</p>
                         </div>
                         <div class="flex items-center">
-                            <span class="material-symbols-outlined @(verificationResponse.VerificationChecks.CredentialIsNotRevoked != false ? "text-green-500" : "text-red-500") mr-2">
+                            <span
+                                class="material-symbols-outlined @(verificationResponse.VerificationChecks.CredentialIsNotRevoked != false ? "text-green-500" : "text-red-500") mr-2">
                                 @(verificationResponse.VerificationChecks.CredentialIsNotRevoked != false ? "check_circle" : "cancel")
                             </span>
                             <p>@(verificationResponse.VerificationChecks.CredentialIsNotRevoked != false ? "Has not been revoked by issuer" : "Has been revoked by issuer")</p>
                         </div>
                         @if (!string.IsNullOrEmpty(verificationResponse.VerificationChecks.ReferenceToRevocationList))
                         {
-                            <p class="ml-6 text-sm text-gray-600 break-words">Revocation List: @verificationResponse.VerificationChecks.ReferenceToRevocationList</p>
+                            <p class="ml-6 text-sm text-gray-600 break-words">Revocation
+                                List: @verificationResponse.VerificationChecks.ReferenceToRevocationList</p>
                         }
                     </div>
                 </div>
@@ -199,7 +239,8 @@
 <!-- Toast component -->
 @if (showToast)
 {
-    <div class="fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg transition-opacity duration-300 @(showToast ? "opacity-100" : "opacity-0") @(isError ? "bg-red-500" : "bg-green-500") text-white">
+    <div
+        class="fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg transition-opacity duration-300 @(showToast ? "opacity-100" : "opacity-0") @(isError ? "bg-red-500" : "bg-green-500") text-white">
         @toastMessage
     </div>
 }
@@ -214,6 +255,7 @@
     private bool showToast = false;
     private bool isError = false;
     private string toastMessage = string.Empty;
+    private List<string> types = new List<string> { };
 
     protected override async Task OnInitializedAsync()
     {
@@ -234,9 +276,10 @@
         {
             credential = result.Value;
             parserResult = (AchievementCredential)CredentialParser.Parse(credential.Credential).Value;
-           if (parserResult != null)
+            if (parserResult != null)
             {
                 await RerunVerification();
+                types = new SelectTemplateService().GetFilteredTypes(credential);
             }
             else
             {
@@ -313,4 +356,5 @@
         showToast = false;
         StateHasChanged();
     }
+
 }

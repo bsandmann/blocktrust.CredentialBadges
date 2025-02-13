@@ -11,6 +11,10 @@ public class VerificationResponse
     public string Name { get; set; }
     
     public string Description { get; set; }
+    public string Issuer { get; set; }
+    public string Domain { get; set; }
+
+    public Dictionary<string,string>? Claims { get; set; }
     
     public string? Image { get; set; }
     
