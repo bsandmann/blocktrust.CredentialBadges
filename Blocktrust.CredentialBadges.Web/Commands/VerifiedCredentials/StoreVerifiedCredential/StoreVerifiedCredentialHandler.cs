@@ -7,7 +7,7 @@ namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVeri
 
 public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCredentialRequest, Result<VerifiedCredential>>
 {
-    private IServiceScopeFactory _serviceScopeFactory;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<StoreVerifiedCredentialHandler> _logger;
 
     public StoreVerifiedCredentialHandler(ILogger<StoreVerifiedCredentialHandler> logger, IServiceScopeFactory serviceScopeFactory)
@@ -21,9 +21,10 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
         using var scope = _serviceScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        var entity = new VerifiedCredentialEntity
+        // Construct the domain model from the request, including Claims
+        var verifiedCredential = new VerifiedCredential
         {
-            StoredCredentialId = Guid.NewGuid(),
+            Id = Guid.NewGuid(),
             Name = request.Name,
             Description = request.Description,
             Image = request.Image,
@@ -32,14 +33,19 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
             ValidFrom = request.ValidFrom.ToUniversalTime(),
             ValidUntil = request.ValidUntil.ToUniversalTime(),
             Issuer = request.Issuer,
-            Domain = request.Domain
+            Domain = request.Domain,
+            Claims = request.Claims,
+            TemplateId = string.IsNullOrEmpty(request.Image)?  "noimage_no_description_light": "image_description_light"
         };
+
+        var entity = verifiedCredential.ToEntity();
 
         try
         {
             context.Set<VerifiedCredentialEntity>().Add(entity);
             await context.SaveChangesAsync(cancellationToken);
 
+            // Convert back to domain model (for returning to caller)
             var credential = VerifiedCredential.FromEntity(entity);
             return Result.Ok(credential);
         }

@@ -5,10 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using FluentResults;
+using Microsoft.Extensions.DependencyInjection;
+using Blocktrust.CredentialBadges.Web.Entities;
 
 public class GetVerifiedCredentialByIdHandler : IRequestHandler<GetVerifiedCredentialByIdRequest, Result<VerifiedCredential>>
 {
-    private IServiceScopeFactory _serviceScopeFactory;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public GetVerifiedCredentialByIdHandler(IServiceScopeFactory serviceScopeFactory)
     {
@@ -20,13 +22,15 @@ public class GetVerifiedCredentialByIdHandler : IRequestHandler<GetVerifiedCrede
         using var scope = _serviceScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        var credential = await context.VerifiedCredentials.FindAsync(new object[] { request.CredentialId }, cancellationToken);
-            
-        if (credential == null)
+        var credentialEntity = await context.VerifiedCredentials.FindAsync(new object[] { request.CredentialId }, cancellationToken);
+
+        if (credentialEntity == null)
         {
             return Result.Fail(new Error($"Credential with ID {request.CredentialId} not found."));
         }
 
-        return Result.Ok(VerifiedCredential.FromEntity(credential));
+        // The FromEntity() method now also handles Claims deserialization.
+        var credential = VerifiedCredential.FromEntity(credentialEntity);
+        return Result.Ok(credential);
     }
 }

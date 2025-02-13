@@ -1,5 +1,6 @@
 ﻿namespace Blocktrust.CredentialBadges.OpenBadges;
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -21,7 +22,7 @@ public class AchievementSubject
     /// MUST be the IRI 'AchievementSubject'. [1..*]
     /// </summary>
     [JsonPropertyName("type")]
-    public required List<string> Type { get; set; }
+    public List<string>? Type { get; set; }
 
     /// <summary>
     /// The datetime the activity ended. [0..1]
@@ -46,7 +47,7 @@ public class AchievementSubject
     /// The achievement being awarded. [1]
     /// </summary>
     [JsonPropertyName("achievement")]
-    public required Achievement Achievement { get; set; }
+    public Achievement? Achievement { get; set; }
     
     /// <summary>
     /// Other identifiers for the recipient of the achievement. Either id or at
@@ -103,5 +104,35 @@ public class AchievementSubject
     /// The academic term in which this assertion was achieved. [0..1]
     /// </summary>
     [JsonPropertyName("term")]
-    public string? Term { get; set; } 
+    public string? Term { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+
+    [JsonIgnore]
+    public Dictionary<string, string>? Claims
+    {
+        get
+        {
+            if (ExtensionData is null) return null;
+
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var kvp in ExtensionData)
+            {
+                var jsonElement = kvp.Value;
+                switch (jsonElement.ValueKind)
+                {
+                    case JsonValueKind.String:
+                        result[kvp.Key] = jsonElement.GetString() ?? "";
+                        break;
+                    default:
+                        // For booleans, numbers, arrays, objects, etc.
+                        // store the literal JSON as a string
+                        result[kvp.Key] = jsonElement.GetRawText();
+                        break;
+                }
+            }
+            return result;
+        }
+    }
 }

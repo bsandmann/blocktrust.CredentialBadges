@@ -122,6 +122,7 @@ public class GetBadgeController : ControllerBase
             Name = achievementCredential.CredentialSubject.Achievement.Name,
             Types = filteredTypes,
             Issuer = achievementCredential.Issuer.Id.ToString(),
+            Claims = achievementCredential.CredentialSubject.Claims,
             Description = achievementCredential.CredentialSubject.Achievement.Description,
             Image = achievementCredential.CredentialSubject.Achievement?.Image?.Id?.ToString(),
             Status = status,

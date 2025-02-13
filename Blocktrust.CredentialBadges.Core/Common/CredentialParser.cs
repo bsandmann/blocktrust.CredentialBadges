@@ -110,7 +110,7 @@ public static class CredentialParser
         var options = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters = { new ImageJsonConverter(), new ProofListJsonConverter() }
+            Converters = { new ImageJsonConverter(), new ProofListJsonConverter(), new ProfileRefConverter() }
         };
 
         var isEndorsementCredentialResult = IsEndorsementCredential(rawInput);

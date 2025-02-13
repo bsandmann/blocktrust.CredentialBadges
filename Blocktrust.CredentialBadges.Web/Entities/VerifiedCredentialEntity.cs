@@ -25,15 +25,18 @@ public class VerifiedCredentialEntity
     [Required(ErrorMessage = "Credential is required")]
     [Column(TypeName = "text")]
     public string Credential { get; set; }
-    
+
     public DateTime ValidFrom { get; set; }
-    
     public DateTime ValidUntil { get; set; }
-    
     public string Issuer { get; set; }
-    
+
     public string TemplateId { get; set; } = "noimage_no_description_light";
 
     [StringLength(253, ErrorMessage = "Domain must not exceed 253 characters")]
     public string? Domain { get; set; }
+
+    // New property to store the serialized claims data
+    [StringLength(5000, ErrorMessage = "Claims must not exceed 5000 characters")]
+    [Column(TypeName = "text")]
+    public string? Claims { get; set; }
 }

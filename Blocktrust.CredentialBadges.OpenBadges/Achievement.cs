@@ -20,7 +20,7 @@ public class Achievement
     /// Type of the Achievement. [1..*]
     /// </summary>
     [JsonPropertyName("type")]
-    public required List<string> Type { get; set; } = new List<string> { "Achievement" };
+    public required List<string>? Type { get; set; } = new List<string> { "Achievement" };
 
     /// <summary>
     /// An object describing which objectives or educational standards this

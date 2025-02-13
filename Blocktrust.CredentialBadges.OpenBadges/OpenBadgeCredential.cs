@@ -41,6 +41,7 @@ public class OpenBadgeCredential
     /// This property is acutally required, but for deserialization from an JWT purposes it is marked as optional 
     /// </summary>
     [JsonPropertyName("issuer")]
+    [JsonConverter(typeof(ProfileRefConverter))]
     public ProfileRef Issuer { get; set; }
 
     /// <summary>

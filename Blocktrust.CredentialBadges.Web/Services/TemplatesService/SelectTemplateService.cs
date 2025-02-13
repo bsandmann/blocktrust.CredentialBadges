@@ -85,8 +85,8 @@ public class SelectTemplateService
         if (result.Value is AchievementCredential achievementCredential)
         {
             var achievementCredentialTypes = achievementCredential.Type;
-            var subjectType = achievementCredential.CredentialSubject.Type;
-            var achievementType = achievementCredential.CredentialSubject.Achievement.Type;
+            var subjectType = achievementCredential.CredentialSubject.Type ?? new List<string>();
+            var achievementType = achievementCredential.CredentialSubject?.Achievement?.Type ?? new List<string>();
 
             var combinedType = achievementCredentialTypes
                 .Concat(subjectType)
