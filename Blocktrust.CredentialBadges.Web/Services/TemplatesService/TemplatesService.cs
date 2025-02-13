@@ -73,14 +73,14 @@ public class TemplatesService
         "noimage_description_dark",
         "noimage_no_description_light",
         "noimage_no_description_dark",
-        "image_no_description_light_withTypes",
-        "image_no_description_dark_withTypes",
-        "image_description_light_withTypes",
-        "image_description_dark_withTypes",
-        "noimage_description_light_withTypes",
-        "noimage_description_dark_withTypes",
-        "noimage_no_description_light_withTypes",
-        "noimage_no_description_dark_withTypes"
+        "image_no_description_withTypes_light",
+        "image_no_description_withTypes_dark",
+        "image_description_withTypes_light",
+        "image_description_withTypes_dark",
+        "noimage_description_withTypes_light",
+        "noimage_description_withTypes_dark",
+        "noimage_no_description_withTypes_light",
+        "noimage_no_description_withTypes_dark"
     };
 
     if (!validTemplates.Contains(templateId))

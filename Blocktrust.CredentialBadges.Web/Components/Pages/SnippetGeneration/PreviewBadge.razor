@@ -104,6 +104,8 @@
             var selectTemplateService = new SelectTemplateService();
             templateIds = selectTemplateService.GetApplicableTemplateIds(credential);
 
+            credential.Types = selectTemplateService.GetFilteredTypes(credential);
+
             templates = new List<string>();
             foreach (var templateId in templateIds)
             {

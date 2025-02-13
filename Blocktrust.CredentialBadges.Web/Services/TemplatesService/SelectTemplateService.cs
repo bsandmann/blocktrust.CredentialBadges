@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 
+using Core.Common;
 using OpenBadges;
 
 public class SelectTemplateService
@@ -29,8 +30,8 @@ public class SelectTemplateService
             // Also add the _withTypes variation if we have types
             if (hasTypes)
             {
-                applicableTemplateIds.Add("image_description_light_withTypes");
-                applicableTemplateIds.Add("image_description_dark_withTypes");
+                applicableTemplateIds.Add("image_description_withTypes_light");
+                applicableTemplateIds.Add("image_description_withTypes_dark");
             }
         }
 
@@ -43,8 +44,8 @@ public class SelectTemplateService
             // Also add the _withTypes variation if we have types
             if (hasTypes)
             {
-                applicableTemplateIds.Add("image_no_description_light_withTypes");
-                applicableTemplateIds.Add("image_no_description_dark_withTypes");
+                applicableTemplateIds.Add("image_no_description_withTypes_light");
+                applicableTemplateIds.Add("image_no_description_withTypes_dark");
             }
         }
 
@@ -57,8 +58,8 @@ public class SelectTemplateService
             // Also add the _withTypes variation if we have types
             if (hasTypes)
             {
-                applicableTemplateIds.Add("noimage_description_light_withTypes");
-                applicableTemplateIds.Add("noimage_description_dark_withTypes");
+                applicableTemplateIds.Add("noimage_description_withTypes_light");
+                applicableTemplateIds.Add("noimage_description_withTypes_dark");
             }
         }
 
@@ -70,44 +71,42 @@ public class SelectTemplateService
         // Also add _withTypes if we have types
         if (hasTypes)
         {
-            applicableTemplateIds.Add("noimage_no_description_light_withTypes");
-            applicableTemplateIds.Add("noimage_no_description_dark_withTypes");
+            applicableTemplateIds.Add("noimage_no_description_withTypes_light");
+            applicableTemplateIds.Add("noimage_no_description_withTypes_dark");
         }
 
         return applicableTemplateIds;
     }
 
-    private List<string> GetFilteredTypes(VerifiedCredential credential)
+    public List<string> GetFilteredTypes(VerifiedCredential credential)
     {
-        //TODO WIP
+        var result = CredentialParser.Parse(credential.Credential);
 
-        // // If credential is actually an AchievementCredential, adapt to your scenario:
-        // if (credential is AchievementCredential achievementCredential)
-        // {
-        //     var achievementCredentialTypes = achievementCredential.Type;
-        //     var subjectType = achievementCredential.CredentialSubject.Type;
-        //     var achievementType = achievementCredential.CredentialSubject.Achievement.Type;
-        //
-        //     var combinedType = achievementCredentialTypes
-        //         .Concat(subjectType)
-        //         .Concat(achievementType)
-        //         .ToList();
-        //
-        //     var filteredTypes = combinedType
-        //         .Where(x => !string.IsNullOrEmpty(x)
-        //                     && !x.Equals("VerifiableCredential", StringComparison.InvariantCultureIgnoreCase)
-        //                     && !x.Equals("AchievementSubject", StringComparison.InvariantCultureIgnoreCase))
-        //         .ToList();
-        //
-        //     return filteredTypes;
-        // }
-        //
-        // if (credential.Types != null && credential.Types.Count > 0)
-        // {
-        //     return credential.Types.Where(x => !string.IsNullOrEmpty(x)).ToList();
-        // }
+        if (result.Value is AchievementCredential achievementCredential)
+        {
+            var achievementCredentialTypes = achievementCredential.Type;
+            var subjectType = achievementCredential.CredentialSubject.Type;
+            var achievementType = achievementCredential.CredentialSubject.Achievement.Type;
 
-        // No types
+            var combinedType = achievementCredentialTypes
+                .Concat(subjectType)
+                .Concat(achievementType)
+                .ToList();
+
+            var filteredTypes = combinedType
+                .Where(x => !string.IsNullOrEmpty(x)
+                            && !x.Equals("VerifiableCredential", StringComparison.InvariantCultureIgnoreCase)
+                            && !x.Equals("AchievementSubject", StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+
+            return filteredTypes;
+        }
+
+        if (credential.Types != null && credential.Types.Count > 0)
+        {
+            return credential.Types.Where(x => !string.IsNullOrEmpty(x)).ToList();
+        }
+
         return new List<string>();
     }
 }
