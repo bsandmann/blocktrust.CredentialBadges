@@ -26,6 +26,8 @@ public class SelectTemplateService
         {
             applicableTemplateIds.Add("image_description_light");
             applicableTemplateIds.Add("image_description_dark");
+            applicableTemplateIds.Add("image_description_small_light");
+            applicableTemplateIds.Add("image_description_small_dark");
 
             // Also add the _withTypes variation if we have types
             if (hasTypes)
@@ -40,6 +42,8 @@ public class SelectTemplateService
         {
             applicableTemplateIds.Add("image_no_description_light");
             applicableTemplateIds.Add("image_no_description_dark");
+            applicableTemplateIds.Add("image_no_description_small_light");
+            applicableTemplateIds.Add("image_no_description_small_dark");
 
             // Also add the _withTypes variation if we have types
             if (hasTypes)
@@ -54,6 +58,8 @@ public class SelectTemplateService
         {
             applicableTemplateIds.Add("noimage_description_light");
             applicableTemplateIds.Add("noimage_description_dark");
+            applicableTemplateIds.Add("noimage_description_small_light");
+            applicableTemplateIds.Add("noimage_description_small_dark");
 
             // Also add the _withTypes variation if we have types
             if (hasTypes)
@@ -67,6 +73,8 @@ public class SelectTemplateService
         // Always add these
         applicableTemplateIds.Add("noimage_no_description_light");
         applicableTemplateIds.Add("noimage_no_description_dark");
+        applicableTemplateIds.Add("noimage_no_description_small_light");
+        applicableTemplateIds.Add("noimage_no_description_small_dark");
 
         // Also add _withTypes if we have types
         if (hasTypes)

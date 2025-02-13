@@ -30,26 +30,46 @@ public class TemplatesService
         string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
 
         bool showDescription = templateId.Contains("description") && !templateId.Contains("no_description");
-        bool showTypes = templateId.Contains("_withTypes");
+        bool showTypes = templateId.Contains("_withTypes") && !templateId.Contains("_small_");
+        // We never show Types if it’s a small template, per requirements.
 
+        // Determine if this is a "small" template
+        bool isSmall = templateId.Contains("_small_");
+
+        // Truncate logic stays the same
         string truncatedName = TruncateString(credential.Name, 60);
         string truncatedIssuer = TruncateString(credential.Issuer, 50);
         string truncatedDescription = TruncateString(credential.Description, 170);
 
-        string commonStyles = $@"
-            display: inline-block !important;
-            width: 30rem !important;
-            border: 1px solid {borderColor} !important;
-            border-radius: 0.5rem !important;
-            background: {backgroundColor} !important;
-            margin: 0rem !important;
-            padding: 0.7rem !important;
-            box-sizing: border-box !important;
-            transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
-            font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
-            color: {textColor} !important;
-        ";
+        // If not small, we show them all (existing behavior).
+        var claimsToShow =  credential.Claims;
 
+        // Larger set of valid templates:
+        var validTemplates = new HashSet<string>
+        {
+            // Regular templates:
+            "image_no_description_light", "image_no_description_dark",
+            "image_description_light", "image_description_dark",
+            "noimage_description_light", "noimage_description_dark",
+            "noimage_no_description_light", "noimage_no_description_dark",
+            "image_no_description_withTypes_light", "image_no_description_withTypes_dark",
+            "image_description_withTypes_light", "image_description_withTypes_dark",
+            "noimage_description_withTypes_light", "noimage_description_withTypes_dark",
+            "noimage_no_description_withTypes_light", "noimage_no_description_withTypes_dark",
+
+            // New small templates:
+            "image_no_description_small_light", "image_no_description_small_dark",
+            "image_description_small_light", "image_description_small_dark",
+            "noimage_description_small_light", "noimage_description_small_dark",
+            "noimage_no_description_small_light", "noimage_no_description_small_dark"
+        };
+
+        if (!validTemplates.Contains(templateId))
+        {
+            throw new ArgumentException($"Invalid template ID: {templateId}", nameof(templateId));
+        }
+
+        // Common hover effects
         string hoverEffect = @"
             this.style.setProperty('box-shadow','0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)','important');
             this.style.setProperty('filter','brightness(1.05)','important');
@@ -60,225 +80,373 @@ public class TemplatesService
             this.style.setProperty('filter','brightness(1)','important');
         ";
 
-        var validTemplates = new HashSet<string>
-        {
-            "image_no_description_light",
-            "image_no_description_dark",
-            "image_description_light",
-            "image_description_dark",
-            "noimage_description_light",
-            "noimage_description_dark",
-            "noimage_no_description_light",
-            "noimage_no_description_dark",
-            "image_no_description_withTypes_light",
-            "image_no_description_withTypes_dark",
-            "image_description_withTypes_light",
-            "image_description_withTypes_dark",
-            "noimage_description_withTypes_light",
-            "noimage_description_withTypes_dark",
-            "noimage_no_description_withTypes_light",
-            "noimage_no_description_withTypes_dark"
-        };
-
-        if (!validTemplates.Contains(templateId))
-        {
-            throw new ArgumentException($"Invalid template ID: {templateId}", nameof(templateId));
-        }
-
+        // Build the template
         StringBuilder templateBuilder = new StringBuilder();
-        templateBuilder.Append($@"
-            <div style='{commonStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
-                <a href='{linkUrl}'
-                   style='
-                        text-decoration: none !important;
-                        color: inherit !important;
-                        display: block !important;
-                        border-bottom: none !important;
-                   '
-                   id='{credential.Id}'
-                   data-credential-id='{credential.Id}'
-                   data-template-id='{templateId}'>
 
-                    <div style='
-                        display: flex !important;
-                        align-items: flex-start !important;
-                        gap: 1rem !important;
-                    '>
-                        {(templateId.StartsWith("image") ? $@"
-                        <div style='
-                            width: 7rem !important;
-                            height: 7rem !important;
-                            flex-shrink: 0 !important;
-                            background-color: {logoBackgroundColor} !important;
-                            border-radius: 0.5rem !important;
-                            overflow: hidden !important;
-                        '>
-                            <img src='{GetImage(credential.Image)}'
-                                 alt='{truncatedName}'
-                                 style='
-                                    width: 100% !important;
-                                    height: 100% !important;
-                                    object-fit: contain !important;
-                                 ' />
-                        </div>" : "")}
+        if (!isSmall)
+        {
+            // ======= REGULAR TEMPLATE =======
+            string commonStyles = $@"
+                display: inline-block !important;
+                width: 30rem !important;
+                border: 1px solid {borderColor} !important;
+                border-radius: 0.5rem !important;
+                background: {backgroundColor} !important;
+                margin: 0rem !important;
+                padding: 0.7rem !important;
+                box-sizing: border-box !important;
+                transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
+                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                color: {textColor} !important;
+            ";
+
+            templateBuilder.Append($@"
+                <div style='{commonStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
+                    <a href='{linkUrl}'
+                       style='
+                            text-decoration: none !important;
+                            color: inherit !important;
+                            display: block !important;
+                            border-bottom: none !important;
+                       '
+                       id='{credential.Id}'
+                       data-credential-id='{credential.Id}'
+                       data-template-id='{templateId}'>
 
                         <div style='
-                            flex-grow: 1 !important;
-                            min-width: 0 !important;
+                            display: flex !important;
+                            align-items: flex-start !important;
+                            gap: 1rem !important;
                         '>
+                            {(templateId.StartsWith("image") ? $@"
                             <div style='
-                                font-size: 1.5rem !important;
-                                margin-bottom: 0.5rem !important;
-                                line-height: 1.5 !important;
-                                color: {titleColor} !important;
+                                width: 7rem !important;
+                                height: 7rem !important;
+                                flex-shrink: 0 !important;
+                                background-color: {logoBackgroundColor} !important;
+                                border-radius: 0.5rem !important;
                                 overflow: hidden !important;
-                                text-overflow: ellipsis !important;
-                                white-space: nowrap !important;
-                                font-weight: bold !important;
-                            '
-                            title='{credential.Name}'>{truncatedName}</div>
+                            '>
+                                <img src='{GetImage(credential.Image)}'
+                                     alt='{truncatedName}'
+                                     style='
+                                        width: 100% !important;
+                                        height: 100% !important;
+                                        object-fit: contain !important;
+                                     ' />
+                            </div>" : "")}
 
-                            {(showTypes && credential.Types != null && credential.Types.Count > 0 ? $@"
                             <div style='
-                                display: flex !important;
-                                align-items: baseline !important;
-                                gap: 0.25rem !important;
-                                font-size: 0.875rem !important;
-                                margin: 0 !important;
-                                padding: 0 !important;
+                                flex-grow: 1 !important;
+                                min-width: 0 !important;
                             '>
                                 <div style='
-                                    color: {validityLabelColor} !important;
-                                    font-weight: 400 !important;
-                                '>
-                                    {(credential.Types.Count == 1 ? "Type" : "Types")}
-                                </div>
+                                    font-size: 1.5rem !important;
+                                    margin-bottom: 0.5rem !important;
+                                    line-height: 1.5 !important;
+                                    color: {titleColor} !important;
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    white-space: nowrap !important;
+                                    font-weight: bold !important;
+                                '
+                                title='{credential.Name}'>{truncatedName}</div>
+
+                                {(showTypes && credential.Types != null && credential.Types.Count > 0 ? $@"
                                 <div style='
-                                    color: {validityDateColor} !important;
-                                    font-weight: 500 !important;
+                                    display: flex !important;
+                                    align-items: baseline !important;
+                                    gap: 0.25rem !important;
+                                    font-size: 0.875rem !important;
+                                    margin: 0 !important;
+                                    padding: 0 !important;
                                 '>
-                                    {string.Join(", ", credential.Types)}
-                                </div>
-                            </div>
-                            " : "")}
-
-                            <div style='
-                                color: {subtitleColor} !important;
-                                font-size: 0.875rem !important;
-                                font-weight: 500 !important;
-                                margin-bottom: 0.5rem !important;
-                                overflow: hidden !important;
-                                text-overflow: ellipsis !important;
-                                white-space: nowrap !important;
-                            '
-                            title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
-
-                            {(showDescription ? $@"
-                            <div style='
-                                font-size: 0.875rem !important;
-                                margin-bottom: 0.5rem !important;
-                                color: {descriptionColor} !important;
-                                overflow: hidden !important;
-                                text-overflow: ellipsis !important;
-                                display: -webkit-box !important;
-                                -webkit-line-clamp: 2 !important;
-                                -webkit-box-orient: vertical !important;
-                            '
-                            title='{credential.Description}'>{truncatedDescription}</div>
-                            " : "")}
-
-                            {(credential.Claims != null && credential.Claims.Count > 0 ? $@"
-                            <div style='
-                                display: flex !important;
-                                flex-direction: column !important;
-                                gap: 0.25rem !important;
-                                margin-bottom: 0.5rem !important;
-                            '>
-                                {string.Join("", credential.Claims.Select(claim => $@"
                                     <div style='
-                                        display: flex !important;
-                                        align-items: baseline !important;
-                                        gap: 0.25rem !important;
-                                        font-size: 0.875rem !important;
+                                        color: {validityLabelColor} !important;
+                                        font-weight: 400 !important;
                                     '>
-                                        <div style='
-                                            color: {validityLabelColor} !important;
-                                            font-weight: 400 !important;
-                                        '>
-                                            {claim.Key}:
-                                        </div>
-                                        <div style='
-                                            color: {validityDateColor} !important;
-                                            font-weight: 500 !important;
-                                            word-wrap: break-word !important;
-                                        '>
-                                            {claim.Value}
-                                        </div>
+                                        {(credential.Types.Count == 1 ? "Type" : "Types")}
                                     </div>
-                                "))}
-                            </div>
-                            " : "")}
+                                    <div style='
+                                        color: {validityDateColor} !important;
+                                        font-weight: 500 !important;
+                                    '>
+                                        {string.Join(", ", credential.Types)}
+                                    </div>
+                                </div>
+                                " : "")}
 
-                            <div style='
-                                display: flex !important;
-                                align-items: center !important;
-                                justify-content: space-between !important;
-                                margin-top: 0.25rem !important;
-                            '>
+                                <div style='
+                                    color: {subtitleColor} !important;
+                                    font-size: 0.875rem !important;
+                                    font-weight: 500 !important;
+                                    margin-bottom: 0.5rem !important;
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    white-space: nowrap !important;
+                                '
+                                title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
+
+                                {(showDescription ? $@"
+                                <div style='
+                                    font-size: 0.875rem !important;
+                                    margin-bottom: 0.5rem !important;
+                                    color: {descriptionColor} !important;
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    display: -webkit-box !important;
+                                    -webkit-line-clamp: 2 !important;
+                                    -webkit-box-orient: vertical !important;
+                                '
+                                title='{credential.Description}'>{truncatedDescription}</div>
+                                " : "")}
+
+                                {(credential.Claims != null && credential.Claims.Count > 0 ? $@"
                                 <div style='
                                     display: flex !important;
                                     flex-direction: column !important;
-                                    line-height: 1 !important;
+                                    gap: 0.25rem !important;
+                                    margin-bottom: 0.5rem !important;
+                                '>
+                                    {string.Join("", credential.Claims.Select(claim => $@"
+                                        <div style='
+                                            display: flex !important;
+                                            align-items: baseline !important;
+                                            gap: 0.25rem !important;
+                                            font-size: 0.875rem !important;
+                                        '>
+                                            <div style='
+                                                color: {validityLabelColor} !important;
+                                                font-weight: 400 !important;
+                                            '>
+                                                {claim.Key}:
+                                            </div>
+                                            <div style='
+                                                color: {validityDateColor} !important;
+                                                font-weight: 500 !important;
+                                                word-wrap: break-word !important;
+                                            '>
+                                                {claim.Value}
+                                            </div>
+                                        </div>
+                                    "))}
+                                </div>
+                                " : "")}
+
+                                <div style='
+                                    display: flex !important;
+                                    align-items: center !important;
+                                    justify-content: space-between !important;
+                                    margin-top: 0.25rem !important;
                                 '>
                                     <div style='
                                         display: flex !important;
-                                        align-items: baseline !important;
-                                        gap: 0.25rem !important;
-                                        font-size: 0.875rem !important;
-                                        margin-bottom: 0.25rem !important;
+                                        flex-direction: column !important;
+                                        line-height: 1 !important;
                                     '>
                                         <div style='
-                                            color: {validityLabelColor} !important;
-                                            font-weight: 400 !important;
+                                            display: flex !important;
+                                            align-items: baseline !important;
+                                            gap: 0.25rem !important;
+                                            font-size: 0.875rem !important;
+                                            margin-bottom: 0.25rem !important;
                                         '>
-                                            Valid from
+                                            <div style='
+                                                color: {validityLabelColor} !important;
+                                                font-weight: 400 !important;
+                                            '>
+                                                Valid from
+                                            </div>
+                                            <div style='
+                                                color: {validityDateColor} !important;
+                                                font-weight: 500 !important;
+                                            '>
+                                                {credential.ValidFrom:dd MMMM, yyyy}
+                                            </div>
                                         </div>
+                                        {(credential.ValidUntil != default(DateTime) ? $@"
                                         <div style='
-                                            color: {validityDateColor} !important;
-                                            font-weight: 500 !important;
+                                            display: flex !important;
+                                            align-items: baseline !important;
+                                            gap: 0.25rem !important;
+                                            font-size: 0.875rem !important;
                                         '>
-                                            {credential.ValidFrom:dd MMMM, yyyy}
+                                            <div style='
+                                                color: {validityLabelColor} !important;
+                                                font-weight: 400 !important;
+                                            '>
+                                                Valid until
+                                            </div>
+                                            <div style='
+                                                color: {validityDateColor} !important;
+                                                font-weight: 500 !important;
+                                            '>
+                                                {credential.ValidUntil:dd MMMM, yyyy}
+                                            </div>
                                         </div>
+                                        " : "")}
                                     </div>
-                                    {(credential.ValidUntil != default(DateTime) ? $@"
-                                    <div style='
-                                        display: flex !important;
-                                        align-items: baseline !important;
-                                        gap: 0.25rem !important;
-                                        font-size: 0.875rem !important;
-                                    '>
-                                        <div style='
-                                            color: {validityLabelColor} !important;
-                                            font-weight: 400 !important;
-                                        '>
-                                            Valid until
-                                        </div>
-                                        <div style='
-                                            color: {validityDateColor} !important;
-                                            font-weight: 500 !important;
-                                        '>
-                                            {credential.ValidUntil:dd MMMM, yyyy}
-                                        </div>
-                                    </div>
-                                    " : "")}
+                                    {GetStatusButton(isDarkTheme, credential.Status)}
                                 </div>
-                                {GetStatusButton(isDarkTheme, credential.Status)}
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        ");
+                    </a>
+                </div>
+            ");
+        }
+        else
+        {
+            // ======= SMALL TEMPLATE =======
+            // Requirements:
+            // - Image is half-size if present
+            // - Name font smaller
+            // - Types are never shown
+            // - Issuer shown
+            // - Description limited to 2 lines
+            // - Show only up to 2 claims
+            // - No ValidFrom / ValidUntil
+            // - Smaller margins/gaps/padding
+            // - Smaller button
+
+            string smallStyles = $@"
+                display: inline-block !important;
+                width: 20rem !important; /* narrower */
+                border: 1px solid {borderColor} !important;
+                border-radius: 0.5rem !important;
+                background: {backgroundColor} !important;
+                margin: 0.5rem !important; /* less margin */
+                padding: 0.5rem !important; /* less padding */
+                box-sizing: border-box !important;
+                transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
+                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                color: {textColor} !important;
+            ";
+
+            templateBuilder.Append($@"
+                <div style='{smallStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
+                    <a href='{linkUrl}'
+                       style='
+                            text-decoration: none !important;
+                            color: inherit !important;
+                            display: block !important;
+                            border-bottom: none !important;
+                       '
+                       id='{credential.Id}'
+                       data-credential-id='{credential.Id}'
+                       data-template-id='{templateId}'>
+
+                        <div style='
+                            display: flex !important;
+                            align-items: flex-start !important;
+                            gap: 0.5rem !important; /* smaller gap */
+                        '>
+                            {(templateId.StartsWith("image") ? $@"
+                            <div style='
+                                width: 3.5rem !important;
+                                height: 3.5rem !important;
+                                flex-shrink: 0 !important;
+                                background-color: {logoBackgroundColor} !important;
+                                border-radius: 0.5rem !important;
+                                overflow: hidden !important;
+                            '>
+                                <img src='{GetImage(credential.Image)}'
+                                     alt='{truncatedName}'
+                                     style='
+                                        width: 100% !important;
+                                        height: 100% !important;
+                                        object-fit: contain !important;
+                                     ' />
+                            </div>" : "")}
+
+                            <div style='
+                                flex-grow: 1 !important;
+                                min-width: 0 !important;
+                            '>
+                                <div style='
+                                    font-size: 1.125rem !important; /* smaller than 1.5rem */
+                                    margin-bottom: 0.3rem !important; /* reduced spacing */
+                                    line-height: 1.3 !important;
+                                    color: {titleColor} !important;
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    white-space: nowrap !important;
+                                    font-weight: bold !important;
+                                '
+                                title='{credential.Name}'>{truncatedName}</div>
+
+                                <div style='
+                                    color: {subtitleColor} !important;
+                                    font-size: 0.8rem !important;
+                                    font-weight: 500 !important;
+                                    margin-bottom: 0.3rem !important; /* smaller spacing */
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    white-space: nowrap !important;
+                                '
+                                title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
+
+                                {(showDescription ? $@"
+                                <div style='
+                                    font-size: 0.8rem !important;
+                                    margin-bottom: 0.3rem !important;
+                                    color: {descriptionColor} !important;
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    display: -webkit-box !important;
+                                    -webkit-line-clamp: 2 !important; /* 2 lines max */
+                                    -webkit-box-orient: vertical !important;
+                                '
+                                title='{credential.Description}'>{truncatedDescription}</div>
+                                " : "")}
+
+                                {(claimsToShow != null && claimsToShow.Any() ? $@"
+                                <div style='
+                                    display: flex !important;
+                                    flex-direction: column !important;
+                                    gap: 0.25rem !important;
+                                    margin-bottom: 0.3rem !important;
+                                '>
+                                    {string.Join("", claimsToShow.Select(claim => $@"
+                                        <div style='
+                                            display: flex !important;
+                                            align-items: baseline !important;
+                                            gap: 0.25rem !important;
+                                            font-size: 0.8rem !important;
+                                        '>
+                                            <div style='
+                                                color: {validityLabelColor} !important;
+                                                font-weight: 400 !important;
+                                            '>
+                                                {claim.Key}:
+                                            </div>
+                                            <div style='
+                                                color: {validityDateColor} !important;
+                                                font-weight: 500 !important;
+                                                word-wrap: break-word !important;
+                                            '>
+                                                {claim.Value}
+                                            </div>
+                                        </div>
+                                    "))}
+                                </div>
+                                " : "")}
+
+                                <!-- For small templates, we do NOT show ValidFrom or ValidUntil. -->
+
+                                <!-- Smaller status button placed at the end -->
+                                <div style='
+                                    display: flex !important;
+                                    justify-content: flex-end !important;
+                                '>
+                                    {GetStatusButtonSmall(isDarkTheme, credential.Status)}
+                                </div>
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            ");
+        }
 
         return templateBuilder.ToString();
     }
@@ -295,6 +463,7 @@ public class TemplatesService
         var (backgroundColor, textColor, iconColor) = GetStatusStyles(isDarkTheme, status);
         string statusText = GetStatusText(status);
 
+        // The normal-size button
         return $@"
             <button style='
                 background-color: {backgroundColor} !important;
@@ -304,6 +473,33 @@ public class TemplatesService
                 display: flex !important;
                 align-items: center !important;
                 font-size: 0.875rem !important;
+                font-weight: 500 !important;
+                border: none !important;
+                outline: none !important;
+                cursor: pointer !important;
+            '>
+                {GetStatusIcon(status, iconColor)}
+                <div style='margin-left: 0.25rem !important; display: inline-block !important;'>{statusText}</div>
+            </button>
+        ";
+    }
+
+    // A smaller version for the “small” templates.
+    private string GetStatusButtonSmall(bool isDarkTheme, EVerificationStatus status)
+    {
+        var (backgroundColor, textColor, iconColor) = GetStatusStyles(isDarkTheme, status);
+        string statusText = GetStatusText(status);
+
+        // Slightly smaller size/padding/font-size
+        return $@"
+            <button style='
+                background-color: {backgroundColor} !important;
+                color: {textColor} !important;
+                padding: 0.25rem 0.5rem !important;
+                border-radius: 0.25rem !important;
+                display: flex !important;
+                align-items: center !important;
+                font-size: 0.75rem !important;
                 font-weight: 500 !important;
                 border: none !important;
                 outline: none !important;
@@ -383,6 +579,7 @@ public class TemplatesService
             return "https://via.placeholder.com/150";
         }
 
+        // If it's not a URL (http/https) or already a data URI, assume base64
         if (!image.StartsWith("http") && !image.StartsWith("data:image"))
         {
             return $"data:image;base64,{image}";
