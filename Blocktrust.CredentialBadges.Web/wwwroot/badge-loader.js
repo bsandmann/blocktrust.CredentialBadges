@@ -1,4 +1,4 @@
-(function() {
+(function () {
     // Safeguard to prevent multiple executions
     if (window.blocktrustBadgeLoaderExecuted) return;
     window.blocktrustBadgeLoaderExecuted = true;
@@ -32,10 +32,17 @@
         document.head.appendChild(style);
     }
 
-    async function fetchAndRenderBadge(element, domain) {
+    async function fetchAndRenderBadge(element) {
         const credentialId = element.getAttribute('data-id');
         const templateId = element.getAttribute('data-template');
         const theme = templateId.split('_').pop();
+
+        // IMPORTANT: we now read domain from the data-domain attribute
+        const domain = element.getAttribute('data-domain');
+        if (!domain) {
+            console.error('Badge loader error: no "data-domain" attribute found on element:', element);
+            return;
+        }
 
         // Show skeleton loader
         element.innerHTML = createSkeletonLoader();
@@ -53,32 +60,16 @@
         }
     }
 
-    function getDomain() {
-        const scripts = document.getElementsByTagName('script');
-        for (let i = scripts.length - 1; i >= 0; i--) {
-            const src = scripts[i].src;
-            if (src && src.includes('badge-loader.js')) {
-                return new URL(src).origin;
-            }
-        }
-        console.error('Unable to determine script domain');
-        return '';
-    }
-
     function init() {
-        const domain = getDomain();
-        if (!domain) {
-            console.error('Badge loader initialization failed: Unable to determine domain');
-            return;
-        }
-
         addSkeletonStyles();
 
         const badges = document.querySelectorAll('.blocktrust-badge');
         if (badges.length === 0) {
             console.warn('No badge elements found on the page');
         } else {
-            badges.forEach(element => fetchAndRenderBadge(element, domain));
+            badges.forEach(element => {
+                fetchAndRenderBadge(element);
+            });
         }
     }
 
