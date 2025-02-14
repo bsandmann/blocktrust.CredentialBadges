@@ -7,7 +7,7 @@ using Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 using Microsoft.EntityFrameworkCore;
 using Blocktrust.CredentialBadges.Core.Services.DIDPrism;
 using Blocktrust.CredentialBadges.Core.Commands.CheckDIDKeySignature;
-using Blocktrust.CredentialBadges.Web.BackgroundServices;
+using Blocktrust.CredentialBadges.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

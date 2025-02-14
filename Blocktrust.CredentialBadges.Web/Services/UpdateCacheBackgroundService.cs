@@ -1,8 +1,7 @@
-using MediatR;
-
-namespace Blocktrust.CredentialBadges.Web.BackgroundServices
+namespace Blocktrust.CredentialBadges.Web.Services
 {
-    using Commands.VerifiedCredentials.UpdateCache;
+    using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateCache;
+    using MediatR;
 
     public class UpdateCacheBackgroundService : BackgroundService
     {
