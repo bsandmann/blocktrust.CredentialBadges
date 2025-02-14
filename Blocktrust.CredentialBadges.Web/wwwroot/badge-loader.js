@@ -5,9 +5,9 @@
 
     function createSkeletonLoader() {
         return `
-            <div style="width: 30rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-family: 'Poppins', sans-serif; padding: 1rem; margin-bottom: 2rem; background: #F8FAFC; overflow: hidden;">
+            <div style="width: 28rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-family: 'Poppins', sans-serif; padding: 1rem; margin-bottom: 2rem; background: #F8FAFC; overflow: hidden;">
                 <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                    <div style="width: 7rem; height: 7rem; flex-shrink: 0; background-color: #ffffff; border-radius: 0.5rem;"></div>
+                    <div style="width: 6rem; height: 6rem; flex-shrink: 0; background-color: #ffffff; border-radius: 0.5rem;"></div>
                     <div style="flex-grow: 1;">
                         <div style="width: 70%; height: 1.5rem; border-radius: 0.25rem; background: linear-gradient(90deg, #F8FAFC 0%, #E0E6ED 50%, #F8FAFC 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
                         <div style="width: 50%; height: 1rem; margin-top: 0.5rem; border-radius: 0.25rem; background: linear-gradient(90deg, #F8FAFC 0%, #E0E6ED 50%, #F8FAFC 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
