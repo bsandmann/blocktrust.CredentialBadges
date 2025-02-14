@@ -83,7 +83,7 @@ app.UseAntiforgery();
 
 // Enable CORS
 app.UseCors("AllowAllOrigins");
-
+app.UseHttpsRedirection();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

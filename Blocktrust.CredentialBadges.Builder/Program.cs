@@ -101,7 +101,7 @@ app.UseStaticFiles();
 
 // Use Routing
 app.UseRouting();
-
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
