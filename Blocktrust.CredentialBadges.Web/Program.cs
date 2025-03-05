@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Blocktrust.CredentialBadges.Core.Services.DIDPrism;
 using Blocktrust.CredentialBadges.Core.Commands.CheckDIDKeySignature;
 using Blocktrust.CredentialBadges.Web.Services;
+using DidPrismResolverClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,11 +53,28 @@ builder.Services.AddScoped<ImageBytesToBase64>();
 
 builder.Services.AddScoped<ExtractPrismPubKeyFromLongFormDid>();
 
+builder.Services.AddHttpClient<PrismDidClient>()
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        return new HttpClientHandler
+        {
+            // Insecure: bypass SSL errors
+            ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+    });
+
 builder.Services.AddServerSideBlazor()
     .AddHubOptions(options =>
     {
         options.MaximumReceiveMessageSize = 12 * 1024 * 1024; // 12MB
     });
+
+builder.Services.AddSingleton(new PrismDidClientOptions
+{
+    BaseUrl = "https://opn.blocktrust.dev:31201",
+    DefaultLedger = "mainnet"
+});
 
 // Add CORS services
 builder.Services.AddCors(options =>
