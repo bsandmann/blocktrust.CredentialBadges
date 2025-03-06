@@ -27,16 +27,26 @@ public class ProfileRefConverter : JsonConverter<ProfileRef>
             };
         }
 
-        // If it’s an object (typical case), just let System.Text.Json
-        // deserialize it into a ProfileRef normally.
         if (reader.TokenType == JsonTokenType.StartObject)
         {
             using var doc = JsonDocument.ParseValue(ref reader);
-            // Pass the raw object back through the serializer
-            // to get a fully populated ProfileRef.
+
+            // Make a clone of the incoming options
+            var noProfileRefConverterOptions = new JsonSerializerOptions(options);
+
+            // Remove or skip adding your converter to avoid recursion
+            for (int i = noProfileRefConverterOptions.Converters.Count - 1; i >= 0; i--)
+            {
+                if (noProfileRefConverterOptions.Converters[i] is ProfileRefConverter)
+                {
+                    noProfileRefConverterOptions.Converters.RemoveAt(i);
+                }
+            }
+
             var result = JsonSerializer.Deserialize<ProfileRef>(
                 doc.RootElement.GetRawText(),
-                options);
+                noProfileRefConverterOptions);
+
             return result;
         }
 
@@ -76,7 +86,6 @@ public class ProfileRefConverter : JsonConverter<ProfileRef>
                value.Name == null &&
                value.Url == null &&
                value.Phone == null &&
-               // etc. – you can refine the logic as needed
                value.Description == null &&
                value.Image == null &&
                value.Email == null &&
