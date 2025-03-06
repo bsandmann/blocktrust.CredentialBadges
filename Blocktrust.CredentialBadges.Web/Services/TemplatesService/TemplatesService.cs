@@ -4,6 +4,8 @@ using Blocktrust.CredentialBadges.Web.Enums;
 
 namespace Blocktrust.CredentialBadges.Web.Services.TemplatesService;
 
+using System.Text.RegularExpressions;
+
 public class TemplatesService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -40,7 +42,7 @@ public class TemplatesService
         bool isSmall = templateId.Contains("_small_");
 
         // Truncate logic
-        var identifer = credential.Claims.TryGetValue("identifier", out var identifier) ? identifier : "";
+        var subjectName = credential.SubjectName; // subjectName is here
         credential.Claims.TryGetValue("name", out var name);
         credential.Claims.TryGetValue("description", out var description);
         string truncatedName = TruncateString(name ?? "", 60);
@@ -48,10 +50,9 @@ public class TemplatesService
         string truncatedDescription = TruncateString(description ?? "", 170);
 
         // If not small, we show them all (existing). But we might skip them if `noClaims`.
-        // So effectively:
         var claimsToShow = credential.Claims;
 
-        // Here are our new valid templates. For each of the existing ones, add a "_noclaims" version:
+        // Valid templates check
         var validTemplates = new HashSet<string>
         {
             // Regular templates:
@@ -204,12 +205,24 @@ public class TemplatesService
                                     color: {subtitleColor} !important;
                                     font-size: 0.875rem !important;
                                     font-weight: 500 !important;
-                                    margin-bottom: 0.5rem !important;
                                     overflow: hidden !important;
                                     text-overflow: ellipsis !important;
                                     white-space: nowrap !important;
                                 '
                                 title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
+
+                                {(string.IsNullOrWhiteSpace(subjectName) ? "" : $@"
+                                <div style='
+                                    color: {subtitleColor} !important;
+                                    font-size: 0.875rem !important;
+                                    font-weight: 500 !important;
+                                    margin-bottom: 0.5rem !important;
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    white-space: nowrap !important;
+                                '
+                                title='{subjectName}'>Issued to: {subjectName}</div>
+                                ")}
 
                                 {(showDescription ? $@"
                                 <div style='
@@ -243,7 +256,7 @@ public class TemplatesService
                                                 color: {validityLabelColor} !important;
                                                 font-weight: 400 !important;
                                             '>
-                                                {claim.Key}:
+                                                 {MakeReadableKey(claim.Key)}:
                                             </div>
                                             <div style='
                                                 color: {validityDateColor} !important;
@@ -321,9 +334,6 @@ public class TemplatesService
         else
         {
             // ======= SMALL TEMPLATE =======
-            // - If _noclaims, skip claims
-            // - Everything else same as existing, but smaller
-
             string smallStyles = $@"
                 display: inline-block !important;
                 width: 20rem !important; /* narrower */
@@ -401,6 +411,20 @@ public class TemplatesService
                                 '
                                 title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
 
+                                <!-- ADDED “Issued to” section (small template) -->
+                                {(string.IsNullOrWhiteSpace(subjectName) ? "" : $@"
+                                <div style='
+                                    color: {subtitleColor} !important;
+                                    font-size: 0.8rem !important;
+                                    font-weight: 500 !important;
+                                    margin-bottom: 0.3rem !important;
+                                    overflow: hidden !important;
+                                    text-overflow: ellipsis !important;
+                                    white-space: nowrap !important;
+                                '
+                                title='{subjectName}'>Issued to: {subjectName}</div>
+                                ")}
+
                                 {(showDescription ? $@"
                                 <div style='
                                     font-size: 0.8rem !important;
@@ -433,7 +457,7 @@ public class TemplatesService
                                                 color: {validityLabelColor} !important;
                                                 font-weight: 400 !important;
                                             '>
-                                                {claim.Key}:
+                                                {MakeReadableKey(claim.Key)}:
                                             </div>
                                             <div style='
                                                 color: {validityDateColor} !important;
@@ -449,7 +473,6 @@ public class TemplatesService
 
                                 <!-- For small templates, we do NOT show ValidFrom or ValidUntil. -->
 
-                                <!-- Smaller status button placed at the end -->
                                 <div style='
                                     display: flex !important;
                                     justify-content: flex-end !important;
@@ -500,13 +523,12 @@ public class TemplatesService
         ";
     }
 
-    // A smaller version for the “small” templates.
     private string GetStatusButtonSmall(bool isDarkTheme, EVerificationStatus status)
     {
         var (backgroundColor, textColor, iconColor) = GetStatusStyles(isDarkTheme, status);
         string statusText = GetStatusText(status);
 
-        // Slightly smaller size/padding/font-size
+        // Slightly smaller button
         return $@"
             <button style='
                 background-color: {backgroundColor} !important;
@@ -602,5 +624,27 @@ public class TemplatesService
         }
 
         return image;
+    }
+
+    public static string MakeReadableKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            return key ?? "";
+
+        // If the key already has spaces, just uppercase the first letter.
+        if (key.Contains(' '))
+        {
+            // Uppercase first character, leave the rest unchanged.
+            return char.ToUpper(key[0]) + key.Substring(1);
+        }
+        else
+        {
+            // Insert a space before each uppercase letter (e.g. "fieldOfStudy" -> "field Of Study")
+            string withSpaces = Regex.Replace(key, "([A-Z])", " $1").Trim();
+
+            // Capitalize the first letter of the resulting string, and make the rest lowercase
+            // (If you want to preserve original casing for the rest, remove the .ToLower() step)
+            return char.ToUpper(withSpaces[0]) + withSpaces.Substring(1).ToLower();
+        }
     }
 }
