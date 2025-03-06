@@ -19,7 +19,7 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
     private readonly AppSettings _appSettings;
 
 
-    public ApproveBuilderCredentialHandler(IMediator mediator, ILogger<ApproveBuilderCredentialHandler> logger,IOptions<AppSettings> appSettings, IServiceScopeFactory serviceScopeFactory)
+    public ApproveBuilderCredentialHandler(IMediator mediator, ILogger<ApproveBuilderCredentialHandler> logger, IOptions<AppSettings> appSettings, IServiceScopeFactory serviceScopeFactory)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -43,37 +43,64 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
                 return Result.Fail<BuilderCredential>("Credential not found");
             }
 
-            // Create offer
-            var offerRequest = new CreateOfferRequest
+            CreateOfferRequest offerRequest;
+            if (ParseCredentialSubject(entity.CredentialSubject)["CredentialType"] == "Endorsement")
             {
-                Claims = new
+                // Create offer
+                offerRequest = new CreateOfferRequest
                 {
-                    type = new List<string> { "AchievementSubject" },
-                    achievement = new
+                    Claims = new
                     {
-                        id = "urn:uuid:" + Guid.NewGuid(),
-                        type = new List<string> { "Achievement" },
-                        achievementType = ParseCredentialSubject(entity.CredentialSubject)["AchievementType"],
-                        name = ParseCredentialSubject(entity.CredentialSubject)["Name"],
-                        description = ParseCredentialSubject(entity.CredentialSubject)["Description"],
-                        criteria = new
+                        identifier = ParseCredentialSubject(entity.CredentialSubject)["Identifier"],
+                        type = new List<string> { "EndorsementSubject" },
+                        name = ParseCredentialSubject(entity.CredentialSubject)["Name"], // moved from the Credential to the subject
+                        description = ParseCredentialSubject(entity.CredentialSubject)["Description"], // moved from the Credential to the subject
+                        endorsementComment = ParseCredentialSubject(entity.CredentialSubject)["EndorsementComment"],
+                    },
+                    CredentialFormat = "JWT",
+                    IssuingDID = _appSettings.IssuingDID,
+                    ConnectionId = entity.IssuerConnectionId,
+                    AutomaticIssuance = true,
+                    ValidityPeriod = 300000000
+                };
+            }
+            else
+            {
+                // Assuming the Credentialtype is Achievement
+                // Create offer
+                offerRequest = new CreateOfferRequest
+                {
+                    Claims = new
+                    {
+                        identifier = ParseCredentialSubject(entity.CredentialSubject)["Identifier"],
+                        type = new List<string> { "AchievementSubject" },
+                        name = ParseCredentialSubject(entity.CredentialSubject)["Name"], // moved from the Credential to the subject
+                        description = ParseCredentialSubject(entity.CredentialSubject)["Description"], // moved from the Credential to the subject
+                        achievement = new
                         {
-                            type = "Criteria",
-                            narrative = ParseCredentialSubject(entity.CredentialSubject)["Criteria"]
+                            achievementType = ParseCredentialSubject(entity.CredentialSubject)["AchievementType"],
+                            criteria = new
+                            {
+                                type = "Criteria",
+                                narrative = ParseCredentialSubject(entity.CredentialSubject)["Criteria"]
+                            },
+                            fieldOfStudy = ParseCredentialSubject(entity.CredentialSubject)["FieldOfStudy"],
+                            specialization = ParseCredentialSubject(entity.CredentialSubject)["Specialization"],
                         },
                         image = new
                         {
                             id = ParseCredentialSubject(entity.CredentialSubject)["Image"],
                             type = "Image"
-                        }
-                    }
-                },
-                CredentialFormat = "JWT",
-                IssuingDID = _appSettings.IssuingDID,
-                ConnectionId = entity.IssuerConnectionId,
-                AutomaticIssuance = true,
-                ValidityPeriod = 300000000
-            };
+                        },
+                    },
+                    CredentialFormat = "JWT",
+                    IssuingDID = _appSettings.IssuingDID,
+                    ConnectionId = entity.IssuerConnectionId,
+                    AutomaticIssuance = true,
+                    ValidityPeriod = 300000000
+                };
+            }
+
 
             var offerResult = await _mediator.Send(offerRequest, cancellationToken);
 
@@ -83,26 +110,25 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
             }
 
             var offerResponse = offerResult.Value;
-     
 
-        // Update credential status to WaitingAcceptance and set ThId
-        var updateRequest = new UpdateBuilderCredentialRequest
-        {
-            CredentialId = request.CredentialId,
-            Status = EBuilderCredentialStatus.WaitingAcceptance,
-            ThId = Guid.Parse(offerResponse.Thid), 
-            RecordIdOnAgent = entity.RecordIdOnAgent
-        };
 
-        var updateResult = await _mediator.Send(updateRequest, cancellationToken);
+            // Update credential status to WaitingAcceptance and set ThId
+            var updateRequest = new UpdateBuilderCredentialRequest
+            {
+                CredentialId = request.CredentialId,
+                Status = EBuilderCredentialStatus.WaitingAcceptance,
+                ThId = Guid.Parse(offerResponse.Thid),
+                RecordIdOnAgent = entity.RecordIdOnAgent
+            };
 
-        if (updateResult.IsFailed)
-        {
-            return Result.Fail<BuilderCredential>("Failed to update credential");
-        }
+            var updateResult = await _mediator.Send(updateRequest, cancellationToken);
 
-        return Result.Ok(updateResult.Value);
-        
+            if (updateResult.IsFailed)
+            {
+                return Result.Fail<BuilderCredential>("Failed to update credential");
+            }
+
+            return Result.Ok(updateResult.Value);
         }
         catch (Exception ex)
         {
