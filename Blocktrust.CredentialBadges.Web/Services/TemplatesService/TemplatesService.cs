@@ -29,22 +29,29 @@ public class TemplatesService
         string borderColor = "#dedede";
         string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
 
+        // Check if we want to show or skip description
         bool showDescription = templateId.Contains("description") && !templateId.Contains("no_description");
+        // Check if we want to show types
         bool showTypes = templateId.Contains("_withTypes") && !templateId.Contains("_small_");
-        // We never show Types if it’s a small template, per requirements.
+        // Check if we want to skip claims
+        bool noClaims = templateId.Contains("_noclaims");
 
         // Determine if this is a "small" template
         bool isSmall = templateId.Contains("_small_");
 
-        // Truncate logic stays the same
-        string truncatedName = TruncateString(credential.Name, 60);
+        // Truncate logic
+        var identifer = credential.Claims.TryGetValue("identifier", out var identifier) ? identifier : "";
+        credential.Claims.TryGetValue("name", out var name);
+        credential.Claims.TryGetValue("description", out var description);
+        string truncatedName = TruncateString(name ?? "", 60);
         string truncatedIssuer = TruncateString(credential.Issuer, 50);
-        string truncatedDescription = TruncateString(credential.Description, 170);
+        string truncatedDescription = TruncateString(description ?? "", 170);
 
-        // If not small, we show them all (existing behavior).
-        var claimsToShow =  credential.Claims;
+        // If not small, we show them all (existing). But we might skip them if `noClaims`.
+        // So effectively:
+        var claimsToShow = credential.Claims;
 
-        // Larger set of valid templates:
+        // Here are our new valid templates. For each of the existing ones, add a "_noclaims" version:
         var validTemplates = new HashSet<string>
         {
             // Regular templates:
@@ -61,7 +68,24 @@ public class TemplatesService
             "image_no_description_small_light", "image_no_description_small_dark",
             "image_description_small_light", "image_description_small_dark",
             "noimage_description_small_light", "noimage_description_small_dark",
-            "noimage_no_description_small_light", "noimage_no_description_small_dark"
+            "noimage_no_description_small_light", "noimage_no_description_small_dark",
+
+            // ======  _noclaims VERSIONS ======
+            // Regular:
+            "image_no_description_noclaims_light", "image_no_description_noclaims_dark",
+            "image_description_noclaims_light", "image_description_noclaims_dark",
+            "noimage_description_noclaims_light", "noimage_description_noclaims_dark",
+            "noimage_no_description_noclaims_light", "noimage_no_description_noclaims_dark",
+            "image_no_description_withTypes_noclaims_light", "image_no_description_withTypes_noclaims_dark",
+            "image_description_withTypes_noclaims_light", "image_description_withTypes_noclaims_dark",
+            "noimage_description_withTypes_noclaims_light", "noimage_description_withTypes_noclaims_dark",
+            "noimage_no_description_withTypes_noclaims_light", "noimage_no_description_withTypes_noclaims_dark",
+
+            // Small + noclaims:
+            "image_no_description_small_noclaims_light", "image_no_description_small_noclaims_dark",
+            "image_description_small_noclaims_light", "image_description_small_noclaims_dark",
+            "noimage_description_small_noclaims_light", "noimage_description_small_noclaims_dark",
+            "noimage_no_description_small_noclaims_light", "noimage_no_description_small_noclaims_dark"
         };
 
         if (!validTemplates.Contains(templateId))
@@ -150,7 +174,7 @@ public class TemplatesService
                                     white-space: nowrap !important;
                                     font-weight: bold !important;
                                 '
-                                title='{credential.Name}'>{truncatedName}</div>
+                                title='{truncatedName}'>{truncatedName}</div>
 
                                 {(showTypes && credential.Types != null && credential.Types.Count > 0 ? $@"
                                 <div style='
@@ -198,17 +222,17 @@ public class TemplatesService
                                     -webkit-line-clamp: 2 !important;
                                     -webkit-box-orient: vertical !important;
                                 '
-                                title='{credential.Description}'>{truncatedDescription}</div>
+                                title='{truncatedDescription}'>{truncatedDescription}</div>
                                 " : "")}
 
-                                {(credential.Claims != null && credential.Claims.Count > 0 ? $@"
+                                {(!noClaims && credential.Claims != null && credential.Claims.Count > 0 ? $@"
                                 <div style='
                                     display: flex !important;
                                     flex-direction: column !important;
                                     gap: 0.25rem !important;
                                     margin-bottom: 0.5rem !important;
                                 '>
-                                    {string.Join("", credential.Claims.Select(claim => $@"
+                                    {string.Join("", credential.Claims.Where(p => p.Key.ToLowerInvariant() != "name" && p.Key.ToLowerInvariant() != "description" && p.Key.ToLowerInvariant() != "identifier").Select(claim => $@"
                                         <div style='
                                             display: flex !important;
                                             align-items: baseline !important;
@@ -297,16 +321,8 @@ public class TemplatesService
         else
         {
             // ======= SMALL TEMPLATE =======
-            // Requirements:
-            // - Image is half-size if present
-            // - Name font smaller
-            // - Types are never shown
-            // - Issuer shown
-            // - Description limited to 2 lines
-            // - Show only up to 2 claims
-            // - No ValidFrom / ValidUntil
-            // - Smaller margins/gaps/padding
-            // - Smaller button
+            // - If _noclaims, skip claims
+            // - Everything else same as existing, but smaller
 
             string smallStyles = $@"
                 display: inline-block !important;
@@ -399,14 +415,14 @@ public class TemplatesService
                                 title='{credential.Description}'>{truncatedDescription}</div>
                                 " : "")}
 
-                                {(claimsToShow != null && claimsToShow.Any() ? $@"
+                                {(!noClaims && claimsToShow != null && claimsToShow.Any() ? $@"
                                 <div style='
                                     display: flex !important;
                                     flex-direction: column !important;
                                     gap: 0.25rem !important;
                                     margin-bottom: 0.3rem !important;
                                 '>
-                                    {string.Join("", claimsToShow.Select(claim => $@"
+                                    {string.Join("", claimsToShow.Where(p=>p.Key.ToLowerInvariant()!="name" && p.Key.ToLowerInvariant()!="description" && p.Key.ToLowerInvariant()!="identifier").Select(claim => $@"
                                         <div style='
                                             display: flex !important;
                                             align-items: baseline !important;
