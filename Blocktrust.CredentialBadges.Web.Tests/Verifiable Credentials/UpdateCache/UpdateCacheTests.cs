@@ -51,8 +51,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
                 new VerifiedCredentialEntity
                 {
                     StoredCredentialId = Guid.NewGuid(),
-                    Name = "Test 1",
-                    Description = "test",
                     Credential = "testCredential",
                     Issuer = "Test Issuer",
                     Status = EVerificationStatus.Verified
@@ -60,8 +58,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
                 new VerifiedCredentialEntity
                 {
                     StoredCredentialId = Guid.NewGuid(),
-                    Name = "Test 2",
-                    Description = "test",
                     Credential = "testCredential",
                     Issuer = "Test Issuer",
                     Status = EVerificationStatus.Verified
@@ -94,7 +90,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
                 var cachedValue = cache.Get<VerifiedCredential>(cacheKey);
 
                 cachedValue.Should().NotBeNull($"Credential {cred.StoredCredentialId} should have been cached");
-                cachedValue!.Name.Should().Be(cred.Name);
             }
         }
 
@@ -110,8 +105,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
                 .Select(i => new VerifiedCredentialEntity
                 {
                     StoredCredentialId = Guid.NewGuid(),
-                    Name = $"Credential #{i}",
-                    Description = "test",
                     Credential = "testCredential",
                     Issuer = "Test Issuer",
                     Status = EVerificationStatus.Verified
@@ -143,7 +136,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
                 var cachedValue = cache.Get<VerifiedCredential>(cacheKey);
 
                 cachedValue.Should().NotBeNull($"Credential {cred.StoredCredentialId} should be in the cache");
-                cachedValue!.Name.Should().Be(cred.Name);
             }
         }
     }

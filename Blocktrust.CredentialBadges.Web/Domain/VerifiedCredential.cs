@@ -29,8 +29,6 @@ public class VerifiedCredential
         {
             StoredCredentialId = Id,
             Status = Status,
-            Description = Description,
-            Name = Name,
             Image = Image,
             Credential = Credential,
             ValidFrom = ValidFrom,
@@ -48,8 +46,6 @@ public class VerifiedCredential
         {
             Id = entity.StoredCredentialId,
             Status = entity.Status,
-            Description = entity.Description,
-            Name = entity.Name,
             Image = entity.Image,
             Credential = entity.Credential,
             ValidFrom = entity.ValidFrom,

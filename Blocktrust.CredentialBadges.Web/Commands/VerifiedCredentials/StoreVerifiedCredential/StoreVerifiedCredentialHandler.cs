@@ -25,8 +25,6 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
         var verifiedCredential = new VerifiedCredential
         {
             Id = Guid.NewGuid(),
-            Name = request.Name,
-            Description = request.Description,
             Image = request.Image,
             Credential = request.Credential,
             Status = request.Status,

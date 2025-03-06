@@ -26,8 +26,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
                 var credentialEntity = new VerifiedCredentialEntity
                 {
                     StoredCredentialId = Guid.NewGuid(),
-                    Name = "Credential To Update",
-                    Description = "Will update the template ID",
                     Image = "https://example.com/someimage.jpg",
                     Credential = "{ \"data\": \"some data\" }",
                     Status = EVerificationStatus.Verified,
@@ -89,8 +87,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
                 var credentialEntity = new VerifiedCredentialEntity
                 {
                     StoredCredentialId = Guid.NewGuid(),
-                    Name = "Credential With Template To Clear",
-                    Description = "Testing empty template ID",
                     Image = "https://example.com/anotherimage.jpg",
                     Credential = "{ \"data\": \"another data\" }",
                     Status = EVerificationStatus.Verified,

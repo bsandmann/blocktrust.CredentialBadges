@@ -20,8 +20,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
             var loggerMock = new Mock<ILogger<StoreVerifiedCredentialHandler>>();
             var request = new StoreVerifiedCredentialRequest
             {
-                Name = "Test Credential",
-                Description = "Test Description",
                 Image = "https://example.com/image.jpg",
                 Credential = "{ \"some\": \"credential data\" }",
                 Status = EVerificationStatus.Verified,
@@ -35,8 +33,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
             // Assert
             result.Should().BeSuccess();
             result.Value.Should().NotBeNull();
-            result.Value.Name.Should().Be("Test Credential");
-            result.Value.Description.Should().Be("Test Description");
             result.Value.Image.Should().Be("https://example.com/image.jpg");
             result.Value.Credential.Should().Be("{ \"some\": \"credential data\" }");
             result.Value.Status.Should().Be(EVerificationStatus.Verified);
@@ -45,10 +41,9 @@ namespace Blocktrust.CredentialBadges.Web.Tests
             using var scope = Fixture.ServiceScopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var credentialInDb = await context.Set<VerifiedCredentialEntity>()
-                .FirstOrDefaultAsync(c => c.Name == "Test Credential");
+                .FirstOrDefaultAsync(c => c.Image == "https://example.com/image.jpg");
 
             credentialInDb.Should().NotBeNull();
-            credentialInDb!.Description.Should().Be("Test Description");
             credentialInDb.Image.Should().Be("https://example.com/image.jpg");
             credentialInDb.Credential.Should().Be("{ \"some\": \"credential data\" }");
             credentialInDb.Status.Should().Be(EVerificationStatus.Verified);
@@ -61,8 +56,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
             var loggerMock = new Mock<ILogger<StoreVerifiedCredentialHandler>>();
             var request = new StoreVerifiedCredentialRequest
             {
-                Name = "No Image Credential",
-                Description = "Should use default template",
                 Image = "",  // no image
                 Credential = "{ \"some\": \"credential data\" }",
                 Status = EVerificationStatus.Verified,
@@ -87,8 +80,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
             var loggerMock = new Mock<ILogger<StoreVerifiedCredentialHandler>>();
             var request = new StoreVerifiedCredentialRequest
             {
-                Name = "Credential With Claims",
-                Description = "Testing Domain & Claims",
                 Image = "https://example.com/image2.jpg",
                 Credential = "{ \"some\": \"credential data 2\" }",
                 Status = EVerificationStatus.Verified,
@@ -117,7 +108,7 @@ namespace Blocktrust.CredentialBadges.Web.Tests
             using var scope = Fixture.ServiceScopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var credentialInDb = await context.Set<VerifiedCredentialEntity>()
-                .FirstOrDefaultAsync(c => c.Name == "Credential With Claims");
+                .FirstOrDefaultAsync(c => c.Domain == "example.org");
 
             credentialInDb.Should().NotBeNull();
             credentialInDb!.Domain.Should().Be("example.org");
@@ -149,8 +140,6 @@ namespace Blocktrust.CredentialBadges.Web.Tests
 
             var request = new StoreVerifiedCredentialRequest
             {
-                Name = "Failing Credential",
-                Description = "This should fail on save",
                 Credential = "{ \"data\": \"will fail\" }",
                 Status = EVerificationStatus.Verified,
                 Issuer = "Failing Issuer"

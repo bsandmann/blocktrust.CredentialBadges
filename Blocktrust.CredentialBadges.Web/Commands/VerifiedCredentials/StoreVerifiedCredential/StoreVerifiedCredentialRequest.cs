@@ -7,8 +7,6 @@ namespace Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.StoreVeri
 
 public class StoreVerifiedCredentialRequest : IRequest<Result<VerifiedCredential>>
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
     public string Image { get; set; }
     public string Credential { get; set; }
     public DateTime ValidFrom { get; set; }
