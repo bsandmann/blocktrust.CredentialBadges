@@ -29,7 +29,7 @@ public class VerifyOpenBadgeHandler : IRequestHandler<VerifyOpenBadgeRequest, Re
             return checkSignatureResult.ToResult();
         }
 
-        verificationResult.SignatureIsValid = checkSignatureResult.Value == ECheckSignatureResponse.Valid || checkSignatureResult.Value == ECheckSignatureResponse.UnsupportedDidMethod;
+        verificationResult.SignatureIsValid = checkSignatureResult.Value == ECheckSignatureResponse.Valid;
         
 
         // Then check the expiration & Issuance Date
