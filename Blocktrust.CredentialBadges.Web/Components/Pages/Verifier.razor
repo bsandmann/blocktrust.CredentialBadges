@@ -88,8 +88,8 @@
                             <img src="data:image;base64,@credential.Image" alt="Issuer Logo"
                                  class="w-16 h-16 object-contain rounded-full mr-4"/>
                             <div class="flex-1 min-w-0 flex items-center">
-                                <p class="font-semibold truncate flex-grow">@parserResult.Issuer.Id</p>
-                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())"
+                                <p class="font-semibold truncate flex-grow">@parserResultAchievement.Issuer.Id</p>
+                                <button @onclick="() => CopyToClipboard(parserResultAchievement.Issuer.Id.ToString())"
                                         class="ml-2 flex-shrink-0">
                                     <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
                                 </button>
@@ -98,8 +98,8 @@
                         else
                         {
                             <div class="flex-1 min-w-0 flex items-center">
-                                <p class="font-semibold truncate flex-grow">@parserResult.Issuer.Id</p>
-                                <button @onclick="() => CopyToClipboard(parserResult.Issuer.Id.ToString())"
+                                <p class="font-semibold truncate flex-grow">@parserResultAchievement.Issuer.Id</p>
+                                <button @onclick="() => CopyToClipboard(parserResultAchievement.Issuer.Id.ToString())"
                                         class="ml-2 flex-shrink-0">
                                     <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
                                 </button>
@@ -114,23 +114,23 @@
                     <div class="flex flex-col mb-2">
                         <strong class="mr-1 min-w-8">Issued To:</strong>
                         <div class="flex flex-row">
-                            <p class="truncate flex-grow ">@parserResult.CredentialSubject.Id</p>
-                            <button @onclick="() => CopyToClipboard(parserResult.CredentialSubject.Id.ToString())"
+                            <p class="truncate flex-grow">@parserResultAchievement.CredentialSubject.Id</p>
+                            <button @onclick="() => CopyToClipboard(parserResultAchievement.CredentialSubject.Id.ToString())"
                                     class="ml-2 flex-shrink-0">
-                                <span
-                                    class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
+                                <span class="material-symbols-outlined text-gray-500 hover:text-gray-700">content_copy</span>
                             </button>
                         </div>
-
                     </div>
                     @if (!string.IsNullOrEmpty(credential.Description))
                     {
                         <p class="mb-2"><strong>Description:</strong> @credential.Description</p>
-                        @if (!string.IsNullOrEmpty(parserResult.CredentialSubject.Achievement.Criteria.Narrative))
+                        @if (!string.IsNullOrEmpty(parserResultAchievement.CredentialSubject.Achievement.Criteria.Narrative))
                         {
                             <div class="mb-2">
                                 <strong>Criteria:</strong>
-                                <p class="break-words">@parserResult.CredentialSubject.Achievement.Criteria.Narrative</p>
+                                <p class="break-words">
+                                    @parserResultAchievement.CredentialSubject.Achievement.Criteria.Narrative
+                                </p>
                             </div>
                         }
                     }
@@ -140,6 +140,19 @@
                         {
                             <p class="mb-2"><strong>@claim.Key:</strong> @claim.Value</p>
                         }
+                    }
+
+                    <!-- Always show the valid from date -->
+                    <p class="mt-4">
+                        <strong>Valid From:</strong> @credential.ValidFrom.ToString("MMMM dd, yyyy")
+                    </p>
+
+                    <!-- Show valid until only when available -->
+                    @if (credential.ValidUntil.HasValue)
+                    {
+                        <p>
+                            <strong>Valid Until:</strong> @credential.ValidUntil.Value.ToString("MMMM dd, yyyy")
+                        </p>
                     }
                 </div>
             </div>
@@ -250,7 +263,8 @@
     private VerifiedCredential credential;
     private string ErrorMessage;
     private bool isVerifying;
-    private AchievementCredential parserResult;
+    private AchievementCredential parserResultAchievement;
+    private EndorsementCredential parserResultEndorsement;
     private VerificationResponse verificationResponse;
     private bool showToast = false;
     private bool isError = false;
@@ -271,12 +285,22 @@
 
     private async Task LoadCredential(Guid credentialId)
     {
-        var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId,false));
+        var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId, false));
         if (result.IsSuccess)
         {
             credential = result.Value;
-            parserResult = (AchievementCredential)CredentialParser.Parse(credential.Credential).Value;
-            if (parserResult != null)
+
+            if (credential.TemplateId.Contains("endorsement"))
+            {
+                parserResultEndorsement = (EndorsementCredential)CredentialParser.Parse(credential.Credential).Value;
+            }
+            else
+            {
+                parserResultAchievement = (AchievementCredential)CredentialParser.Parse(credential.Credential).Value;
+            }
+
+
+            if (parserResultAchievement != null)
             {
                 await RerunVerification();
                 types = new SelectTemplateService().GetFilteredTypes(credential);

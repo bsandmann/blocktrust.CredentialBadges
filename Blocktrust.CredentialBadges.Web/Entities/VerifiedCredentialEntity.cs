@@ -20,7 +20,7 @@ public class VerifiedCredentialEntity
     public string Credential { get; set; }
 
     public DateTime ValidFrom { get; set; }
-    public DateTime ValidUntil { get; set; }
+    public DateTime? ValidUntil { get; set; }
     public string Issuer { get; set; }
 
     public string TemplateId { get; set; } = "noimage_no_description_light";

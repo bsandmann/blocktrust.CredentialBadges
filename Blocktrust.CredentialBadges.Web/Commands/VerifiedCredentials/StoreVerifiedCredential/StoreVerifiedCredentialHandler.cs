@@ -29,7 +29,7 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
             Credential = request.Credential,
             Status = request.Status,
             ValidFrom = request.ValidFrom.ToUniversalTime(),
-            ValidUntil = request.ValidUntil.ToUniversalTime(),
+            ValidUntil = request.ValidUntil?.ToUniversalTime(),
             Issuer = request.Issuer,
             Domain = request.Domain,
             Claims = request.Claims,
