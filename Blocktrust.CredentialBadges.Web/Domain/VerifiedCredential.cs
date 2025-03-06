@@ -22,6 +22,8 @@ public class VerifiedCredential
     public string TemplateId { get; set; }
     public string? Domain { get; set; }
     public Dictionary<string, string>? Claims { get; set; }
+    public string? SubjectId { get; set; }
+    public string? SubjectName { get; set; }
 
     public VerifiedCredentialEntity ToEntity()
     {
@@ -36,7 +38,9 @@ public class VerifiedCredential
             Issuer = Issuer,
             TemplateId = TemplateId,
             Domain = Domain,
-            Claims = SerializeClaims(Claims)
+            Claims = SerializeClaims(Claims),
+            SubjectId = SubjectId,
+            SubjectName = SubjectName
         };
     }
 
@@ -53,7 +57,9 @@ public class VerifiedCredential
             Issuer = entity.Issuer,
             TemplateId = entity.TemplateId,
             Domain = entity.Domain,
-            Claims = DeserializeClaims(entity.Claims)
+            Claims = DeserializeClaims(entity.Claims),
+            SubjectId = entity.SubjectId,
+            SubjectName = entity.SubjectName
         };
     }
 

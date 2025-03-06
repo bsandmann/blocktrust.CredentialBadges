@@ -15,4 +15,6 @@ public class StoreVerifiedCredentialRequest : IRequest<Result<VerifiedCredential
     public EVerificationStatus Status { get; set; }
     public string? Domain { get; set; }
     public Dictionary<string, string>? Claims { get; set; }
+    public string? SubjectId { get; set; }
+    public string? SubjectName { get; set; }
 }

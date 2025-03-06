@@ -31,4 +31,10 @@ public class VerifiedCredentialEntity
     [StringLength(5000, ErrorMessage = "Claims must not exceed 5000 characters")]
     [Column(TypeName = "text")]
     public string? Claims { get; set; }
+    
+    [StringLength(2000, ErrorMessage = "SubjectId must not exceed 2000 characters")]
+    public string? SubjectId { get; set; }
+    
+    [StringLength(300, ErrorMessage = "SubjectName must not exceed 300 characters")]
+    public string? SubjectName { get; set; }
 }

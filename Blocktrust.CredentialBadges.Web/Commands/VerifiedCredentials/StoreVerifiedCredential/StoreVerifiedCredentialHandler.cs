@@ -33,6 +33,8 @@ public class StoreVerifiedCredentialHandler : IRequestHandler<StoreVerifiedCrede
             Issuer = request.Issuer,
             Domain = request.Domain,
             Claims = request.Claims,
+            SubjectId = request.SubjectId,
+            SubjectName = request.SubjectName,
             TemplateId = string.IsNullOrEmpty(request.Image)?  "noimage_no_description_light": "image_description_light"
         };
 
