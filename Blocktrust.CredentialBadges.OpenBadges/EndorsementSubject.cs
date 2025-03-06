@@ -1,5 +1,6 @@
 ﻿namespace Blocktrust.CredentialBadges.OpenBadges;
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -25,4 +26,34 @@ public class EndorsementSubject
     /// </summary>
     [JsonPropertyName("endorsementComment")]
     public string? EndorsementComment { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+
+    [JsonIgnore]
+    public Dictionary<string, string>? Claims
+    {
+        get
+        {
+            if (ExtensionData is null) return null;
+
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var kvp in ExtensionData)
+            {
+                var jsonElement = kvp.Value;
+                switch (jsonElement.ValueKind)
+                {
+                    case JsonValueKind.String:
+                        result[kvp.Key] = jsonElement.GetString() ?? "";
+                        break;
+                    default:
+                        // For booleans, numbers, arrays, objects, etc.
+                        // store the literal JSON as a string
+                        result[kvp.Key] = jsonElement.GetRawText();
+                        break;
+                }
+            }
+            return result;
+        }
+    }
 }
