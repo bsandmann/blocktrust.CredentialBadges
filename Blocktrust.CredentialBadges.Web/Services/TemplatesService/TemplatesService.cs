@@ -1,10 +1,9 @@
 using System.Text;
 using Blocktrust.CredentialBadges.Web.Domain;
 using Blocktrust.CredentialBadges.Web.Enums;
+using System.Text.RegularExpressions;
 
 namespace Blocktrust.CredentialBadges.Web.Services.TemplatesService;
-
-using System.Text.RegularExpressions;
 
 public class TemplatesService
 {
@@ -31,31 +30,26 @@ public class TemplatesService
         string borderColor = "#dedede";
         string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
 
-        // Check if we want to show or skip description
+        // The basic "show/hide" logic from existing code
         bool showDescription = templateId.Contains("description") && !templateId.Contains("no_description");
-        // Check if we want to show types
         bool showTypes = templateId.Contains("_withTypes") && !templateId.Contains("_small_");
-        // Check if we want to skip claims
         bool noClaims = templateId.Contains("_noclaims");
-
-        // Determine if this is a "small" template
         bool isSmall = templateId.Contains("_small_");
 
-        // Truncate logic
-        var subjectName = credential.SubjectName; // subjectName is here
+        // Read the subjectName
+        var subjectName = credential.SubjectName;
+
+        // Some truncated strings
         credential.Claims.TryGetValue("name", out var name);
         credential.Claims.TryGetValue("description", out var description);
         string truncatedName = TruncateString(name ?? "", 60);
         string truncatedIssuer = TruncateString(credential.Issuer, 50);
         string truncatedDescription = TruncateString(description ?? "", 170);
 
-        // If not small, we show them all (existing). But we might skip them if `noClaims`.
-        var claimsToShow = credential.Claims;
-
-        // Valid templates check
+        // ====== Add your new endorsement template IDs here
         var validTemplates = new HashSet<string>
         {
-            // Regular templates:
+            // -- existing ones omitted for brevity but keep them --
             "image_no_description_light", "image_no_description_dark",
             "image_description_light", "image_description_dark",
             "noimage_description_light", "noimage_description_dark",
@@ -64,15 +58,10 @@ public class TemplatesService
             "image_description_withTypes_light", "image_description_withTypes_dark",
             "noimage_description_withTypes_light", "noimage_description_withTypes_dark",
             "noimage_no_description_withTypes_light", "noimage_no_description_withTypes_dark",
-
-            // New small templates:
             "image_no_description_small_light", "image_no_description_small_dark",
             "image_description_small_light", "image_description_small_dark",
             "noimage_description_small_light", "noimage_description_small_dark",
             "noimage_no_description_small_light", "noimage_no_description_small_dark",
-
-            // ======  _noclaims VERSIONS ======
-            // Regular:
             "image_no_description_noclaims_light", "image_no_description_noclaims_dark",
             "image_description_noclaims_light", "image_description_noclaims_dark",
             "noimage_description_noclaims_light", "noimage_description_noclaims_dark",
@@ -81,12 +70,16 @@ public class TemplatesService
             "image_description_withTypes_noclaims_light", "image_description_withTypes_noclaims_dark",
             "noimage_description_withTypes_noclaims_light", "noimage_description_withTypes_noclaims_dark",
             "noimage_no_description_withTypes_noclaims_light", "noimage_no_description_withTypes_noclaims_dark",
-
-            // Small + noclaims:
             "image_no_description_small_noclaims_light", "image_no_description_small_noclaims_dark",
             "image_description_small_noclaims_light", "image_description_small_noclaims_dark",
             "noimage_description_small_noclaims_light", "noimage_description_small_noclaims_dark",
-            "noimage_no_description_small_noclaims_light", "noimage_no_description_small_noclaims_dark"
+            "noimage_no_description_small_noclaims_light", "noimage_no_description_small_noclaims_dark",
+
+            // -- endorsement templates --
+            "endorsement_light",
+            "endorsement_dark",
+            "endorsement_detailed_light",
+            "endorsement_detailed_dark"
         };
 
         if (!validTemplates.Contains(templateId))
@@ -105,7 +98,277 @@ public class TemplatesService
             this.style.setProperty('filter','brightness(1)','important');
         ";
 
-        // Build the template
+        // ======= If it's one of the new ENDORSEMENT templates, handle separately =======
+        if (templateId.StartsWith("endorsement"))
+        {
+            // We have: "endorsement_light", "endorsement_dark", "endorsement_detailed_light", "endorsement_detailed_dark"
+            bool isDetailed = templateId.Contains("detailed");
+
+            // Try to get the endorsementComment
+            credential.Claims.TryGetValue("endorsementComment", out var endorsementCommentRaw);
+            string endorsementComment = endorsementCommentRaw ?? "";
+            string truncatedEndorsementComment = TruncateString(endorsementComment, 200);
+
+            // For styling, we'll use the same base container as the "regular" template
+            // but we won't show an image block or claims.
+            // We'll also do special logic for the top lines (endorsementComment vs name).
+
+            StringBuilder endorsementBuilder = new StringBuilder();
+
+            // Common container styles (similar to "regular", i.e. non-small):
+            string containerStyles = $@"
+                display: inline-block !important;
+                width: 30rem !important;
+                border: 1px solid {borderColor} !important;
+                border-radius: 0.5rem !important;
+                background: {backgroundColor} !important;
+                margin: 0rem !important;
+                padding: 0.7rem !important;
+                box-sizing: border-box !important;
+                transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
+                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                color: {textColor} !important;
+            ";
+
+            endorsementBuilder.Append($@"
+                <div style='{containerStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
+                    <a href='{linkUrl}'
+                       style='
+                            text-decoration: none !important;
+                            color: inherit !important;
+                            display: block !important;
+                            border-bottom: none !important;
+                       '
+                       id='{credential.Id}'
+                       data-credential-id='{credential.Id}'
+                       data-template-id='{templateId}'>
+
+                        <div style='
+                            display: flex !important;
+                            align-items: flex-start !important;
+                            gap: 1rem !important;
+                        '>
+                            <!-- No image block for endorsement. If you want an image, insert it here. -->
+
+                            <div style='flex-grow: 1 !important; min-width: 0 !important;'>
+
+                                <!-- 1) Big text: endorsementComment or name. 
+                                     If endorsementComment is present, show it in bigger text (1.75rem).
+                                     If endorsementComment is missing, show the name in big text. 
+                                -->
+            ");
+
+            bool hasEndorsementComment = !string.IsNullOrWhiteSpace(endorsementComment);
+            if (hasEndorsementComment)
+            {
+                // Show endorsementComment in bigger text
+                endorsementBuilder.Append($@"
+                    <div style='
+                        font-size: 1.75rem !important;
+                        margin-bottom: 0.5rem !important;
+                        line-height: 1.4 !important;
+                        color: {titleColor} !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        white-space: nowrap !important;
+                        font-weight: bold !important;
+                    '
+                    title='{truncatedEndorsementComment}'>{truncatedEndorsementComment}</div>
+                ");
+            }
+
+            // 2) If we are in the "detailed" template AND endorsementComment is present => also show name in "description-like" style.
+            //    If endorsementComment is missing => name goes in the big text above.
+            if (isDetailed)
+            {
+                if (hasEndorsementComment)
+                {
+                    // Show name in the smaller, description-like style
+                    endorsementBuilder.Append($@"
+                        <div style='
+                            font-size: 0.875rem !important;
+                            margin-bottom: 0.5rem !important;
+                            color: {descriptionColor} !important;
+                            overflow: hidden !important;
+                            text-overflow: ellipsis !important;
+                            white-space: nowrap !important;
+                            font-weight: 500 !important;
+                        '
+                        title='{truncatedName}'>{truncatedName}</div>
+                    ");
+                }
+                else
+                {
+                    // No endorsementComment => we show name in the big style
+                    endorsementBuilder.Append($@"
+                        <div style='
+                            font-size: 1.75rem !important;
+                            margin-bottom: 0.5rem !important;
+                            line-height: 1.4 !important;
+                            color: {titleColor} !important;
+                            overflow: hidden !important;
+                            text-overflow: ellipsis !important;
+                            white-space: nowrap !important;
+                            font-weight: bold !important;
+                        '
+                        title='{truncatedName}'>{truncatedName}</div>
+                    ");
+                }
+            }
+            else
+            {
+                // Non-detailed version
+                // If endorsementComment is missing => show name in big text, otherwise skip name
+                if (!hasEndorsementComment)
+                {
+                    // Show name in big text
+                    endorsementBuilder.Append($@"
+                        <div style='
+                            font-size: 1.75rem !important;
+                            margin-bottom: 0.5rem !important;
+                            line-height: 1.4 !important;
+                            color: {titleColor} !important;
+                            overflow: hidden !important;
+                            text-overflow: ellipsis !important;
+                            white-space: nowrap !important;
+                            font-weight: bold !important;
+                        '
+                        title='{truncatedName}'>{truncatedName}</div>
+                    ");
+                }
+            }
+
+            // 3) Issued by
+            endorsementBuilder.Append($@"
+                <div style='
+                    color: {subtitleColor} !important;
+                    font-size: 0.875rem !important;
+                    font-weight: 500 !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                    white-space: nowrap !important;
+                '
+                title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
+            ");
+
+            // 4) Issued to
+            if (!string.IsNullOrWhiteSpace(subjectName))
+            {
+                endorsementBuilder.Append($@"
+                    <div style='
+                        color: {subtitleColor} !important;
+                        font-size: 0.875rem !important;
+                        font-weight: 500 !important;
+                        margin-bottom: 0.5rem !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        white-space: nowrap !important;
+                    '
+                    title='{subjectName}'>Issued to: {subjectName}</div>
+                ");
+            }
+
+            // 5) Only if "detailed": show the description (truncated).
+            if (isDetailed && !string.IsNullOrWhiteSpace(truncatedDescription))
+            {
+                endorsementBuilder.Append($@"
+                    <div style='
+                        font-size: 0.875rem !important;
+                        margin-bottom: 0.5rem !important;
+                        color: {descriptionColor} !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        display: -webkit-box !important;
+                        -webkit-line-clamp: 2 !important;
+                        -webkit-box-orient: vertical !important;
+                    '
+                    title='{truncatedDescription}'>{truncatedDescription}</div>
+                ");
+            }
+
+            // 6) Skip claims entirely for endorsement (as specified).
+
+            // 7) Validity + status
+            endorsementBuilder.Append($@"
+                <div style='
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
+                    margin-top: 0.25rem !important;
+                '>
+                    <div style='
+                        display: flex !important;
+                        flex-direction: column !important;
+                        line-height: 1 !important;
+                    '>
+                        <div style='
+                            display: flex !important;
+                            align-items: baseline !important;
+                            gap: 0.25rem !important;
+                            font-size: 0.875rem !important;
+                            margin-bottom: 0.25rem !important;
+                        '>
+                            <div style='
+                                color: {validityLabelColor} !important;
+                                font-weight: 400 !important;
+                            '>
+                                Valid from
+                            </div>
+                            <div style='
+                                color: {validityDateColor} !important;
+                                font-weight: 500 !important;
+                            '>
+                                {credential.ValidFrom:dd MMMM, yyyy}
+                            </div>
+                        </div>
+            ");
+
+            if (credential.ValidUntil != default(DateTime))
+            {
+                endorsementBuilder.Append($@"
+                    <div style='
+                        display: flex !important;
+                        align-items: baseline !important;
+                        gap: 0.25rem !important;
+                        font-size: 0.875rem !important;
+                    '>
+                        <div style='
+                            color: {validityLabelColor} !important;
+                            font-weight: 400 !important;
+                        '>
+                            Valid until
+                        </div>
+                        <div style='
+                            color: {validityDateColor} !important;
+                            font-weight: 500 !important;
+                        '>
+                            {credential.ValidUntil:dd MMMM, yyyy}
+                        </div>
+                    </div>
+                ");
+            }
+
+            // 8) Status button
+            endorsementBuilder.Append($@"
+                    </div>
+                    {GetStatusButton(isDarkTheme, credential.Status)}
+                </div>
+            ");
+
+            // Close container
+            endorsementBuilder.Append($@"
+                            </div> <!-- end inner flex-grow container -->
+                        </div> <!-- end flex row -->
+                    </a>
+                </div>
+            ");
+
+            return endorsementBuilder.ToString();
+        }
+        // ======= END OF ENDORSEMENT BLOCK =======
+
+
+        // ======= If not an endorsement, we do the existing logic: SMALL vs REGULAR =======
         StringBuilder templateBuilder = new StringBuilder();
 
         if (!isSmall)
@@ -336,12 +599,12 @@ public class TemplatesService
             // ======= SMALL TEMPLATE =======
             string smallStyles = $@"
                 display: inline-block !important;
-                width: 20rem !important; /* narrower */
+                width: 20rem !important;
                 border: 1px solid {borderColor} !important;
                 border-radius: 0.5rem !important;
                 background: {backgroundColor} !important;
-                margin: 0.5rem !important; /* less margin */
-                padding: 0.5rem !important; /* less padding */
+                margin: 0.5rem !important;
+                padding: 0.5rem !important;
                 box-sizing: border-box !important;
                 transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
                 font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
@@ -364,7 +627,7 @@ public class TemplatesService
                         <div style='
                             display: flex !important;
                             align-items: flex-start !important;
-                            gap: 0.5rem !important; /* smaller gap */
+                            gap: 0.5rem !important;
                         '>
                             {(templateId.StartsWith("image") ? $@"
                             <div style='
@@ -389,8 +652,8 @@ public class TemplatesService
                                 min-width: 0 !important;
                             '>
                                 <div style='
-                                    font-size: 1.125rem !important; /* smaller than 1.5rem */
-                                    margin-bottom: 0.3rem !important; /* reduced spacing */
+                                    font-size: 1.125rem !important;
+                                    margin-bottom: 0.3rem !important;
                                     line-height: 1.3 !important;
                                     color: {titleColor} !important;
                                     overflow: hidden !important;
@@ -404,14 +667,13 @@ public class TemplatesService
                                     color: {subtitleColor} !important;
                                     font-size: 0.8rem !important;
                                     font-weight: 500 !important;
-                                    margin-bottom: 0.3rem !important; /* smaller spacing */
+                                    margin-bottom: 0.3rem !important;
                                     overflow: hidden !important;
                                     text-overflow: ellipsis !important;
                                     white-space: nowrap !important;
                                 '
                                 title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
 
-                                <!-- ADDED “Issued to” section (small template) -->
                                 {(string.IsNullOrWhiteSpace(subjectName) ? "" : $@"
                                 <div style='
                                     color: {subtitleColor} !important;
@@ -433,20 +695,20 @@ public class TemplatesService
                                     overflow: hidden !important;
                                     text-overflow: ellipsis !important;
                                     display: -webkit-box !important;
-                                    -webkit-line-clamp: 2 !important; /* 2 lines max */
+                                    -webkit-line-clamp: 2 !important;
                                     -webkit-box-orient: vertical !important;
                                 '
                                 title='{credential.Description}'>{truncatedDescription}</div>
                                 " : "")}
 
-                                {(!noClaims && claimsToShow != null && claimsToShow.Any() ? $@"
+                                {(!noClaims && credential.Claims != null && credential.Claims.Any() ? $@"
                                 <div style='
                                     display: flex !important;
                                     flex-direction: column !important;
                                     gap: 0.25rem !important;
                                     margin-bottom: 0.3rem !important;
                                 '>
-                                    {string.Join("", claimsToShow.Where(p=>p.Key.ToLowerInvariant()!="name" && p.Key.ToLowerInvariant()!="description" && p.Key.ToLowerInvariant()!="identifier").Select(claim => $@"
+                                    {string.Join("", credential.Claims.Where(p=>p.Key.ToLowerInvariant()!="name" && p.Key.ToLowerInvariant()!="description" && p.Key.ToLowerInvariant()!="identifier").Select(claim => $@"
                                         <div style='
                                             display: flex !important;
                                             align-items: baseline !important;
@@ -472,7 +734,6 @@ public class TemplatesService
                                 " : "")}
 
                                 <!-- For small templates, we do NOT show ValidFrom or ValidUntil. -->
-
                                 <div style='
                                     display: flex !important;
                                     justify-content: flex-end !important;
@@ -502,7 +763,6 @@ public class TemplatesService
         var (backgroundColor, textColor, iconColor) = GetStatusStyles(isDarkTheme, status);
         string statusText = GetStatusText(status);
 
-        // The normal-size button
         return $@"
             <button style='
                 background-color: {backgroundColor} !important;
@@ -528,7 +788,6 @@ public class TemplatesService
         var (backgroundColor, textColor, iconColor) = GetStatusStyles(isDarkTheme, status);
         string statusText = GetStatusText(status);
 
-        // Slightly smaller button
         return $@"
             <button style='
                 background-color: {backgroundColor} !important;
@@ -634,16 +893,13 @@ public class TemplatesService
         // If the key already has spaces, just uppercase the first letter.
         if (key.Contains(' '))
         {
-            // Uppercase first character, leave the rest unchanged.
             return char.ToUpper(key[0]) + key.Substring(1);
         }
         else
         {
             // Insert a space before each uppercase letter (e.g. "fieldOfStudy" -> "field Of Study")
             string withSpaces = Regex.Replace(key, "([A-Z])", " $1").Trim();
-
-            // Capitalize the first letter of the resulting string, and make the rest lowercase
-            // (If you want to preserve original casing for the rest, remove the .ToLower() step)
+            // Capitalize the first letter, make the rest lowercase
             return char.ToUpper(withSpaces[0]) + withSpaces.Substring(1).ToLower();
         }
     }

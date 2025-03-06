@@ -18,11 +18,25 @@ public class SelectTemplateService
             hasDescription = credential.Claims.TryGetValue("description", out var description) && !string.IsNullOrEmpty(description);
         }
 
+
         // Determine if the credential has non-empty "filtered" types
         var filteredTypes = GetFilteredTypes(credential);
         bool hasTypes = filteredTypes.Any();
 
+        var isEndoresement = filteredTypes.Contains("Endorsement") && filteredTypes.Count == 1;
+
         var applicableTemplateIds = new List<string>();
+
+
+        if (isEndoresement)
+        {
+            applicableTemplateIds.Add("endorsement_detailed_light");
+            applicableTemplateIds.Add("endorsement_detailed_dark");
+            applicableTemplateIds.Add("endorsement_light");
+            applicableTemplateIds.Add("endorsement_dark");
+
+            return applicableTemplateIds;
+        }
 
         // 1) Templates that require both image and description
         if (hasImage && hasDescription)
