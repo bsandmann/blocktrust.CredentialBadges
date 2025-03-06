@@ -337,7 +337,7 @@ public class TemplatesService
                                         </div>
             ");
 
-            if (credential.ValidUntil != default(DateTime))
+            if (credential.ValidUntil != default(DateTime) && credential.ValidUntil is not null)
             {
                 endorsementBuilder.Append($@"
                                         <div style='
@@ -597,7 +597,7 @@ public class TemplatesService
                                         </div>
             ");
 
-            if (credential.ValidUntil != default(DateTime))
+            if (credential.ValidUntil != default(DateTime) && credential.ValidUntil is not null)
             {
                 templateBuilder.Append($@"
                                         <div style='
