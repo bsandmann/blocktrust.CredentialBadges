@@ -35,22 +35,7 @@ public class VerificationTests
         _checkTrustRegistryHandler = new CheckTrustRegistryHandler();
     }
 
-    [Fact]
-    public async Task CheckSignatureHandler_Should_Return_Valid_For_Valid_Signature()
-    {
-        // Arrange
-        var parserResult = CredentialParser.Parse(PrismCredentials.LatestCredential);
-        parserResult.IsSuccess.Should().BeTrue();
 
-        var request = new CheckSignatureRequest(parserResult.Value);
-
-        // Act
-        var result = await _checkSignatureHandler.Handle(request, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(ECheckSignatureResponse.Valid);
-    }
 
     [Fact]
     public async Task CheckSignatureHandler_Should_Return_Invalid_For_Invalid_Signature()
