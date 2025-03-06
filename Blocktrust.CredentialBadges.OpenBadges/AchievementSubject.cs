@@ -54,7 +54,7 @@ public class AchievementSubject
     /// least one identifier MUST be supplied. [0..*]
     /// </summary>
     [JsonPropertyName("identifier")]
-    public List<IdentityObject>? Identifier { get; set; }
+    public string? Identifier { get; set; }
     
     /// <summary>
     /// An image representing this user's achievement. If present, this must be a

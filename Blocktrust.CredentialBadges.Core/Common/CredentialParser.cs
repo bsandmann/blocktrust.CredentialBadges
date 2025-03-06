@@ -166,24 +166,16 @@ public static class CredentialParser
     /// <returns></returns>
     private static Result<bool> IsEndorsementCredential(string rawInput)
     {
-        if (rawInput.Contains("OpenBadgeCredential") && !rawInput.Contains("EndorsementCredential"))
-        {
-            return Result.Ok(false);
-        }
-        else if (rawInput.Contains("EndorsementCredential") && !rawInput.Contains("OpenBadgeCredential"))
+        // TODO The implementation of this part of the code cannot be done properly atm
+        // as the OpenBadgeCredential created by Identus can't be 100% conform to the spec
+        // will use a simple heuristic for now
+
+        if (rawInput.Contains("EndorsementSubject") && !rawInput.Contains("AchievementSubject"))
         {
             return Result.Ok(true);
         }
-        else if (rawInput.Contains("EndorsementCredential") && rawInput.Contains("OpenBadgeCredential"))
-        {
-            // Simple assumption that we are dealing with a credential with embbded endorsements
-            // like the "CompleteOpenBadgeCredential.json" in the tests
-            return Result.Ok(false);
-        }
         else
         {
-            // TODO This code has to be enabled again, when we can create correct Credential-types with identus
-            // return Result.Fail("Could not determine the type of the credential to either be a OpenBadgeCredential or an EndorsementCredential");
             return Result.Ok(false);
         }
     }

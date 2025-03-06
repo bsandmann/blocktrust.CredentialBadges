@@ -95,19 +95,31 @@ public class SelectTemplateService
             var achievementCredentialTypes = achievementCredential.Type;
             var subjectType = achievementCredential.CredentialSubject.Type ?? new List<string>();
             var achievementType = achievementCredential.CredentialSubject?.Achievement?.Type ?? new List<string>();
+            var achievementType2 = achievementCredential.CredentialSubject?.Achievement?.AchievementType?.ToString() ?? "";
 
             var combinedType = achievementCredentialTypes
                 .Concat(subjectType)
                 .Concat(achievementType)
+                .Concat(new List<string>() { achievementType2 })
                 .ToList();
 
             var filteredTypes = combinedType
                 .Where(x => !string.IsNullOrEmpty(x)
                             && !x.Equals("VerifiableCredential", StringComparison.InvariantCultureIgnoreCase)
-                            && !x.Equals("AchievementSubject", StringComparison.InvariantCultureIgnoreCase))
+                            && !x.Equals("AchievementSubject", StringComparison.InvariantCultureIgnoreCase)
+                            && !x.Equals("Achievement", StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
 
+            if (!filteredTypes.Any())
+            {
+                return new List<string>() { "Achievement" };
+            }
+
             return filteredTypes;
+        }
+        else if (result.Value is EndorsementCredential endorsementCredential)
+        {
+            return new List<string>() { "Endorsement" };
         }
 
         if (credential.Types != null && credential.Types.Count > 0)

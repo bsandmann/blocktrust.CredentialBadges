@@ -78,6 +78,10 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
                         description = ParseCredentialSubject(entity.CredentialSubject)["Description"], // moved from the Credential to the subject
                         achievement = new
                         {
+                            id = Guid.NewGuid().ToString(),
+                            type = new List<string> { "Achievement" },
+                            description = "", // we use the values above but these should stay in here for compliance with the spec
+                            name = "", // we use the values above but these should stay in here for compliance with the spec
                             achievementType = ParseCredentialSubject(entity.CredentialSubject)["AchievementType"],
                             criteria = new
                             {

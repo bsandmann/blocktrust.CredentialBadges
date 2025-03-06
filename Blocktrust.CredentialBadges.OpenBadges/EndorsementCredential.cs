@@ -23,7 +23,7 @@ public class EndorsementCredential : OpenBadgeCredential
     /// The name of the credential for display purposes in wallets. For example, in a list of credentials and in detail views. [1]
     /// </summary>
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// The individual, entity, organization, assertion, or achievement that is endorsed and the endorsement comment. [1]
