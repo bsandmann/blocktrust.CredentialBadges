@@ -87,7 +87,7 @@ namespace Blocktrust.CredentialBadges.Core.Commands.CheckPrismDIDSignature
                     {
                         if (resolution.IsDeactivated)
                         {
-                            return Result.Fail("DID is deactivated (per resolution API).");
+                            return Result.Ok(ECheckSignatureResponse.Invalid);
                         }
                         else
                         {
@@ -154,6 +154,7 @@ namespace Blocktrust.CredentialBadges.Core.Commands.CheckPrismDIDSignature
                 {
                     return DidResolutionKeyResult.Failure("No issuer key found in DID document.");
                 }
+
                 if (didDocument.AssertionMethod.Count > 1)
                 {
                     return DidResolutionKeyResult.Failure("Multiple issuer keys found in DID document.");
@@ -168,8 +169,8 @@ namespace Blocktrust.CredentialBadges.Core.Commands.CheckPrismDIDSignature
                 var keyPart = assertionMethod[1];
                 var issuingKey = didDocument.VerificationMethod.FirstOrDefault(
                     p => p.Id == didDocument.AssertionMethod[0]
-                      || p.Id == keyPart
-                      || p.Id == "#" + keyPart);
+                         || p.Id == keyPart
+                         || p.Id == "#" + keyPart);
 
                 if (issuingKey?.PublicKeyJwk == null)
                 {
