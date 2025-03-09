@@ -9,6 +9,8 @@ using Blocktrust.CredentialBadges.Core.Services.DIDPrism;
 using Blocktrust.CredentialBadges.Core.Commands.CheckDIDKeySignature;
 using Blocktrust.CredentialBadges.Web.Services;
 using DidPrismResolverClient;
+using Blocktrust.CredentialBadges.Web.Common;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,10 +72,18 @@ builder.Services.AddServerSideBlazor()
         options.MaximumReceiveMessageSize = 12 * 1024 * 1024; // 12MB
     });
 
-builder.Services.AddSingleton(new PrismDidClientOptions
+// Configure AppSettings binding
+builder.Services.Configure<AppSettings>(builder.Configuration);
+
+// Configure PrismDidClientOptions from AppSettings
+builder.Services.AddSingleton(sp =>
 {
-    BaseUrl = "https://opn.blocktrust.dev:31201",
-    DefaultLedger = "mainnet"
+    var appSettings = sp.GetRequiredService<IOptions<AppSettings>>().Value;
+    return new PrismDidClientOptions
+    {
+        BaseUrl = appSettings.PrismDid.BaseUrl,
+        DefaultLedger = appSettings.PrismDid.DefaultLedger
+    };
 });
 
 // Add CORS services
