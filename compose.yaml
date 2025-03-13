@@ -1,0 +1,6 @@
+﻿services:
+  blocktrust.credentialbadges.docsweb:
+    image: blocktrust.credentialbadges.docsweb
+    build:
+      context: .
+      dockerfile: Blocktrust.CredentialBadges.DocsWeb/Dockerfile
