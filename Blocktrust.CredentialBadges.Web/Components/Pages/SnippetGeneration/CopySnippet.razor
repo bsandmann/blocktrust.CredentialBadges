@@ -1,6 +1,9 @@
 @page "/copysnippet/{credentialId:guid}/{selectedTemplateId}"
+@using Blocktrust.CredentialBadges.Web.Common
+@using Microsoft.Extensions.Options
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject IOptions<AppSettings> AppSettings
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <div class="relative min-h-screen w-full bg-[#F0F1F2] flex items-center justify-center px-4 py-8">
@@ -79,9 +82,13 @@
     {
         // Simulating an asynchronous operation
         await Task.Delay(500);
+        
+        // Get the badge loader URL from app settings
+        var badgeLoaderUrl = AppSettings.Value.Badge.LoaderScriptUrl;
+        
         // old snippet code, when the js is deployed locally only
         // snippetCode = $@"<div class='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}'></div><script src='{domain}/badge-loader.js'></script>";
-        snippetCode = $@"<div class='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}' data-domain='{domain}'></div><script src='https://0cfa9cc0.blocktrust-credential-badges.pages.dev/badge-loader.min.js'></script>";
+        snippetCode = $@"<div class='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}' data-domain='{domain}'></div><script src='{badgeLoaderUrl}'></script>";
         isLoading = false;
     }
 
