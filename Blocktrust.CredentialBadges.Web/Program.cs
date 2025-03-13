@@ -105,13 +105,16 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// app.UseHttpsRedirection();
+// HTTPS is handled by Traefik in production
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 app.UseAntiforgery();
 
 // Enable CORS
 app.UseCors("AllowAllOrigins");
-app.UseHttpsRedirection();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

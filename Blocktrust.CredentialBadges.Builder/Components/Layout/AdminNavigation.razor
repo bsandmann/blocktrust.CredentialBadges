@@ -114,7 +114,13 @@
 
        private string GetSubNavLinkClass(string path)
        {
-           if (currentPath.Contains(path) && currentPath != NavigationManager.BaseUri + "admin/requests")
+           // Use Uri methods to normalize paths and avoid protocol issues
+           var uri = new Uri(NavigationManager.Uri);
+           var baseUri = new Uri(NavigationManager.BaseUri);
+           var currentRelativePath = uri.AbsolutePath;
+           var adminRequestsPath = baseUri.GetLeftPart(UriPartial.Authority) + "/admin/requests";
+           
+           if (currentRelativePath.Contains(path) && NavigationManager.Uri != adminRequestsPath)
            {
                return "bg-white text-slate-700 flex items-center p-2 rounded-md";
            }
@@ -123,7 +129,12 @@
 
        private string GetAllSubNavLinkClass()
        {
-           if (currentPath.Equals(NavigationManager.BaseUri + "admin/requests", StringComparison.OrdinalIgnoreCase))
+           // Use Uri methods to normalize paths and avoid protocol issues
+           var uri = new Uri(NavigationManager.Uri);
+           var baseUri = new Uri(NavigationManager.BaseUri);
+           var adminRequestsPath = baseUri.GetLeftPart(UriPartial.Authority) + "/admin/requests";
+           
+           if (NavigationManager.Uri.TrimEnd('/').Equals(adminRequestsPath.TrimEnd('/'), StringComparison.OrdinalIgnoreCase))
            {
                return "bg-white text-slate-700 flex items-center p-2 rounded-md";
            }

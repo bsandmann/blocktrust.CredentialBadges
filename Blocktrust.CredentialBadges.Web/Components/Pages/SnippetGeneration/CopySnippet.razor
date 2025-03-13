@@ -68,7 +68,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        domain = NavigationManager.BaseUri.TrimEnd('/');
+        // Ensure we always use the same protocol as the current page by removing the protocol part
+        var uri = new Uri(NavigationManager.BaseUri);
+        domain = $"//{uri.Authority}";
         await Task.Delay(1000); // Simulating network delay
         await GenerateSnippet();
     }

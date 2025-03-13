@@ -101,7 +101,13 @@ app.UseStaticFiles();
 
 // Use Routing
 app.UseRouting();
-app.UseHttpsRedirection();
+
+// HTTPS is handled by Traefik in production
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 
