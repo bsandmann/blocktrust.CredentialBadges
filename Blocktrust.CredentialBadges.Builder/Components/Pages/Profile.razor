@@ -15,41 +15,68 @@
         <h1 class="text-xl mb-8">Welcome, @username!</h1>
     </div>
 
-    <!-- Updated explanation text -->
-    <p class="mb-6">
-        You can now use this application to set up a DID and request credentials to be issued to your name.
-    </p>
-
-    <!-- Tailwind-styled numbered list -->
-    <ol class="list-decimal list-inside space-y-2">
-        <li>
-            Go to <strong>"New DID"</strong> at the top and let the system generate a new DID for you.
-            It is automatically saved in the browser.
-        </li>
-        <li>
-            Next, go to <strong>"Connections"</strong> and click the <strong>"Connect"</strong> button.
-            All values should be pre-filled for you to establish a connection to the Credential Issuance instance.
-            We'll use this instance to issue a credential to you.
-        </li>
-        <li>
-            Now, go to <strong>"Credentials"</strong> to create a new credential to your liking.
-            We currently use the Open Badges 3.0 format to model suitable credential types.
-            We encourage you to also upload an image of a badge.
-        </li>
-        <li>
-            The credential is now sent to the admin interface of this application.
-            The admin will review your request, and you will receive a Credential Offer.
-        </li>
-        <li>
-            You can now see the status changing to <strong>"Waiting Acceptance"</strong>.
-            You can accept the credential, and it will be added to your wallet a few seconds later.
-            Refresh the credential state to see the changes.
-        </li>
-        <li>
-            You can copy the credential and create a badge at
-            <a href="https://badges.blocktrust.dev/" class="text-blue-500 hover:underline">https://badges.blocktrust.dev/</a>.
-        </li>
-    </ol>
+    <!-- Role-specific content -->
+    <AuthorizeView>
+        <Authorized>
+            @if (context.User.IsInRole("adminRole"))
+            {
+                <!-- Admin explanation text -->
+                <p class="mb-6">
+                    You can now use this application to approve or deny credential requests from users.
+                </p>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>
+                        Go to the <strong>dashboard</strong> and select the credential you are interested in by its date/label.
+                    </li>
+                    <li>
+                        Click <strong>"Show"</strong> to view the credential details.
+                    </li>
+                    <li>
+                        Click <strong>"Approve"</strong> to send a credential offering to the user (the future holder of the credential).
+                    </li>
+                    <li>
+                        Click <strong>"Deny"</strong> to not continue the issuance process.
+                    </li>
+                </ol>
+            }
+            else
+            {
+                <!-- User explanation text -->
+                <p class="mb-6">
+                    You can now use this application to set up a DID and request credentials to be issued to your name.
+                </p>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>
+                        Go to <strong>"New DID"</strong> at the top and let the system generate a new DID for you.
+                        It is automatically saved in the browser.
+                    </li>
+                    <li>
+                        Next, go to <strong>"Connections"</strong> and click the <strong>"Connect"</strong> button.
+                        All values should be pre-filled for you to establish a connection to the Credential Issuance instance.
+                        We'll use this instance to issue a credential to you.
+                    </li>
+                    <li>
+                        Now, go to <strong>"Credentials"</strong> to create a new credential to your liking.
+                        We currently use the Open Badges 3.0 format to model suitable credential types.
+                        We encourage you to also upload an image of a badge.
+                    </li>
+                    <li>
+                        The credential is now sent to the admin interface of this application.
+                        The admin will review your request, and you will receive a Credential Offer.
+                    </li>
+                    <li>
+                        You can now see the status changing to <strong>"Waiting Acceptance"</strong>.
+                        You can accept the credential, and it will be added to your wallet a few seconds later.
+                        Refresh the credential state to see the changes.
+                    </li>
+                    <li>
+                        You can copy the credential and create a badge at
+                        <a href="https://badges.blocktrust.dev/" class="text-blue-500 hover:underline">https://badges.blocktrust.dev/</a>.
+                    </li>
+                </ol>
+            }
+        </Authorized>
+    </AuthorizeView>
 
     <form action="Account/Logout" method="post" class="text-center mt-8">
         <AntiforgeryToken/>
