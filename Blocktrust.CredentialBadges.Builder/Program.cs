@@ -10,6 +10,7 @@ using Blocktrust.CredentialBadges.Builder.Services;
 using Blocktrust.CredentialBadges.Core.Services.Clipboard;
 using Blocktrust.CredentialBadges.Core.Services.Images;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +86,15 @@ builder.Services.AddScoped<ImageBytesToBase64>();
 // Add Antiforgery services
 builder.Services.AddAntiforgery();
 
+// Configure forwarded headers when running behind a reverse proxy like Traefik
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    // Clear known networks and proxies to accept all forwarded headers
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -96,6 +106,9 @@ else
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+
+// Apply forwarded headers early in the pipeline
+app.UseForwardedHeaders();
 
 app.UseStaticFiles();
 
@@ -110,6 +123,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Add content security policy to enforce HTTPS
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Content-Security-Policy", 
+                               "upgrade-insecure-requests; default-src https:; img-src https: data:; connect-src https: wss:;");
+    await next();
+});
 
 // Add UseAntiforgery middleware here, after authentication and authorization
 app.UseAntiforgery();
