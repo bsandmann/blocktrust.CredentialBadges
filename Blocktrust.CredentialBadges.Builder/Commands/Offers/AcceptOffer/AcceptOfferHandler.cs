@@ -24,9 +24,9 @@ public class AcceptOfferHandler : IRequestHandler<AcceptOfferRequest, Result<str
         // Ensure the subject DID is in short form
         request.SubjectId = GetShortDid(request.SubjectId);
 
-        // if api key is null, use agent 2 api key
+        // if api key is null, use user agent api key
         if (string.IsNullOrEmpty(request.ApiKey))
-            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.SubjectApiKey);
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.UserApiKey);
         else
         {
             _httpClient.DefaultRequestHeaders.Add("apiKey", request.ApiKey);
@@ -34,7 +34,7 @@ public class AcceptOfferHandler : IRequestHandler<AcceptOfferRequest, Result<str
 
         var identusClient = new IdentusClient(_httpClient)
         {
-            BaseUrl = _appSettings.Agent2BaseUrl
+            BaseUrl = _appSettings.UserAgentBaseUrl
         };
 
         try

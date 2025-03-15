@@ -29,11 +29,11 @@ public class GetOfferByThIdHandler : IRequestHandler<GetOfferByThIdRequest, Resu
         else
         {
             _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.SubjectApiKey);
+            _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.UserApiKey);
         }   
         var identusClient = new IdentusClient(_httpClient)
         {
-            BaseUrl = _appSettings.Agent2BaseUrl
+            BaseUrl = _appSettings.UserAgentBaseUrl
         };
 
         try

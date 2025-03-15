@@ -27,11 +27,11 @@ public class CheckAgentHealthHandler : IRequestHandler<CheckAgentHealthRequest, 
         var identusClient = new IdentusClient(_httpClient);
         if (request.AgentNumber == 1)
         {
-            identusClient.BaseUrl = _appSettings.Agent1BaseUrl;
+            identusClient.BaseUrl = _appSettings.AdminAgentBaseUrl;
         }
         else
         {
-            identusClient.BaseUrl = _appSettings.Agent2BaseUrl;
+            identusClient.BaseUrl = _appSettings.UserAgentBaseUrl;
         }
 
         try

@@ -39,22 +39,6 @@ public class InitializeConnectionHandlerTests
         _httpClientFactory = new TestHttpClientFactory(_appSettings);
     }
 
-    // [Fact]
-    // public async Task Handle_ShouldReturnSuccessResult_WhenConnectionCreatedSuccessfully()
-    // {
-    //     // Arrange
-    //     var handler = new InitializeConnectionHandler(_httpClientFactory, _appSettings, _logger);
-    //     var request = new InitializeConnectionRequest();
-    //
-    //     // Act
-    //     var result = await handler.Handle(request, CancellationToken.None);
-    //
-    //     // Assert
-    //     result.IsSuccess.Should().BeTrue();
-    //     result.Value.Should().NotBeNull();
-    //     result.Value.ConnectionId.Should().NotBeNullOrEmpty();
-    //     result.Value.InvitationUrl.Should().NotBeNullOrEmpty();
-    // }
 
     /// <summary>
     ///  Test to get builder credential by id when credential exists

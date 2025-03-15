@@ -45,7 +45,8 @@ builder.Services.AddAuthentication(options =>
 var connectionString = builder.Configuration.GetConnectionString("BuilderDbConnection") ?? throw new InvalidOperationException("Connection string 'BuilderDbConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString)
+           .ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -81,6 +82,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 builder.Services.AddHttpClient("IdentusAgents");
+builder.Services.AddHttpClient("AdminAgent");
+builder.Services.AddHttpClient("UserAgent");
 
 builder.Services.AddScoped<ImageBytesToBase64>();
 
@@ -150,31 +153,29 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    
+
     try
     {
         // Apply migrations and create database if it doesn't exist
         dbContext.Database.Migrate();
         logger.LogInformation("Database migration completed successfully.");
-        
+
         // Check if we need to seed an admin user
         if (!await dbContext.AnyUsersAsync())
         {
             logger.LogInformation("No users found. Creating default admin user.");
-            
+
             // Load admin data from configuration if available
             var adminEmail = builder.Configuration["AdminUser:Email"] ?? "admin@blocktrust.dev";
             var adminPassword = builder.Configuration["AdminUser:Password"] ?? "Password123!";
-            var adminFirstName = builder.Configuration["AdminUser:FirstName"] ?? "Admin";
-            var adminLastName = builder.Configuration["AdminUser:LastName"] ?? "User";
-            
+
             var adminUser = new ApplicationUser
             {
                 UserName = adminEmail,
                 Email = adminEmail,
                 EmailConfirmed = true,
             };
-            
+
             var result = await userManager.CreateAsync(adminUser, adminPassword);
             if (result.Succeeded)
             {
@@ -183,15 +184,14 @@ using (var scope = app.Services.CreateScope())
             }
             else
             {
-                logger.LogWarning("Failed to create default admin user: {Errors}", 
+                logger.LogWarning("Failed to create default admin user: {Errors}",
                     string.Join(", ", result.Errors.Select(e => e.Description)));
             }
         }
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-        throw; // Rethrow to fail startup if we can't create the database
+        logger.LogWarning(ex, "An error occurred while migrating or seeding the database.");
     }
 }
 

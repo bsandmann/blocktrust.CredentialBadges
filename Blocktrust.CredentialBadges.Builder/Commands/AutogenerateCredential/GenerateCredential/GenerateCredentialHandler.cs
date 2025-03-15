@@ -24,7 +24,7 @@ public class GenerateCredentialHandler : IRequestHandler<GenerateCredentialReque
 
     public async Task<Result<string>> Handle(GenerateCredentialRequest request, CancellationToken cancellationToken)
     {
-        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.Agent1ApiKey);
+        _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.AdminApiKey);
         // Create offer using the request directly
         var createOfferResponse = await _mediator.Send(new CreateOfferRequest
         {

@@ -28,8 +28,8 @@ public class GetRecordByIdHandlerTests
         // Configure AppSettings directly
         services.Configure<AppSettings>(options =>
         {
-            options.Agent2ApiKey = "597634cfaa4feae5";
-            options.Agent2BaseUrl = "http://212.124.52.36:35413/cloud-agent/";
+            options.UserApiKey = "597634cfaa4feae5";
+            options.UserAgentBaseUrl = "http://212.124.52.36:35413/cloud-agent/";
         });
 
         // Build service provider
@@ -118,7 +118,7 @@ public class TestHttpClientFactory : IHttpClientFactory
     public HttpClient CreateClient(string name)
     {
         var client = new HttpClient(new TestHttpMessageHandler());
-        client.BaseAddress = new Uri(_appSettings.Value.Agent2BaseUrl);
+        client.BaseAddress = new Uri(_appSettings.Value.UserAgentBaseUrl);
         LastCreatedClient = client;
         return client;
     }

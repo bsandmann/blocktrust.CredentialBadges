@@ -23,7 +23,7 @@ public class RegisterApiKeyHandler : IRequestHandler<RegisterApiKeyRequest, Resu
         // Set the base URL and header for the HttpClient
         _httpClient.BaseAddress = new Uri(_appSettings.UserAgentBaseUrl);
         _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.Add("x-admin-api-key", _appSettings.UserAgentAdminKey);
+        _httpClient.DefaultRequestHeaders.Add("x-admin-api-key", _appSettings.UserApiKey);
     }
 
     public async Task<Result<string>> Handle(RegisterApiKeyRequest request, CancellationToken cancellationToken)

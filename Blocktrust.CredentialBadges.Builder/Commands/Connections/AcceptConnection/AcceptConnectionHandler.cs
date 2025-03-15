@@ -18,7 +18,7 @@ public class AcceptConnectionHandler : IRequestHandler<AcceptConnectionRequest, 
         _httpClient.BaseAddress = new Uri(appSettings.Value.UserAgentBaseUrl);
         _httpClient.DefaultRequestHeaders.Clear();
         //apiKey
-        _httpClient.DefaultRequestHeaders.Add("apiKey", appSettings.Value.SubjectApiKey);
+        _httpClient.DefaultRequestHeaders.Add("apiKey", appSettings.Value.UserApiKey);
     }
 
     public async Task<Result<AcceptConnectionResponse>> Handle(AcceptConnectionRequest request, CancellationToken cancellationToken)

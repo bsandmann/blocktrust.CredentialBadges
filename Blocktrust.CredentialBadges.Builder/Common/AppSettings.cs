@@ -1,32 +1,35 @@
 namespace Blocktrust.CredentialBadges.Builder.Common;
 
+using System;
+
 public class AppSettings
 {
-    public string Agent1BaseUrl { get; set; }
-    public string Agent2BaseUrl { get; set; }
-    public string Agent1ApiKey { get; set; }
-    public string Agent2ApiKey { get; set; }
-
+    // Main Agent URLs
     public string AdminAgentBaseUrl { get; set; }
     public string UserAgentBaseUrl { get; set; }
     
+    // Agent API Keys (used for both admin operations and regular API calls)
+    public string AdminApiKey { get; set; }
+    public string UserApiKey { get; set; }
+    
+    // DID Information
+    public string IssuingDID { get; set; }
+    
+    // Optional Subject Info
+    public string? SubjectDID { get; set; }
+    
+    // Deprecated properties - use the new ones above instead
+    [Obsolete("Use UserApiKey instead")]
+    public string SubjectApiKey { get; set; }
+    
+    [Obsolete("Use AdminApiKey instead")]
     public string AdminAgentAdminKey { get; set; }
+    
+    [Obsolete("Use UserApiKey instead")]
     public string UserAgentAdminKey { get; set; }
     
-    public string AdminApiKey { get; set; }
-    
-    
-    public string IssuingDID { get; set; }
-    public string IssuingApiKey { get; set; }
-    
-    public string? SubjectDID { get; set; }
-    public string SubjectApiKey { get; set; }
-
-    
-    public string SnippetBaseUrl { get; set; }
-    
-    
-    
+    // Integration URLs
+    public string SnippetsUrl { get; set; }
     
     /// <summary>
     /// API key for SendGrid
@@ -37,6 +40,4 @@ public class AppSettings
     /// Configured Email for SendGrid
     /// </summary>
     public string? SendGridFromEmail { get; set; }
-
-    
 }

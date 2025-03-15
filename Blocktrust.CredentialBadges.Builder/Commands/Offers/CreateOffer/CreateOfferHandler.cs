@@ -24,7 +24,7 @@ public class CreateOfferHandler : IRequestHandler<CreateOfferRequest, Result<Off
         _httpClient.DefaultRequestHeaders.Add("apiKey", _appSettings.AdminApiKey);
         var identusClient = new IdentusClient(_httpClient);
 
-        identusClient.BaseUrl = _appSettings.Agent1BaseUrl; 
+        identusClient.BaseUrl = _appSettings.AdminAgentBaseUrl;
         
         // Ensure the subject DID is in short form
         request.IssuingDID = GetShortDid(request.IssuingDID);
