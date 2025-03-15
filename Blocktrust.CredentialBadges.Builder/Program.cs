@@ -128,14 +128,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Add content security policy to enforce HTTPS
-app.Use(async (context, next) =>
-{
-    context.Response.Headers.Add("Content-Security-Policy", 
-                               "upgrade-insecure-requests; default-src https:; img-src https: data:; connect-src https: wss:;");
-    await next();
-});
-
 // Add UseAntiforgery middleware here, after authentication and authorization
 app.UseAntiforgery();
 
