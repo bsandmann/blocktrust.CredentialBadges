@@ -11,6 +11,7 @@ using Blocktrust.CredentialBadges.Core.Services.Clipboard;
 using Blocktrust.CredentialBadges.Core.Services.Images;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -141,4 +142,57 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.UseStatusCodePagesWithRedirects("/");
+
+// Ensure database is created and migrated on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        // Apply migrations and create database if it doesn't exist
+        dbContext.Database.Migrate();
+        logger.LogInformation("Database migration completed successfully.");
+        
+        // Check if we need to seed an admin user
+        if (!await dbContext.AnyUsersAsync())
+        {
+            logger.LogInformation("No users found. Creating default admin user.");
+            
+            // Load admin data from configuration if available
+            var adminEmail = builder.Configuration["AdminUser:Email"] ?? "admin@blocktrust.dev";
+            var adminPassword = builder.Configuration["AdminUser:Password"] ?? "Password123!";
+            var adminFirstName = builder.Configuration["AdminUser:FirstName"] ?? "Admin";
+            var adminLastName = builder.Configuration["AdminUser:LastName"] ?? "User";
+            
+            var adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true,
+            };
+            
+            var result = await userManager.CreateAsync(adminUser, adminPassword);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "adminRole");
+                logger.LogInformation("Default admin user created successfully.");
+            }
+            else
+            {
+                logger.LogWarning("Failed to create default admin user: {Errors}", 
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        throw; // Rethrow to fail startup if we can't create the database
+    }
+}
+
 app.Run();

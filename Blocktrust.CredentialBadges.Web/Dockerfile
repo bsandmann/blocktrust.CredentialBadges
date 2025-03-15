@@ -3,8 +3,7 @@
 # (the folder that contains "blocktrust.CredentialBadges" and "DidPrismResolverClient")
 #
 # Example build command:
-#   docker build -f blocktrust.CredentialBadges/Blocktrust.CredentialBadges.Web/Dockerfile \
-#       -t credentialbadgesweb .
+#   docker build -f blocktrust.CredentialBadges/Blocktrust.CredentialBadges.Web/Dockerfile -t credentialbadgesweb .
 #
 # Explanation:
 #   We copy each .csproj individually to preserve folder structure in the Docker cache,

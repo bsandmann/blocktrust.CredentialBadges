@@ -11,6 +11,7 @@ using Blocktrust.CredentialBadges.Web.Services;
 using DidPrismResolverClient;
 using Blocktrust.CredentialBadges.Web.Common;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -120,5 +121,23 @@ app.MapRazorComponents<App>()
 
 // Map controller routes
 app.MapControllers();
+
+// Ensure database is created and migrated on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        // Check if the database exists, create and migrate if needed
+        dbContext.Database.Migrate();
+        Console.WriteLine("Database migration completed successfully.");
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+        throw; // Rethrow to fail startup if we can't create the database
+    }
+}
 
 app.Run();
