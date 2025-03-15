@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Blocktrust.CredentialBadges.Builder.Migrations
 {
     /// <inheritdoc />
-    public partial class modifiedappdbcontext : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -187,8 +187,8 @@ namespace Blocktrust.CredentialBadges.Builder.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("298385a4-c076-4242-8211-5145e376a350"), null, "adminRole", "ADMINROLE" },
-                    { new Guid("ae60bbcb-5599-4edc-9ffc-930db2f5161f"), null, "nonAdminRole", "NONADMINROLE" }
+                    { new Guid("c131feb1-f7b1-404e-b31b-a9eb6094f0d9"), null, "adminRole", "ADMINROLE" },
+                    { new Guid("d89e9303-e49c-4083-af96-9dbc6833dfa4"), null, "nonAdminRole", "NONADMINROLE" }
                 });
 
             migrationBuilder.CreateIndex(

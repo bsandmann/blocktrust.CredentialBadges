@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Blocktrust.CredentialBadges.Builder.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240718063203_buildercredentialentity")]
-    partial class buildercredentialentity
+    [Migration("20250315143252_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -119,16 +119,72 @@ namespace Blocktrust.CredentialBadges.Builder.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("94da5d25-1c2d-4ca8-9073-91512f96aaae"),
+                            Id = new Guid("c131feb1-f7b1-404e-b31b-a9eb6094f0d9"),
                             Name = "adminRole",
                             NormalizedName = "ADMINROLE"
                         },
                         new
                         {
-                            Id = new Guid("4384eb41-d40a-46ee-899a-e2e9967cd8b3"),
+                            Id = new Guid("d89e9303-e49c-4083-af96-9dbc6833dfa4"),
                             Name = "nonAdminRole",
                             NormalizedName = "NONADMINROLE"
                         });
+                });
+
+            modelBuilder.Entity("Blocktrust.CredentialBadges.Builder.Data.Entities.BuilderCredentialEntity", b =>
+                {
+                    b.Property<Guid>("CredentialId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CredentialSubject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("IssuerConnectionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IssuerDid")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid?>("RecordIdOnAgent")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SubjectConnectionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SubjectDid")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("ThId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("VerifiableCredential")
+                        .HasColumnType("text");
+
+                    b.HasKey("CredentialId");
+
+                    b.ToTable("BuilderCredentials");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
