@@ -955,7 +955,7 @@ public class TemplatesService
     {
         if (image == null)
         {
-            return "https://via.placeholder.com/150";
+            return string.Empty;
         }
 
         // If it's not a URL (http/https) or a data URI, assume base64

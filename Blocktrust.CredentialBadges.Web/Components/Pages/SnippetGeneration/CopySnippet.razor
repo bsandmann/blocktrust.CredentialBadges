@@ -87,7 +87,6 @@
         var badgeLoaderUrl = AppSettings.Value.Badge.LoaderScriptUrl;
         
         // old snippet code, when the js is deployed locally only
-        // snippetCode = $@"<div class='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}'></div><script src='{domain}/badge-loader.js'></script>";
         snippetCode = $@"<div class='blocktrust-badge' data-id='{credentialId}' data-template='{selectedTemplateId}' data-domain='{domain}'></div><script src='{badgeLoaderUrl}'></script>";
         isLoading = false;
     }
