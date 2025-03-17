@@ -150,9 +150,84 @@ public class GetBadgeController : ControllerBase
                                                    !x.Equals("VerifiableCredential", StringComparison.InvariantCultureIgnoreCase) &&
                                                    !x.Equals("AchievementSubject", StringComparison.InvariantCultureIgnoreCase)).ToList();
 
-        var name = achievementCredential.CredentialSubject?.Identifier ?? achievementCredential.CredentialSubject?.Id?.ToString() ?? "Unknown";
-        var description = achievementCredential.CredentialSubject?.Achievement?.Description ?? "";
+        // Extract or create claims
+        var claims = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        
+        // Add existing claims if available
+        if (achievementCredential.CredentialSubject?.Claims != null)
+        {
+            foreach (var claim in achievementCredential.CredentialSubject.Claims)
+            {
+                claims[claim.Key] = claim.Value;
+            }
+        }
+        
+        // Get name and description - prioritize from claims first, then from achievement properties
+        var name = claims.TryGetValue("name", out var nameFromClaims) && !string.IsNullOrEmpty(nameFromClaims)
+            ? nameFromClaims
+            : achievementCredential.CredentialSubject?.Achievement?.Name ?? "Achievement";
+            
+        var description = claims.TryGetValue("description", out var descFromClaims) && !string.IsNullOrEmpty(descFromClaims)
+            ? descFromClaims
+            : achievementCredential.CredentialSubject?.Achievement?.Description ?? "";
+            
         var issuer = achievementCredential.Issuer?.Id?.ToString() ?? "Unknown Issuer";
+        
+        // Update claims with final values (in case they weren't in claims originally)
+        claims["name"] = name;
+        claims["description"] = description;
+        
+        // Extract criteria if available
+        if (achievementCredential.CredentialSubject?.Achievement?.Criteria != null)
+        {
+            var criteria = achievementCredential.CredentialSubject.Achievement.Criteria;
+            if (!string.IsNullOrEmpty(criteria.Narrative))
+            {
+                claims["criteria"] = criteria.Narrative;
+            }
+        }
+        
+        // Extract additional fields from achievement
+        if (achievementCredential.CredentialSubject?.Achievement != null)
+        {
+            var achievement = achievementCredential.CredentialSubject.Achievement;
+            
+            // Check for field of study or specialization in claims or Achievement object
+            var fieldOfStudyProps = new[] { "fieldOfStudy", "field_of_study", "fieldofstudy", "field" };
+            var specializationProps = new[] { "specialization", "specializationArea", "specialization_area" };
+            
+            foreach (var prop in fieldOfStudyProps)
+            {
+                if (claims.ContainsKey(prop) && !string.IsNullOrEmpty(claims[prop]))
+                {
+                    claims["fieldOfStudy"] = claims[prop];
+                    break;
+                }
+            }
+            
+            foreach (var prop in specializationProps)
+            {
+                if (claims.ContainsKey(prop) && !string.IsNullOrEmpty(claims[prop]))
+                {
+                    claims["specialization"] = claims[prop];
+                    break;
+                }
+            }
+        }
+        
+        // Get validUntil from credential
+        var validUntil = achievementCredential.ValidUntil ?? achievementCredential.ExpirationDate;
+        
+        // Get image from either Achievement image or Subject image
+        string? imageUrl = null;
+        if (achievementCredential.CredentialSubject?.Achievement?.Image?.Id != null)
+        {
+            imageUrl = achievementCredential.CredentialSubject.Achievement.Image.Id.ToString();
+        }
+        else if (achievementCredential.CredentialSubject?.Image?.Id != null)
+        {
+            imageUrl = achievementCredential.CredentialSubject.Image.Id.ToString();
+        }
                 
         return new VerifiedCredential
         {
@@ -160,14 +235,15 @@ public class GetBadgeController : ControllerBase
             Name = name,
             Types = filteredTypes,
             Issuer = issuer,
-            Claims =  achievementCredential.CredentialSubject?.Claims,
+            Claims = claims,
             Description = description,
-            Image =  achievementCredential.CredentialSubject?.Image?.Id != null ? achievementCredential.CredentialSubject.Image?.Id?.ToString() : "",
+            Image = imageUrl,
             Status = status,
             ValidFrom = achievementCredential.ValidFrom ?? achievementCredential.IssuanceDate ?? DateTime.UtcNow,
+            ValidUntil = validUntil,  // Set the ValidUntil property explicitly
             SubjectId = achievementCredential.CredentialSubject?.Id?.ToString(),
             SubjectName = GetSubjectNameFromAchievement(achievementCredential),
-            Credential = achievementCredential.RawData // Make sure the credential data is passed through,
+            Credential = achievementCredential.RawData // Make sure the credential data is passed through
         };
     }
 
@@ -182,9 +258,41 @@ public class GetBadgeController : ControllerBase
                                                    !x.Equals("VerifiableCredential", StringComparison.InvariantCultureIgnoreCase) &&
                                                    !x.Equals("EndorsementSubject", StringComparison.InvariantCultureIgnoreCase)).ToList();
 
-        var name = endorsementCredential.Name ?? "Endorsement";
-        var description = endorsementCredential.Description ?? "";
+        // Extract or create claims
+        var claims = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        
+        // Add existing claims if available
+        if (endorsementCredential.CredentialSubject?.Claims != null)
+        {
+            foreach (var claim in endorsementCredential.CredentialSubject.Claims)
+            {
+                claims[claim.Key] = claim.Value;
+            }
+        }
+        
+        // Get name and description - prioritize from claims first, then from endorsement properties
+        var name = claims.TryGetValue("name", out var nameFromClaims) && !string.IsNullOrEmpty(nameFromClaims)
+            ? nameFromClaims
+            : endorsementCredential.Name ?? "Endorsement";
+            
+        var description = claims.TryGetValue("description", out var descFromClaims) && !string.IsNullOrEmpty(descFromClaims)
+            ? descFromClaims
+            : endorsementCredential.Description ?? "";
+            
         var issuer = endorsementCredential.Issuer?.Id?.ToString() ?? "Unknown Issuer";
+        
+        // Update claims with final values (in case they weren't in claims originally)
+        claims["name"] = name;
+        claims["description"] = description;
+        
+        // Add endorsement comment as a claim if available
+        if (!string.IsNullOrEmpty(endorsementCredential.CredentialSubject?.EndorsementComment))
+        {
+            claims["endorsementComment"] = endorsementCredential.CredentialSubject.EndorsementComment;
+        }
+        
+        // Get validUntil from credential
+        var validUntil = endorsementCredential.ValidUntil ?? endorsementCredential.ExpirationDate;
         
         return new VerifiedCredential
         {
@@ -192,12 +300,13 @@ public class GetBadgeController : ControllerBase
             Name = name,
             Types = filteredTypes,
             Issuer = issuer,
-            Claims = endorsementCredential.CredentialSubject?.Claims,
+            Claims = claims,
             Description = description,
             // Endorsement credentials may not have an image so we leave it null
             Image = null,
             Status = status,
             ValidFrom = endorsementCredential.ValidFrom ?? endorsementCredential.IssuanceDate ?? DateTime.UtcNow,
+            ValidUntil = validUntil,  // Set the ValidUntil property explicitly
             SubjectId = endorsementCredential.CredentialSubject?.Id?.ToString(),
             SubjectName = GetEndorsementComment(endorsementCredential),
             Credential = endorsementCredential.RawData // Make sure the credential data is passed through
