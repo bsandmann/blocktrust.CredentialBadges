@@ -1,0 +1,71 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2025-03-17T18:34:42.976513606"><title>How to build | CredentialBadges Documentation</title><script type="application/json" id="virtual-toc-data">[{"id":"building-the-blocktrust-credentialbadges-projects","level":0,"title":"Building the Blocktrust.CredentialBadges Projects","anchor":"#building-the-blocktrust-credentialbadges-projects"},{"id":"prerequisites","level":0,"title":"Prerequisites","anchor":"#prerequisites"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="How to build | CredentialBadges Documentation"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="CredentialBadges Documentation Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/how-to-build.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="How to build | CredentialBadges Documentation"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/how-to-build.html#webpage",
+    "url": "writerside-documentation/how-to-build.html",
+    "name": "How to build | CredentialBadges Documentation",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "CredentialBadges Documentation Help"
+}</script><!-- End Schema.org --></head><body data-id="How-to-build" data-main-title="How to build" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs=""><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>CredentialBadges Documentation  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="How-to-build" id="How-to-build.md">How to build</h1><section class="chapter"><h2 id="building-the-blocktrust-credentialbadges-projects" data-toc="building-the-blocktrust-credentialbadges-projects">Building the Blocktrust.CredentialBadges Projects</h2><p id="-7zl1c3_5">This guide explains how to set up your development environment for building and running the Blocktrust.CredentialBadges.Builder and Blocktrust.CredentialBadges.Web projects. These instructions focus on Ubuntu, with notes on differences for other operating systems.</p></section><section class="chapter"><h2 id="prerequisites" data-toc="prerequisites">Prerequisites</h2><section class="chapter"><h3 id="net-9-sdk" data-toc="net-9-sdk">.NET 9 SDK</h3><p id="-7zl1c3_12">The projects require .NET 9 SDK. To install it on Ubuntu:</p><ol class="list _decimal" id="-7zl1c3_13" type="1"><li class="list__item" id="-7zl1c3_18"><p id="-7zl1c3_20">Add the Microsoft package repository:</p><div class="code-block" data-lang="bash">
+wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+rm packages-microsoft-prod.deb
+</div></li><li class="list__item" id="-7zl1c3_19"><p id="-7zl1c3_22">Install the .NET 9 SDK:</p></li></ol><div class="code-block" data-lang="none">
+   sudo apt-get update
+   sudo apt-get install -y dotnet-sdk-9.0
+</div><ol class="list _decimal" id="-7zl1c3_15" type="1" start="3"><li class="list__item" id="-7zl1c3_23"><p>Verify the installation:</p></li></ol><div class="code-block" data-lang="none">
+   dotnet --version
+</div><p id="-7zl1c3_17">Note: For Windows and macOS, download and install the .NET 9 SDK from the https://dotnet.microsoft.com/download/dotnet/9.0. The installation process differs on these platforms.</p></section><section class="chapter"><h3 id="node-js-and-npm" data-toc="node-js-and-npm">Node.js and npm</h3><p id="-7zl1c3_24">Both projects use Tailwind CSS, which requires Node.js and npm:</p><ol class="list _decimal" id="-7zl1c3_25" type="1"><li class="list__item" id="-7zl1c3_29"><p>Install Node.js and npm (recommended to use NVM for Node version management):</p></li></ol><div class="code-block" data-lang="none">
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+   source ~/.bashrc
+   nvm install 20.11.0
+   nvm use 20.11.0
+</div><ol class="list _decimal" id="-7zl1c3_27" type="1" start="2"><li class="list__item" id="-7zl1c3_30"><p>Verify the installation:</p></li></ol><div class="code-block" data-lang="none">
+   node --version
+   npm --version
+</div></section><section class="chapter"><h3 id="ide-options" data-toc="ide-options">IDE Options</h3><p id="-7zl1c3_31">You'll need one of the following IDEs:</p><ul class="list _bullet" id="-7zl1c3_32"><li class="list__item" id="-7zl1c3_33"><p>JetBrains Rider: Download and install from https://www.jetbrains.com/rider/download/. Recommended for cross-platform development.</p></li><li class="list__item" id="-7zl1c3_34"><p>Visual Studio Code: Install from https://code.visualstudio.com/ along with the C# extension.</p></li><li class="list__item" id="-7zl1c3_35"><p>Visual Studio: Available for Windows and macOS (Visual Studio for Mac).</p></li></ul></section><section class="chapter"><h3 id="clone-the-repository" data-toc="clone-the-repository">Clone the Repository</h3><p id="-7zl1c3_36">Clone the main repo:</p><div class="code-block" data-lang="none">
+git clone https://github.com/bsandmann/blocktrust.CredentialBadges
+</div><p id="-7zl1c3_38">You'll also need the DidPrismResolverClient project. Clone it <span class="control" id="-7zl1c3_41">next to</span> the CredentialBadges project, not inside it! You can find it here:</p><div class="code-block" data-lang="none">
+git clone https://github.com/bsandmann/DidPrismResolverClient
+</div><p id="-7zl1c3_40">The second project is used by multiple other projects and is just a .net wrapper for the OPN DID resolver.</p></section><section class="chapter"><h3 id="building-the-projects" data-toc="building-the-projects">Building the Projects</h3><section class="chapter"><h4 id="common-steps-for-both-projects" data-toc="common-steps-for-both-projects">Common Steps for Both Projects</h4><p id="-7zl1c3_46">Restore the .NET dependencies:</p><div class="code-block" data-lang="none">
+   dotnet restore
+</div></section><section class="chapter"><h4 id="building-blocktrust-credentialbadges-builder" data-toc="building-blocktrust-credentialbadges-builder">Building Blocktrust.CredentialBadges.Builder</h4><ol class="list _decimal" id="-7zl1c3_48" type="1"><li class="list__item" id="-7zl1c3_58"><p>Navigate to the Builder project directory:</p></li></ol><div class="code-block" data-lang="none">
+   cd Blocktrust.CredentialBadges.Builder
+</div><ol class="list _decimal" id="-7zl1c3_50" type="1" start="2"><li class="list__item" id="-7zl1c3_59"><p>Install npm dependencies for Tailwind CSS:</p></li></ol><div class="code-block" data-lang="none">
+   npm install
+</div><ol class="list _decimal" id="-7zl1c3_52" type="1" start="3"><li class="list__item" id="-7zl1c3_60"><p>Start the Tailwind CSS watcher in a separate terminal:</p></li></ol><div class="code-block" data-lang="none">
+   npx tailwindcss -i ./TailwindStyles/app.css -o ./wwwroot/app.css --watch
+</div><ol class="list _decimal" id="-7zl1c3_54" type="1" start="4"><li class="list__item" id="-7zl1c3_61"><p>Build the project:</p></li></ol><div class="code-block" data-lang="none">
+   dotnet build
+</div><ol class="list _decimal" id="-7zl1c3_56" type="1" start="5"><li class="list__item" id="-7zl1c3_62"><p>Run the project:</p></li></ol><div class="code-block" data-lang="none">
+   dotnet run
+</div></section><section class="chapter"><h4 id="building-blocktrust-credentialbadges-web" data-toc="building-blocktrust-credentialbadges-web">Building Blocktrust.CredentialBadges.Web</h4><ol class="list _decimal" id="-7zl1c3_63" type="1"><li class="list__item" id="-7zl1c3_73"><p>Navigate to the Web project directory:</p></li></ol><div class="code-block" data-lang="none">
+   cd Blocktrust.CredentialBadges.Web
+</div><ol class="list _decimal" id="-7zl1c3_65" type="1" start="2"><li class="list__item" id="-7zl1c3_74"><p>Install npm dependencies for Tailwind CSS:</p></li></ol><div class="code-block" data-lang="none">
+   npm install
+</div><ol class="list _decimal" id="-7zl1c3_67" type="1" start="3"><li class="list__item" id="-7zl1c3_75"><p>Start the Tailwind CSS watcher in a separate terminal:</p></li></ol><div class="code-block" data-lang="none">
+   npx tailwindcss -i ./TailwindStyles/app.css -o ./wwwroot/app.css --watch
+</div><ol class="list _decimal" id="-7zl1c3_69" type="1" start="4"><li class="list__item" id="-7zl1c3_76"><p>Build the project:</p></li></ol><div class="code-block" data-lang="none">
+   dotnet build
+</div><ol class="list _decimal" id="-7zl1c3_71" type="1" start="5"><li class="list__item" id="-7zl1c3_77"><p>Run the project:</p></li></ol><div class="code-block" data-lang="none">
+   dotnet run
+</div></section><section class="chapter"><h4 id="running-both-projects-together" data-toc="running-both-projects-together">Running Both Projects Together</h4><p id="-7zl1c3_78">For a complete development environment, you'll need to run both projects simultaneously. You can:</p><ol class="list _decimal" id="-7zl1c3_79" type="1"><li class="list__item" id="-7zl1c3_84"><p>Run each project in a separate terminal with its own Tailwind CSS watcher</p></li><li class="list__item" id="-7zl1c3_85"><p>Use the solution file with your IDE to run multiple projects</p></li></ol><section class="chapter"><h5 id="in-terminal-1-builder-project-with-tailwind" data-toc="in-terminal-1-builder-project-with-tailwind">In terminal 1 - Builder project with Tailwind</h5><div class="code-block" data-lang="none">
+cd Blocktrust.CredentialBadges.Builder
+npx tailwindcss -i ./TailwindStyles/app.css -o ./wwwroot/app.css --watch
+</div></section><section class="chapter"><h5 id="in-terminal-2-builder-project" data-toc="in-terminal-2-builder-project">In terminal 2 - Builder project</h5><div class="code-block" data-lang="none">
+cd Blocktrust.CredentialBadges.Builder
+dotnet run
+</div></section><section class="chapter"><h5 id="in-terminal-3-web-project-with-tailwind" data-toc="in-terminal-3-web-project-with-tailwind">In terminal 3 - Web project with Tailwind</h5><div class="code-block" data-lang="none">
+cd Blocktrust.CredentialBadges.Web
+npx tailwindcss -i ./TailwindStyles/app.css -o ./wwwroot/app.css --watch
+</div></section><section class="chapter"><h5 id="in-terminal-4-web-project" data-toc="in-terminal-4-web-project">In terminal 4 - Web project</h5><div class="code-block" data-lang="none">
+cd Blocktrust.CredentialBadges.Web
+dotnet run
+</div></section></section></section><section class="chapter"><h3 id="configure-application-settings" data-toc="configure-application-settings">Configure Application Settings</h3><p id="-7zl1c3_90">For information on configuring the applications with appropriate connection strings and environment variables, please refer to the &quot;How to Run&quot; section of the documentation.</p><p id="-7zl1c3_91">Additional Notes</p><ul class="list _bullet" id="-7zl1c3_92"><li class="list__item" id="-7zl1c3_93"><p>Both projects use PostgreSQL as the database backend</p></li><li class="list__item" id="-7zl1c3_94"><p>The projects use Entity Framework Core for database access</p></li><li class="list__item" id="-7zl1c3_95"><p>Make sure your IDE is configured to use the correct .NET version (9.0)</p></li><li class="list__item" id="-7zl1c3_96"><p>When running the Tailwind CSS watcher, any changes to Razor or HTML files will automatically regenerate the CSS</p></li></ul></section></section><div class="last-modified">Last modified: 17 March 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="how-to-run.html" class="navigation-links__prev">How to Run</a><a href="embedding-examples.html" class="navigation-links__next">Embedding examples</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.js"></script></body></html>
