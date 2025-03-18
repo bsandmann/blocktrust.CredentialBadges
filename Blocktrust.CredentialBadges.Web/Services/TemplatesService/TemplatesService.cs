@@ -28,7 +28,7 @@ public class TemplatesService
         string validityLabelColor = isDarkTheme ? "#94A3B8" : "#718096";
         string validityDateColor = isDarkTheme ? "#ffffff" : "#2d3748";
         string borderColor = "#dedede";
-        string logoBackgroundColor = isDarkTheme ? "#4a5568" : "#ffffff";
+        string logoBackgroundColor = isDarkTheme ? "#020617" : "#ffffff";
 
         // Basic show/hide logic
         bool showDescription = templateId.Contains("description") && !templateId.Contains("no_description");
@@ -106,7 +106,6 @@ public class TemplatesService
             string endorsementComment = endorsementCommentRaw ?? "";
             bool hasEndorsementComment = !string.IsNullOrWhiteSpace(endorsementComment);
 
-            // Check length at 120
             bool needsEllipsis = endorsementComment.Length > 120;
             string truncatedEndorsementComment = needsEllipsis
                 ? endorsementComment.Substring(0, 120) + "..."
@@ -114,7 +113,7 @@ public class TemplatesService
 
             StringBuilder endorsementBuilder = new StringBuilder();
 
-            // Outer container (same as other templates)
+            // Outer container (with forced text-align and font-family)
             string containerStyles = $@"
         display: inline-block !important;
         width: 30rem !important;
@@ -127,15 +126,20 @@ public class TemplatesService
         transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
         font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
         color: {textColor} !important;
+        text-align: left !important;
     ";
 
             endorsementBuilder.Append($@"
         <div style='{containerStyles}' onmouseover=""{hoverEffect}"" onmouseout=""{resetEffect}"">
             <a href='{linkUrl}'
-               style='text-decoration: none !important;
+               style='
+                      text-decoration: none !important;
                       color: inherit !important;
                       display: block !important;
-                      border-bottom: none !important;'
+                      border-bottom: none !important;
+                      text-align: left !important;
+                      font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+               '
                id='{credential.Id}'
                data-credential-id='{credential.Id}'
                data-template-id='{templateId}'>
@@ -177,13 +181,12 @@ public class TemplatesService
 
             // Right block (main text area)
             endorsementBuilder.Append($@"
-                    <div style='flex-grow: 1 !important; min-width: 0 !important;'>
+                    <div style='flex-grow: 1 !important; min-width: 0 !important; text-align: left !important;'>
     ");
 
             // 1) Big text for endorsement comment
             if (hasEndorsementComment)
             {
-                // If the comment is ≤120, display multiline; if it’s >120, truncate to 120 and single-line ellipsis
                 if (!needsEllipsis)
                 {
                     // Full text (multiline friendly)
@@ -195,6 +198,7 @@ public class TemplatesService
                                 color: {titleColor} !important;
                                 font-weight: bold !important;
                                 word-wrap: break-word !important;  
+                                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                             '
                             title='{endorsementComment}'>
                                 {endorsementComment}
@@ -213,6 +217,7 @@ public class TemplatesService
                                 font-weight: bold !important;
                                 overflow: hidden !important;
                                 text-overflow: ellipsis !important;
+                                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                             '
                             title='{endorsementComment}'>
                                 {truncatedEndorsementComment}
@@ -236,6 +241,7 @@ public class TemplatesService
                                 text-overflow: ellipsis !important;
                                 white-space: nowrap !important;
                                 font-weight: 500 !important;
+                                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                             '
                             title='{truncatedName}'>{truncatedName}</div>
             ");
@@ -252,6 +258,7 @@ public class TemplatesService
                                 text-overflow: ellipsis !important;
                                 white-space: nowrap !important;
                                 font-weight: bold !important;
+                                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                             '
                             title='{truncatedName}'>{truncatedName}</div>
             ");
@@ -273,6 +280,7 @@ public class TemplatesService
                                 text-overflow: ellipsis !important;
                                 white-space: nowrap !important;
                                 font-weight: bold !important;
+                                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                             '
                             title='{truncatedName}'>{truncatedName}</div>
             ");
@@ -288,6 +296,7 @@ public class TemplatesService
                             overflow: hidden !important;
                             text-overflow: ellipsis !important;
                             white-space: nowrap !important;
+                            font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                         '
                         title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
     ");
@@ -304,6 +313,7 @@ public class TemplatesService
                             overflow: hidden !important;
                             text-overflow: ellipsis !important;
                             white-space: nowrap !important;
+                            font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                         '
                         title='{subjectName}'>Issued to: {subjectName}</div>
         ");
@@ -322,6 +332,7 @@ public class TemplatesService
                             display: -webkit-box !important;
                             -webkit-line-clamp: 2 !important;
                             -webkit-box-orient: vertical !important;
+                            font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                         '
                         title='{truncatedDescription}'>{truncatedDescription}</div>
         ");
@@ -336,6 +347,7 @@ public class TemplatesService
                             align-items: center !important;
                             justify-content: space-between !important;
                             margin-top: 0.25rem !important;
+                            font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                         '>
                             <div style='
                                 display: flex !important;
@@ -352,12 +364,14 @@ public class TemplatesService
                                     <div style='
                                         color: {validityLabelColor} !important;
                                         font-weight: 400 !important;
+                                        font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                     '>
                                         Valid from
                                     </div>
                                     <div style='
                                         color: {validityDateColor} !important;
                                         font-weight: 500 !important;
+                                        font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                     '>
                                         {credential.ValidFrom:dd MMMM, yyyy}
                                     </div>
@@ -376,12 +390,14 @@ public class TemplatesService
                                     <div style='
                                         color: {validityLabelColor} !important;
                                         font-weight: 400 !important;
+                                        font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                     '>
                                         Valid until
                                     </div>
                                     <div style='
                                         color: {validityDateColor} !important;
                                         font-weight: 500 !important;
+                                        font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                     '>
                                         {credential.ValidUntil:dd MMMM, yyyy}
                                     </div>
@@ -421,6 +437,7 @@ public class TemplatesService
                 transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
                 font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                 color: {textColor} !important;
+                text-align: left !important;
             ";
 
             templateBuilder.Append($@"
@@ -429,7 +446,10 @@ public class TemplatesService
                        style='text-decoration: none !important;
                               color: inherit !important;
                               display: block !important;
-                              border-bottom: none !important;'
+                              border-bottom: none !important;
+                              text-align: left !important;
+                              font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                       '
                        id='{credential.Id}'
                        data-credential-id='{credential.Id}'
                        data-template-id='{templateId}'>
@@ -462,7 +482,7 @@ public class TemplatesService
             }
 
             templateBuilder.Append($@"
-                            <div style='flex-grow: 1 !important; min-width: 0 !important;'>
+                            <div style='flex-grow: 1 !important; min-width: 0 !important; text-align: left !important;'>
                                 <div style='
                                     font-size: 1.5rem !important;
                                     margin-bottom: 0.5rem !important;
@@ -472,6 +492,7 @@ public class TemplatesService
                                     text-overflow: ellipsis !important;
                                     white-space: nowrap !important;
                                     font-weight: bold !important;
+                                    font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                 '
                                 title='{truncatedName}'>{truncatedName}</div>
             ");
@@ -487,6 +508,7 @@ public class TemplatesService
                                     font-size: 0.875rem !important;
                                     margin: 0 !important;
                                     padding: 0 !important;
+                                    font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                 '>
                                     <div style='
                                         color: {validityLabelColor} !important;
@@ -512,6 +534,7 @@ public class TemplatesService
                                     overflow: hidden !important;
                                     text-overflow: ellipsis !important;
                                     white-space: nowrap !important;
+                                    font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                 '
                                 title='{credential.Issuer}'>Issued by: {truncatedIssuer}</div>
             ");
@@ -527,6 +550,7 @@ public class TemplatesService
                                     overflow: hidden !important;
                                     text-overflow: ellipsis !important;
                                     white-space: nowrap !important;
+                                    font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                 '
                                 title='{subjectName}'>Issued to: {subjectName}</div>
                 ");
@@ -544,6 +568,7 @@ public class TemplatesService
                                     display: -webkit-box !important;
                                     -webkit-line-clamp: 2 !important;
                                     -webkit-box-orient: vertical !important;
+                                    font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                 '
                                 title='{truncatedDescription}'>{truncatedDescription}</div>
                 ");
@@ -562,6 +587,7 @@ public class TemplatesService
                                             align-items: baseline !important;
                                             gap: 0.25rem !important;
                                             font-size: 0.875rem !important;
+                                            font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                         '>
                                             <div style='
                                                 color: {validityLabelColor} !important;
@@ -602,6 +628,7 @@ public class TemplatesService
                                         display: flex !important;
                                         flex-direction: column !important;
                                         line-height: 1 !important;
+                                        font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                     '>
                                         <div style='
                                             display: flex !important;
@@ -675,6 +702,7 @@ public class TemplatesService
                 transition: box-shadow 0.2s ease-in-out, filter 0.2s ease-in-out !important;
                 font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                 color: {textColor} !important;
+                text-align: left !important;
             ";
 
             templateBuilder.Append($@"
@@ -683,7 +711,10 @@ public class TemplatesService
                        style='text-decoration: none !important;
                               color: inherit !important;
                               display: block !important;
-                              border-bottom: none !important;'
+                              border-bottom: none !important;
+                              text-align: left !important;
+                              font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                       '
                        id='{credential.Id}'
                        data-credential-id='{credential.Id}'
                        data-template-id='{templateId}'>
@@ -716,7 +747,7 @@ public class TemplatesService
             }
 
             templateBuilder.Append($@"
-                            <div style='flex-grow: 1 !important; min-width: 0 !important;'>
+                            <div style='flex-grow: 1 !important; min-width: 0 !important; text-align: left !important;'>
                                 <div style='
                                     font-size: 1.125rem !important;
                                     margin-bottom: 0.3rem !important;
@@ -726,6 +757,7 @@ public class TemplatesService
                                     text-overflow: ellipsis !important;
                                     white-space: nowrap !important;
                                     font-weight: bold !important;
+                                    font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                 '
                                 title='{credential.Name}'>{truncatedName}</div>
 
@@ -769,6 +801,7 @@ public class TemplatesService
                                     display: -webkit-box !important;
                                     -webkit-line-clamp: 2 !important;
                                     -webkit-box-orient: vertical !important;
+                                    font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                 '
                                 title='{credential.Description}'>{truncatedDescription}</div>
                 ");
@@ -786,6 +819,7 @@ public class TemplatesService
                                             align-items: baseline !important;
                                             gap: 0.25rem !important;
                                             font-size: 0.8rem !important;
+                                            font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
                                         '>
                                             <div style='
                                                 color: {validityLabelColor} !important;
@@ -815,7 +849,7 @@ public class TemplatesService
                 ");
             }
 
-            // For small templates, no ValidFrom/ValidUntil lines; just a status button
+            // For small templates, we skip ValidFrom/ValidUntil lines and only show the status button
             templateBuilder.Append($@"
                                 <div style='
                                     display: flex !important;
@@ -858,9 +892,15 @@ public class TemplatesService
                 border: none !important;
                 outline: none !important;
                 cursor: pointer !important;
+                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                text-align: left !important;
             '>
                 {GetStatusIcon(status, iconColor)}
-                <div style='margin-left: 0.25rem !important; display: inline-block !important;'>{statusText}</div>
+                <div style='
+                     margin-left: 0.25rem !important;
+                     display: inline-block !important;
+                     font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                '>{statusText}</div>
             </button>
         ";
     }
@@ -883,9 +923,15 @@ public class TemplatesService
                 border: none !important;
                 outline: none !important;
                 cursor: pointer !important;
+                font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                text-align: left !important;
             '>
                 {GetStatusIcon(status, iconColor)}
-                <div style='margin-left: 0.25rem !important; display: inline-block !important;'>{statusText}</div>
+                <div style='
+                     margin-left: 0.25rem !important;
+                     display: inline-block !important;
+                     font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif !important;
+                '>{statusText}</div>
             </button>
         ";
     }

@@ -216,7 +216,7 @@ public class GetBadgeController : ControllerBase
         }
         
         // Get validUntil from credential
-        var validUntil = achievementCredential.ValidUntil ?? achievementCredential.ExpirationDate;
+        var validUntil = achievementCredential.ValidUntil ?? achievementCredential.ExpirationDate ?? null;
         
         // Get image from either Achievement image or Subject image
         string? imageUrl = null;
@@ -292,7 +292,7 @@ public class GetBadgeController : ControllerBase
         }
         
         // Get validUntil from credential
-        var validUntil = endorsementCredential.ValidUntil ?? endorsementCredential.ExpirationDate;
+        var validUntil = endorsementCredential.ValidUntil ?? endorsementCredential.ExpirationDate ?? null;
         
         return new VerifiedCredential
         {

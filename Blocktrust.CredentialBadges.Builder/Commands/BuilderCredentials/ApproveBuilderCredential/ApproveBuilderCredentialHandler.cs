@@ -61,7 +61,7 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
                     IssuingDID = _appSettings.IssuingDID,
                     ConnectionId = entity.IssuerConnectionId,
                     AutomaticIssuance = true,
-                    ValidityPeriod = 300000000
+                    ValidityPeriod = 31556952
                 };
             }
             else
@@ -101,7 +101,7 @@ public class ApproveBuilderCredentialHandler : IRequestHandler<ApproveBuilderCre
                     IssuingDID = _appSettings.IssuingDID,
                     ConnectionId = entity.IssuerConnectionId,
                     AutomaticIssuance = true,
-                    ValidityPeriod = 300000000
+                    ValidityPeriod = 31556952
                 };
             }
 
