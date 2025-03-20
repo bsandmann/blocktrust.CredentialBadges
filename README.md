@@ -4,6 +4,12 @@
 
 Blocktrust Credential Badges is a project designed to enhance the display and verification of W3C Verifiable Credentials (VCs) and OpenBadges 3.0 credentials on websites. Our goal is to create a system for embedding these credentials, making them accessible and verifiable for everyone, even without an identity wallet.
 
+You can find the full [project documentation here](https://docs.badges.blocktrust.dev/).
+This includes a [Step-by-Step video](https://youtu.be/QgOi2EtLlGg)
+
+If you want to see some live credentials you can have a look [here](https://docs.badges.blocktrust.dev/credential-examples.html)
+
+
 ## Key Features
 
 1. **Credential Embedding**: A module that enables embedding of W3C VCs and OpenBadges 3.0 credentials into any website.
@@ -26,7 +32,7 @@ The Blocktrust Credential Badges system operates in several steps:
 
 ## Project Timeline
 
-The Blocktrust Credential Badges project began in April 2024 and is expected to conclude around March 2025.
+The Blocktrust Credential Badges project began in April 2024 and was finished as planned in March 2025
 
 ## Technology Stack
 
@@ -40,7 +46,6 @@ Our project uses the following technologies:
 ## Integration with OpenBadges 3.0
 
 We are aligning our project with the OpenBadges 3.0 specification, which is based on the W3C Verifiable Credentials (VC) 2.0 standard. This alignment ensures interoperability with the broader OpenBadges ecosystem.
-
 
 ## License
 
